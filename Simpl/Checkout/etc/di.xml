@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Payment Method Facade configuration -->
+    <virtualType name="SimplCheckoutPaymentFacade" type="Simpl\Checkout\Model\Payment\SimplCheckout">
+        <arguments>
+            <argument name="code" xsi:type="const">Simpl\Checkout\Model\Ui\ConfigProvider::CODE</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Magento\Payment\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">Magento\Payment\Gateway\Config\ValueHandlerPool
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Configuration reader -->
+    <type name="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">Simpl\Checkout\Model\Ui\ConfigProvider::CODE</argument>
+        </arguments>
+    </type>
+
+    <!-- Value handlers infrastructure -->
+    <type name="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">Magento\Payment\Gateway\Config\ConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </type>
+    <type name="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">Magento\Payment\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
+
+    <!-- API -->
+    <preference for="Simpl\Checkout\Api\OrderUpdateManagementInterface"
+                type="Simpl\Checkout\Model\OrderUpdateManagement"/>
+    <preference for="Simpl\Checkout\Api\Data\PaymentDataInterface"
+                type="Simpl\Checkout\Model\Data\PaymentData"/>
+    <preference for="Simpl\Checkout\Api\Data\TransactionDataInterface"
+                type="Simpl\Checkout\Model\Data\TransactionData"/>
+    <preference for="Simpl\Checkout\Api\Data\AppliedChargesDataInterface"
+                type="Simpl\Checkout\Model\Data\AppliedChargesData"/>
+    <preference for="Simpl\Checkout\Api\Data\AppliedDiscountsDataInterface"
+                type="Simpl\Checkout\Model\Data\AppliedDiscountsData"/>
+    <preference for="Simpl\Checkout\Api\Data\ApiResponseDataInterface"
+                type="Simpl\Checkout\Model\Data\ApiResponseData"/>
+    <preference for="Simpl\Checkout\Api\Data\RedirectionUrlDataInterface"
+                type="Simpl\Checkout\Model\Data\RedirectionUrlData"/>
+    <preference for="Simpl\Checkout\Api\Data\OrderConfirmSuccessDataInterface"
+                type="Simpl\Checkout\Model\Data\OrderConfirmSuccessData"/>
+    <preference for="Simpl\Checkout\Api\Data\ErrorDataInterface"
+                type="Simpl\Checkout\Model\Data\ErrorData"/>
+    <preference for="Simpl\Checkout\Api\RefundManagementInterface"
+                type="Simpl\Checkout\Model\RefundManagement"/>
+    <preference for="Simpl\Checkout\Api\Data\MessageDataInterface"
+                type="Simpl\Checkout\Model\Data\MessageData"/>
+    <preference for="Simpl\Checkout\Api\Data\ApiDataInterface"
+                type="Simpl\Checkout\Model\Data\ApiData"/>
+
+    <type name="Simpl\Checkout\Logger\Handler">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+    <type name="Simpl\Checkout\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">SimplCheckoutLogger</argument>
+            <argument name="handlers"  xsi:type="array">
+                <item name="system" xsi:type="object">Simpl\Checkout\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </type>
+</config>
