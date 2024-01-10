@@ -1,0 +1,39 @@
+<div id="messages">
+    <div class="message"> Validate Credentials
+        <button id="save_secret" class="primary" onclick="return false;">Check</button>
+        <div id="valid"></div>
+    </div>
+
+    <script type="text/javascript">
+        require(['jquery','mage/storage',], function ($) {
+            $(document).ready(function(){
+                if($("#payment_other_simplcheckout_test_secret").val()!="")
+                {
+                    $("#save_secret").prop('disabled', true);
+                    return false;
+                }
+            });
+
+            $('#payment_other_simplcheckout_test_secret').on('keypress','',function(){
+                $("#save_secret").prop('disabled', false);
+                return true;
+            });
+
+            jQuery(document).on('click', '#messages', function (event)
+            {
+                param = $("#payment_other_simplcheckout_test_secret").val();
+                $.ajax({
+                    showLoader: true,
+                    url: "/admin/simplcheckout/index/validatesecret/clientsecret/"+param,
+                    type: "POST",
+                    data: {data:'success'},
+                    success: function(response){
+                        $('#valid').html(response).show();
+                        return false;
+                    }
+                });
+            });
+        });
+    </script>
+</div>
+
