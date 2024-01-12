@@ -2,11 +2,11 @@
     "name": "simpl/module-checkout",
     "description": "Simpl Checkout",
     "type": "magento2-module",
-    "license": "GPL-3.0",
+    "license": "MIT",
     "authors": [
         {
-            "name": "Unicornready",
-            "email": "info@unicornready.com"
+            "name": "Simpl",
+            "email": "info@getsimpl.com"
         }
     ],
     "minimum-stability": "dev",

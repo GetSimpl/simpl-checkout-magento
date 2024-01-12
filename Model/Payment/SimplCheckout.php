@@ -18,9 +18,10 @@ use Magento\Payment\Model\InfoInterface;
 use Magento\Sales\Model\Order;
 use Psr\Log\LoggerInterface;
 use Simpl\Checkout\Helper\Config as SimplConfig;
+use Magento\Payment\Model\Method\Adapter;
+use Magento\Quote\Api\Data\CartInterface;
 
-class SimplCheckout  extends \Magento\Payment\Model\Method\Adapter
-{
+class SimplCheckout  extends Adapter {
 
     protected $_code = "simplcheckout";
 
@@ -38,8 +39,7 @@ class SimplCheckout  extends \Magento\Payment\Model\Method\Adapter
         ValidatorPoolInterface $validatorPool = null,
         CommandManagerInterface $commandExecutor = null,
         LoggerInterface $logger = null
-    )
-    {
+    ) {
         $this->simplConfig = $simplConfig;
 
         parent::__construct(
@@ -57,7 +57,7 @@ class SimplCheckout  extends \Magento\Payment\Model\Method\Adapter
     }
 
     public function isAvailable(
-        \Magento\Quote\Api\Data\CartInterface $quote = null
+        CartInterface $quote = null
     ) {
         if (!$this->simplConfig->isEnabled())
             return false;
@@ -65,27 +65,23 @@ class SimplCheckout  extends \Magento\Payment\Model\Method\Adapter
         return parent::isAvailable($quote);
     }
 
-    public function capture(InfoInterface $payment, $amount)
-    {
+    public function capture(InfoInterface $payment, $amount) {
         return $this;
     }
 
-    public function refund(InfoInterface $payment, $amount)
-    {
+    public function refund(InfoInterface $payment, $amount) {
         $this->cancel($payment, $amount);
 
         return $this;
     }
 
-    public function void(InfoInterface $payment)
-    {
+    public function void(InfoInterface $payment) {
         $this->cancel($payment);
 
         return $this;
     }
 
-    public function cancel(InfoInterface $payment, $amount = null)
-    {
+    public function cancel(InfoInterface $payment, $amount = null) {
         try {
 
             $order = $payment->getOrder();

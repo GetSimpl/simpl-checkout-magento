@@ -2,13 +2,11 @@
 
 namespace Simpl\Checkout\Model\Adminhtml\Source;
 
-class Mode
-{
+class Mode {
     const TEST = 'test';
     const LIVE = 'live';
 
-    public function toOptionArray()
-    {
+    public function toOptionArray() {
         return [
             [
                 'value' => self::TEST,

@@ -3,9 +3,10 @@
 namespace Simpl\Checkout\Model\Ui;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
+use Simpl\Checkout\Helper\Config;
 
-class ConfigProvider  implements ConfigProviderInterface
-{
+class ConfigProvider  implements ConfigProviderInterface {
+
     const CODE = 'simplcheckout';
 
     protected $config;
@@ -14,17 +15,15 @@ class ConfigProvider  implements ConfigProviderInterface
      * @param \Simpl\Checkout\Helper\Config $config
      */
     public function __construct(
-        \Simpl\Checkout\Helper\Config $config
-    )
-    {
+        Config $config
+    ) {
         $this->config = $config;
     }
 
     /**
      * @return string[][][]
      */
-    public function getConfig()
-    {
+    public function getConfig() {
         $data = [];
 
         $data = [

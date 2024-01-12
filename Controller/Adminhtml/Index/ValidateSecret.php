@@ -11,8 +11,7 @@ use Psr\Log\LoggerInterface;
 use Magento\Framework\App\RequestInterface;
 use Simpl\Checkout\Helper\SimplApi;
 
-class ValidateSecret implements HttpPostActionInterface
-{
+class ValidateSecret implements HttpPostActionInterface {
 
     /**
      * @var PageFactory
@@ -68,15 +67,20 @@ class ValidateSecret implements HttpPostActionInterface
      * Validate secret
      *
      */
-    public function execute()
-    {
+    public function execute() {
         try {
-            $secret = $this->request->getParam('clientsecret');
+            $secret = $this->request->getParam('client_secret');
 
             if ($this->simplApi->install($secret)) {
-                $response = ['status'=> true, 'message'=>'Congratulations! Valid Credentials'];
+                $response = [
+                    'status'=> true,
+                    'message'=>'Congratulations! Valid Credentials'
+                ];
             } else {
-                $response = ['status'=> false, 'message'=>'Invalid Credentials!'];
+                $response = [
+                    'status'=> false,
+                    'message'=>'Invalid Credentials!'
+                ];
             }
 
         } catch (LocalizedException $e) {
@@ -91,8 +95,7 @@ class ValidateSecret implements HttpPostActionInterface
     /**
      * Create json response
      */
-    public function jsonResponse($response = '')
-    {
+    private function jsonResponse($response = '') {
         $this->http->getHeaders()->clearHeaders();
         $this->http->setHeader('Content-Type', 'application/json');
         return $this->http->setBody(
