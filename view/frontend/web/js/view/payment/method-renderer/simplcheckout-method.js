@@ -15,6 +15,9 @@ define(
             getInstructions: function () {
                 return window.checkoutConfig.payment.simplcheckout.instructions;
             },
+            getTitleForFrontend: function () {
+                return window.checkoutConfig.payment.simplcheckout.title_for_frontend;
+            },
             /**
              * After place order callback
              */

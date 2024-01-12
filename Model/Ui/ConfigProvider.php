@@ -30,7 +30,8 @@ class ConfigProvider  implements ConfigProviderInterface
         $data = [
             'payment' => [
                 self::CODE => [
-                    'instructions' => $this->config->getInstructions()
+                    'instructions' => $this->config->getInstructions(),
+                    'title_for_frontend' => $this->config->getTitleForFrontend()
                 ]
             ]
         ];

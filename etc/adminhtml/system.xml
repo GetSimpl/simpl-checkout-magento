@@ -41,7 +41,7 @@
                 <field id="validate_secret" translate="label" sortOrder="16" showInDefault="1" showInWebsite="1" showInStore="1">
                     <frontend_model>Simpl\Checkout\Block\Adminhtml\System\Config\ValidateSecret</frontend_model>
                 </field>
-                <field id="title" type="text" sortOrder="20" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                <field id="title_for_frontend" type="text" sortOrder="20" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
                     <label>Title</label>
                     <comment><![CDATA[Enter the title that you want to show to the customer]]></comment>
                 </field>
