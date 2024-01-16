@@ -70,7 +70,7 @@ class SimplCheckout  extends Adapter {
     }
 
     public function refund(InfoInterface $payment, $amount) {
-        $this->cancel($payment, $amount);
+        $this->initRefund($payment, $amount);
 
         return $this;
     }
@@ -81,7 +81,7 @@ class SimplCheckout  extends Adapter {
         return $this;
     }
 
-    public function cancel(InfoInterface $payment, $amount = null) {
+    public function initRefund(InfoInterface $payment, $amount = null) {
         try {
 
             $order = $payment->getOrder();
@@ -94,6 +94,22 @@ class SimplCheckout  extends Adapter {
             $order->setStatus(Order::STATE_CLOSED);
 
             // TODO API to init refund
+
+        } catch (\Exception $e) {
+            throw new CouldNotSaveException(__('Refund can not be processed'));
+        }
+
+        return $this;
+    }
+
+    public function cancel(InfoInterface $payment, $amount = null) {
+        try {
+
+            $order = $payment->getOrder();
+            $order->setState(Order::STATE_CLOSED);
+            $order->setStatus(Order::STATE_CLOSED);
+
+            // TODO API to init cancel
 
         } catch (\Exception $e) {
             throw new CouldNotSaveException(__('Refund can not be processed'));
