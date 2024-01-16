@@ -70,18 +70,9 @@ class ValidateSecret implements HttpPostActionInterface {
     public function execute() {
         try {
             $secret = $this->request->getParam('client_secret');
+            $clientId = $this->request->getParam('client_id');
 
-            if ($this->simplApi->install($secret)) {
-                $response = [
-                    'status'=> true,
-                    'message'=>'Congratulations! Valid Credentials'
-                ];
-            } else {
-                $response = [
-                    'status'=> false,
-                    'message'=>'Invalid Credentials!'
-                ];
-            }
+            $response = $this->simplApi->install($secret,$clientId);
 
         } catch (LocalizedException $e) {
             $response = ['status'=> false, 'message'=>$e->getMessage()];
