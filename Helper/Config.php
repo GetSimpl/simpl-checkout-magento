@@ -32,8 +32,7 @@ class Config extends AbstractHelper
      *
      * @return bool
      */
-    public function isEnabled(): bool
-    {
+    public function isEnabled() {
         return (bool)$this->scopeConfig->getValue(
             self::SIMPL_PAYMENT_ACTIVE,
             self::SCOPE
@@ -45,8 +44,7 @@ class Config extends AbstractHelper
      *
      * @return string
      */
-    public function getApiUrl(): string
-    {
+    public function getApiUrl() {
         $mode = $this->getSimplMode();
         if($mode == 'live') {
             return (string) self::POST_URL_LIVE;
@@ -59,8 +57,7 @@ class Config extends AbstractHelper
      *
      * @return string
      */
-    public function getSimplMode(): string
-    {
+    public function getSimplMode() {
         return (string) $this->scopeConfig->getValue(
             self::SIMPL_PAYMENT_MODE,
             self::SCOPE
@@ -72,8 +69,7 @@ class Config extends AbstractHelper
      *
      * @return string
      */
-    public function getClientId(): string
-    {
+    public function getClientId() {
         return (string) $this->scopeConfig->getValue(
             self::SIMPL_PAYMENT_CLIENT_ID,
             self::SCOPE
@@ -85,8 +81,7 @@ class Config extends AbstractHelper
      *
      * @return string
      */
-    public function getTitle(): string
-    {
+    public function getTitle(): string {
         return (string) $this->scopeConfig->getValue(
             self::SIMPL_PAYMENT_TITLE,
             self::SCOPE
@@ -98,8 +93,7 @@ class Config extends AbstractHelper
      *
      * @return string
      */
-    public function getInstructions(): string
-    {
+    public function getInstructions() {
         return (string) $this->scopeConfig->getValue(
             self::SIMPL_PAYMENT_INS,
             self::SCOPE
@@ -111,8 +105,7 @@ class Config extends AbstractHelper
      *
      * @return string
      */
-    public function getTitleForFrontend(): string
-    {
+    public function getTitleForFrontend() {
         return (string) $this->scopeConfig->getValue(
             self::SIMPL_PAYMENT_TITLE_FRONTEND,
             self::SCOPE
@@ -124,8 +117,7 @@ class Config extends AbstractHelper
      *
      * @return string
      */
-    public function getSecret(): string
-    {
+    public function getSecret() {
         $mode = $this->getSimplMode();
         if ($mode == 'live') {
             return (string) $this->scopeConfig->getValue(

@@ -55,8 +55,7 @@ class Simpl extends AbstractHelper
         Logger $logger,
         StoreManagerInterface $storeManager,
         Context $context
-    )
-    {
+    ) {
         $this->config = $config;
         $this->logger = $logger;
         $this->client = $client;
@@ -122,8 +121,7 @@ class Simpl extends AbstractHelper
      * @param string $method
      * @return array
      */
-    public function callSimplApi($endpointUrl, array $params = [], $method = 'POST')
-    {
+    public function callSimplApi($endpointUrl, array $params = [], $method = 'POST') {
         $responseData = [];
         try{
             $clientId = $this->getClientId();

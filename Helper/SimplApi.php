@@ -18,8 +18,7 @@ class SimplApi extends AbstractHelper
     public function __construct(
         Simpl $simpl,
         Context $context
-    )
-    {
+    ) {
         $this->simpl = $simpl;
         parent::__construct($context);
     }
