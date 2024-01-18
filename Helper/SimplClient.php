@@ -66,19 +66,15 @@ class SimplClient extends AbstractHelper
     }
 
     /**
-     * @param $clientId
-     * @param $nonce
-     * @param $signature
+     * @param string $clientId
+     * @param string $nonce
+     * @param string $signature
      * @return bool
      * @throws \Exception
      */
-    public function validateSignature($clientId, $nonce, $signature) {
+    public function validateSignature(string $clientId,string  $nonce,string  $signature) {
         $localSignature = $this->generateSignature($nonce, $clientId);
-        if ($signature == $localSignature) {
-            return true;
-        } else {
-            return false;
-        }
+        return $signature == $localSignature;
     }
 
     /**
@@ -116,37 +112,47 @@ class SimplClient extends AbstractHelper
     }
 
     /**
+     * Function to prepare header
+     * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \Exception
+     */
+    private function getHeaders() {
+        $clientId = $this->getClientId();
+        $nonce = $this->generateUuid();
+        $signature = $this->generateSignature($nonce);
+        $domain = $this->getDomain();
+
+        return [
+            'SIMPL-CLIENT-ID' => $clientId,
+            'SIMPL-CLIENT-NONCE' => $nonce,
+            'SIMPL-CLIENT-SIGNATURE' => $signature,
+            'SHOP-DOMAIN' => $domain,
+            'cache-control' => 'no-cache',
+            'Content-Type' => 'application/json'
+        ];
+    }
+
+    /**
      * Common function to call Simpl API
-     * @param $requestUrl
+     * @param string $requestUrl
      * @param array $params
      * @param string $method
      * @return array
      */
-    public function callSimplApi($endpointUrl, array $params = [], $method = 'POST')
+    public function callSimplApi(string $endpointUrl, array $params = [], $method = 'POST')
     {
         $responseData = [];
         try{
-            $clientId = $this->getClientId();
-            $secret = $this->getSecret();
-            $nonce = $this->generateUuid();
-            $signature = $this->generateSignature($nonce);
             $hostUrl = $this->config->getApiUrl();
-            $domain = $this->getDomain();
+            $headers = $this->getHeaders();
             $body = $this->json->serialize($params);
 
             $this->logger->info( 'API Call initiated for '.$endpointUrl);
 
-            if(!empty($clientId) &&  !empty($secret) && !empty($hostUrl) && !empty($endpointUrl) && !empty($signature)){
+            if(!empty($hostUrl) && !empty($endpointUrl) && !empty($headers)){
                 $requestUrl = $hostUrl.$endpointUrl;
                 $this->logger->info( 'API Call initiated for '.$hostUrl.' '.$requestUrl);
-                $headers = [
-                    'SIMPL-CLIENT-ID' => $clientId,
-                    'SIMPL-CLIENT-NONCE' => $nonce,
-                    'SIMPL-CLIENT-SIGNATURE' => $signature,
-                    'SHOP-DOMAIN' => $domain,
-                    'cache-control' => 'no-cache',
-                    'Content-Type' => 'application/json'
-                ];
 
                 $this->logger->info(print_r($params,true));
                 $startTime = time();
@@ -190,16 +196,17 @@ class SimplClient extends AbstractHelper
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getDomain() {
+    private function getDomain() {
         return $this->storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
     }
 
 
     /**
+     * @param string $nonce
+     * @param string|null $clientId
      * @return false|string
-     * @throws \Exception
      */
-    public function generateSignature($nonce, $clientId = null) {
+    private function generateSignature(string $nonce,string $clientId = null) {
 
         if (!$clientId)
             $clientId = $this->getClientId();
@@ -214,7 +221,7 @@ class SimplClient extends AbstractHelper
      * @return string
      * @throws \Exception
      */
-    public function generateUuid() {
+    private function generateUuid() {
         $b = random_bytes(16);
         $b[6] = chr(ord($b[6]) & 0x0f | 0x40);
         $b[8] = chr(ord($b[8]) & 0x3f | 0x80);
