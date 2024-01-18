@@ -25,6 +25,17 @@ class SimplApi extends AbstractHelper
     }
 
     /**
+     * @param $response
+     * @return bool
+     */
+    private function isSuccess($response) {
+        if (isset($response["data"]["success"]) and $response["data"]["success"] == true) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * API to install plugin
      * @param string $secret
      * @param string $clientId
@@ -34,7 +45,7 @@ class SimplApi extends AbstractHelper
         $this->simplClient->setClientId($clientId);
         $this->simplClient->setSecret($secret);
         $response = $this->simplClient->callSimplApi(self::INSTALL_API);
-        if (isset($response["data"]["success"]) and $response["data"]["success"] == true) {
+        if ($this->isSuccess($response)) {
             return [
                 'status' => true,
                 'message' => 'Congratulations! Valid Credentials'
