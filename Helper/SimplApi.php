@@ -13,13 +13,14 @@ class SimplApi extends AbstractHelper
     /**
      * @var SimplClient
      */
-    protected $simpl;
+    protected $simplClient;
 
     public function __construct(
-        SimplClient $simpl,
+        SimplClient $simplClient,
         Context $context
-    ) {
-        $this->simpl = $simpl;
+    )
+    {
+        $this->simplClient = $simplClient;
         parent::__construct($context);
     }
 
@@ -29,9 +30,9 @@ class SimplApi extends AbstractHelper
      * @return array
      */
     public function install($secret,$clientId) {
-        $this->simpl->setClientId($clientId);
-        $this->simpl->setSecret($secret);
-        $response = $this->simpl->callSimplApi(self::INSTALL_API);
+        $this->simplClient->setClientId($clientId);
+        $this->simplClient->setSecret($secret);
+        $response = $this->simplClient->callSimplApi(self::INSTALL_API);
         if (isset($response["data"]["success"]) and $response["data"]["success"] == true) {
             return [
                 'status' => true,
