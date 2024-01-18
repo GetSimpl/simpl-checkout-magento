@@ -34,6 +34,17 @@ class SimplApi extends AbstractHelper {
     }
 
     /**
+     * @param $response
+     * @return null|string
+     */
+    private function getErrorMessage($response) {
+        if (isset($response["data"]["error"]) and isset($response["data"]["error"]["message"])) {
+            return $response["data"]["error"]["message"];
+        }
+        return NULL;
+    }
+
+    /**
      * API to install plugin
      * @param string $secret
      * @param string $clientId
