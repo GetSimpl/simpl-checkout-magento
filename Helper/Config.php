@@ -16,8 +16,8 @@ class Config extends AbstractHelper
     const SIMPL_PAYMENT_TITLE = 'title';
     const SIMPL_PAYMENT_TITLE_FRONTEND = 'title_for_frontend';
     const SIMPL_PAYMENT_INS = 'instructions';
-    const POST_URL_LIVE = 'LIVE_URL_HERE';
-    const POST_URL_TEST = 'TEST_URL_HERE';
+    const SIMPL_LIVE_HOST_URL = 'LIVE_URL_HERE';
+    const SIMPL_TEST_HOST_URL = 'TEST_URL_HERE';
 
     /**
      * @param \Magento\Framework\App\Helper\Context $context
@@ -45,9 +45,9 @@ class Config extends AbstractHelper
     public function getApiUrl() {
         $mode = $this->getSimplMode();
         if($mode == 'live') {
-            return $this->getSimplConfig(self::POST_URL_LIVE);
+            return $this->getSimplConfig(self::SIMPL_LIVE_HOST_URL);
         }
-        return $this->getSimplConfig(self::POST_URL_TEST);
+        return $this->getSimplConfig(self::SIMPL_TEST_HOST_URL);
     }
 
     /**
