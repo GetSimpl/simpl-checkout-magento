@@ -11,12 +11,12 @@ class SimplApi extends AbstractHelper
     const INSTALL_API = 'api/v1/mogento/app/install';
 
     /**
-     * @var Simpl
+     * @var SimplClient
      */
     protected $simpl;
 
     public function __construct(
-        Simpl $simpl,
+        SimplClient $simpl,
         Context $context
     ) {
         $this->simpl = $simpl;
