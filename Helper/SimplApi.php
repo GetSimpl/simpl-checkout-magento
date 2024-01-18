@@ -23,6 +23,17 @@ class SimplApi extends AbstractHelper {
     }
 
     /**
+     * @param $response
+     * @return bool
+     */
+    private function isSuccess($response) {
+        if (isset($response["data"]["success"]) and $response["data"]["success"] == true) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * API to install plugin
      * @param string $secret
      * @param string $clientId
