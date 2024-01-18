@@ -43,8 +43,7 @@ class Config extends AbstractHelper
      * @return string
      */
     public function getApiUrl() {
-        $mode = $this->getSimplMode();
-        if($mode == 'live') {
+        if($this->isLiveIntegration()) {
             return $this->getSimplConfig(self::SIMPL_LIVE_HOST_URL);
         }
         return $this->getSimplConfig(self::SIMPL_TEST_HOST_URL);
@@ -55,7 +54,7 @@ class Config extends AbstractHelper
      *
      * @return string
      */
-    public function getSimplMode() {
+    public function getIntegrationMode() {
         return $this->getSimplConfig(self::SIMPL_PAYMENT_MODE);
     }
 
@@ -101,8 +100,7 @@ class Config extends AbstractHelper
      * @return string
      */
     public function getSecret() {
-        $mode = $this->getSimplMode();
-        if ($mode == 'live') {
+        if ($this->isLiveIntegration()) {
             return $this->getSimplConfig(self::SIMPL_PAYMENT_LIVE_SECRET);
         }
         return $this->getSimplConfig(self::SIMPL_PAYMENT_TEST_SECRET);
@@ -118,6 +116,13 @@ class Config extends AbstractHelper
             $configKey,
             self::SCOPE
         );
+    }
+
+    /**
+     * @return bool
+     */
+    private function isLiveIntegration() {
+        return $this->getIntegrationMode() == 'live';
     }
 
 }
