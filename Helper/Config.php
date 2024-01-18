@@ -7,14 +7,15 @@ use Magento\Framework\App\Helper\AbstractHelper;
 class Config extends AbstractHelper
 {
     const SCOPE = 'website';
-    const SIMPL_PAYMENT_ACTIVE = 'payment/simplcheckout/active';
-    const SIMPL_PAYMENT_MODE = 'payment/simplcheckout/mode';
-    const SIMPL_PAYMENT_CLIENT_ID = 'payment/simplcheckout/client_id';
-    const SIMPL_PAYMENT_TEST_SECRET = 'payment/simplcheckout/test_secret';
-    const SIMPL_PAYMENT_LIVE_SECRET = 'payment/simplcheckout/live_secret';
-    const SIMPL_PAYMENT_TITLE = 'payment/simplcheckout/title';
-    const SIMPL_PAYMENT_TITLE_FRONTEND = 'payment/simplcheckout/title_for_frontend';
-    const SIMPL_PAYMENT_INS = 'payment/simplcheckout/instructions';
+    const SIMPL_PAYMENT_CODE = 'simplcheckout';
+    const SIMPL_PAYMENT_ACTIVE = 'active';
+    const SIMPL_PAYMENT_MODE = 'mode';
+    const SIMPL_PAYMENT_CLIENT_ID = 'client_id';
+    const SIMPL_PAYMENT_TEST_SECRET = 'test_secret';
+    const SIMPL_PAYMENT_LIVE_SECRET = 'live_secret';
+    const SIMPL_PAYMENT_TITLE = 'title';
+    const SIMPL_PAYMENT_TITLE_FRONTEND = 'title_for_frontend';
+    const SIMPL_PAYMENT_INS = 'instructions';
     const POST_URL_LIVE = 'LIVE_URL_HERE';
     const POST_URL_TEST = 'TEST_URL_HERE';
 
@@ -33,10 +34,7 @@ class Config extends AbstractHelper
      * @return bool
      */
     public function isEnabled() {
-        return (bool)$this->scopeConfig->getValue(
-            self::SIMPL_PAYMENT_ACTIVE,
-            self::SCOPE
-        );
+        return $this->getSimplConfig(self::SIMPL_PAYMENT_ACTIVE);
     }
 
     /**
@@ -47,9 +45,9 @@ class Config extends AbstractHelper
     public function getApiUrl() {
         $mode = $this->getSimplMode();
         if($mode == 'live') {
-            return (string) self::POST_URL_LIVE;
+            return $this->getSimplConfig(self::POST_URL_LIVE);
         }
-        return (string) self::POST_URL_TEST;
+        return $this->getSimplConfig(self::POST_URL_TEST);
     }
 
     /**
@@ -58,10 +56,7 @@ class Config extends AbstractHelper
      * @return string
      */
     public function getSimplMode() {
-        return (string) $this->scopeConfig->getValue(
-            self::SIMPL_PAYMENT_MODE,
-            self::SCOPE
-        );
+        return $this->getSimplConfig(self::SIMPL_PAYMENT_MODE);
     }
 
     /**
@@ -70,10 +65,7 @@ class Config extends AbstractHelper
      * @return string
      */
     public function getClientId() {
-        return (string) $this->scopeConfig->getValue(
-            self::SIMPL_PAYMENT_CLIENT_ID,
-            self::SCOPE
-        );
+        return $this->getSimplConfig(self::SIMPL_PAYMENT_CLIENT_ID);
     }
 
     /**
@@ -81,11 +73,8 @@ class Config extends AbstractHelper
      *
      * @return string
      */
-    public function getTitle(): string {
-        return (string) $this->scopeConfig->getValue(
-            self::SIMPL_PAYMENT_TITLE,
-            self::SCOPE
-        );
+    public function getTitle() {
+        return $this->getSimplConfig(self::SIMPL_PAYMENT_TITLE);
     }
 
     /**
@@ -94,10 +83,7 @@ class Config extends AbstractHelper
      * @return string
      */
     public function getInstructions() {
-        return (string) $this->scopeConfig->getValue(
-            self::SIMPL_PAYMENT_INS,
-            self::SCOPE
-        );
+        return $this->getSimplConfig(self::SIMPL_PAYMENT_INS);
     }
 
     /**
@@ -106,10 +92,7 @@ class Config extends AbstractHelper
      * @return string
      */
     public function getTitleForFrontend() {
-        return (string) $this->scopeConfig->getValue(
-            self::SIMPL_PAYMENT_TITLE_FRONTEND,
-            self::SCOPE
-        );
+        return $this->getSimplConfig(self::SIMPL_PAYMENT_TITLE_FRONTEND);
     }
 
     /**
@@ -120,13 +103,19 @@ class Config extends AbstractHelper
     public function getSecret() {
         $mode = $this->getSimplMode();
         if ($mode == 'live') {
-            return (string) $this->scopeConfig->getValue(
-                self::SIMPL_PAYMENT_LIVE_SECRET,
-                self::SCOPE
-            );
+            return $this->getSimplConfig(self::SIMPL_PAYMENT_LIVE_SECRET);
         }
+        return $this->getSimplConfig(self::SIMPL_PAYMENT_TEST_SECRET);
+    }
+
+    /**
+     * @param $key
+     * @return string
+     */
+    private function getSimplConfig($key) {
+        $configKey = 'payment/' . self::SIMPL_PAYMENT_CODE . '/' .$key;
         return (string) $this->scopeConfig->getValue(
-            self::SIMPL_PAYMENT_TEST_SECRET,
+            $configKey,
             self::SCOPE
         );
     }
