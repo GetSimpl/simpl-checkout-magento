@@ -1,0 +1,22 @@
+{
+    "name": "simpl/module-checkout",
+    "description": "Simpl Checkout",
+    "type": "magento2-module",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Simpl",
+            "email": "info@getsimpl.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Simpl\\Checkout\\": ""
+        }
+    }
+}
