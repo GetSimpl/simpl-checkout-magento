@@ -26,10 +26,11 @@ class SimplApi extends AbstractHelper
 
     /**
      * API to install plugin
-     * @param $secret
+     * @param string $secret
+     * @param string $clientId
      * @return array
      */
-    public function install($secret,$clientId) {
+    public function install(string $secret, string $clientId) {
         $this->simplClient->setClientId($clientId);
         $this->simplClient->setSecret($secret);
         $response = $this->simplClient->callSimplApi(self::INSTALL_API);
