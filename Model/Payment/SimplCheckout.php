@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace Simpl\Checkout\Model\Payment;
 
+use _PHPStan_532094bc1\Nette\Neon\Exception;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Payment\Gateway\Command\CommandManagerInterface;
@@ -20,12 +21,15 @@ use Psr\Log\LoggerInterface;
 use Simpl\Checkout\Helper\Config as SimplConfig;
 use Magento\Payment\Model\Method\Adapter;
 use Magento\Quote\Api\Data\CartInterface;
+use Simpl\Checkout\Helper\SimplApi;
 
 class SimplCheckout  extends Adapter {
 
     protected $_code = "simplcheckout";
 
     protected $simplConfig;
+
+    protected $simplApi;
 
     public function __construct(
         ManagerInterface $eventManager,
@@ -35,12 +39,14 @@ class SimplCheckout  extends Adapter {
         $formBlockType,
         $infoBlockType,
         SimplConfig $simplConfig,
+        SimplApi $simplApi,
         CommandPoolInterface $commandPool = null,
         ValidatorPoolInterface $validatorPool = null,
         CommandManagerInterface $commandExecutor = null,
         LoggerInterface $logger = null
     ) {
         $this->simplConfig = $simplConfig;
+        $this->simplApi = $simplApi;
 
         parent::__construct(
             $eventManager,
@@ -71,13 +77,11 @@ class SimplCheckout  extends Adapter {
 
     public function refund(InfoInterface $payment, $amount) {
         $this->initRefund($payment, $amount);
-
         return $this;
     }
 
     public function void(InfoInterface $payment) {
         $this->cancel($payment);
-
         return $this;
     }
 
@@ -85,6 +89,9 @@ class SimplCheckout  extends Adapter {
         try {
 
             $order = $payment->getOrder();
+            $creditmemo = $payment->getCreditmemo();
+            $orderId = $order->getIncrementId();
+
             if (!is_numeric($amount)) $amount = 0;
             $amount = round((float)$amount, 2);
 
@@ -93,7 +100,17 @@ class SimplCheckout  extends Adapter {
             $order->setState(Order::STATE_CLOSED);
             $order->setStatus(Order::STATE_CLOSED);
 
-            // TODO API to init refund
+            // Refund API request data
+            $data["order_id"] = $orderId;
+            $data["currency"] = $order->getBaseCurrencyCode();
+            $data["credit_memo"]["id"] = $creditmemo->getId();
+            $data["credit_memo"]["amount"] = $amount;
+            $data["credit_memo"]["status"] = "pending";
+
+            // API to init refund
+            if(!$this->simplApi->initRefund($orderId, $data)) {
+                throw new Exception(__('Error in API call'));
+            }
 
         } catch (\Exception $e) {
             throw new CouldNotSaveException(__('Refund can not be processed'));
