@@ -8,10 +8,11 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Serialize\Serializer\Json;
 use Simpl\Checkout\Logger\Logger;
-use Magento\Store\Model\StoreManagerInterface;
+use Simpl\Checkout\Api\Data\ApiResponseDataInterface;
+use Simpl\Checkout\Api\Data\ErrorDataInterface;
 
-class SimplClient extends AbstractHelper
-{
+class SimplClient extends AbstractHelper {
+
     /**
      * @var GuzzleHttpClient
      */
@@ -33,9 +34,14 @@ class SimplClient extends AbstractHelper
     protected $config;
 
     /**
-     * @var StoreManagerInterface
+     * @var ApiResponseDataInterface
      */
-    protected $storeManager;
+    protected $apiResponseData;
+
+    /**
+     * @var ErrorDataInterface
+     */
+    protected $errorData;
 
     private $clientId;
 
@@ -46,6 +52,7 @@ class SimplClient extends AbstractHelper
      * @param Json $json
      * @param Config $config
      * @param Logger $logger
+     * @param ApiResponseDataInterface $apiResponseData
      * @param Context $context
      */
     public function __construct(
@@ -53,15 +60,18 @@ class SimplClient extends AbstractHelper
         Json $json,
         Config $config,
         Logger $logger,
-        StoreManagerInterface $storeManager,
+        ApiResponseDataInterface $apiResponseData,
+        ErrorDataInterface $errorData,
         Context $context
-    )
-    {
+    ) {
         $this->config = $config;
         $this->logger = $logger;
         $this->client = $client;
         $this->json = $json;
-        $this->storeManager = $storeManager;
+        $this->apiResponseData = $apiResponseData;
+        $this->errorData = $errorData;
+        $this->clientId = $this->config->getClientId();
+        $this->secret = $this->config->getSecret();
         parent::__construct($context);
     }
 
@@ -75,26 +85,6 @@ class SimplClient extends AbstractHelper
     public function validateSignature(string $clientId,string  $nonce,string  $signature) {
         $localSignature = $this->generateSignature($nonce, $clientId);
         return $signature == $localSignature;
-    }
-
-    /**
-     * @return string
-     */
-    public function getClientId() {
-        if ($this->clientId) {
-            return $this->clientId;
-        }
-        return $this->config->getClientId();
-    }
-
-    /**
-     * @return string
-     */
-    public function getSecret() {
-        if ($this->secret) {
-            return $this->secret;
-        }
-        return $this->config->getSecret();
     }
 
     /**
@@ -118,10 +108,10 @@ class SimplClient extends AbstractHelper
      * @throws \Exception
      */
     private function getHeaders() {
-        $clientId = $this->getClientId();
+        $clientId = $this->clientId;
         $nonce = $this->generateUuid();
         $signature = $this->generateSignature($nonce);
-        $domain = $this->getDomain();
+        $domain = $this->config->getDomain();
 
         return [
             'SIMPL-CLIENT-ID' => $clientId,
@@ -134,19 +124,66 @@ class SimplClient extends AbstractHelper
     }
 
     /**
-     * Common function to call Simpl API
+     * @param string $method
      * @param string $requestUrl
      * @param array $params
-     * @param string $method
-     * @return array
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws GuzzleException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function callSimplApi(string $endpointUrl, array $params = [], $method = 'POST')
-    {
-        $responseData = [];
+    private function initPostRequest(string $method, string $requestUrl, array $params = []) {
+        return $this->client->request(
+            $method,
+            $requestUrl,
+            [
+                'headers' => $this->getHeaders(),
+                'body' => $this->json->serialize($params)
+            ]
+        );
+    }
+
+    /**
+     * @param string $method
+     * @param string $requestUrl
+     * @param array $params
+     * @return \Psr\Http\Message\ResponseInterface
+     * @throws GuzzleException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    private function initGetRequest(string $method, string $requestUrl, array $params = []) {
+        return $this->client->request(
+            $method,
+            $requestUrl,
+            [
+                'headers' => $this->getHeaders(),
+                'query' => $this->json->serialize($params)
+            ]
+        );
+    }
+
+    /**
+     * @param $response
+     * @return bool
+     */
+    private function isSuccess($response) {
+        if (isset($response["success"]) and $response["success"] == true) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     *
+     * Common function to call Simpl API
+     * @param string $endpointUrl
+     * @param array $params
+     * @param string $method
+     * @return ApiResponseDataInterface
+     */
+    public function callSimplApi(string $endpointUrl, array $params = [], $method = 'POST') {
+        $responseData = $this->apiResponseData;
         try{
             $hostUrl = $this->config->getApiUrl();
-            $headers = $this->getHeaders();
-            $body = $this->json->serialize($params);
 
             $this->logger->info( 'API Call initiated for '.$endpointUrl);
 
@@ -156,21 +193,26 @@ class SimplClient extends AbstractHelper
 
                 $this->logger->info(print_r($params,true));
                 $startTime = time();
-                $response = $this->client->request(
-                    $method,
-                    $requestUrl,
-                    [
-                        'headers' => $headers,
-                        'body' => $body
-                    ]
-                );
 
-                $responseData = [
-                    'code' => $response->getStatusCode(),
-                    'data' => $this->json->unserialize($response->getBody()->getContents())
-                ];
+                if ($method == 'POST') {
+                    $response = $this->initPostRequest($method, $requestUrl, $params);
+                } else {
+                    $response = $this->initGetRequest($method, $requestUrl, $params);
+                }
 
-                $this->logger->info(print_r($responseData,true));
+                $responseArray = $this->json->unserialize($response->getBody()->getContents());
+
+                if ($this->isSuccess($responseArray)) {
+                    $responseData->setSuccess(true);
+                    if (isset($responseArray["data"]))
+                        $responseData->setData($responseArray["data"]);
+                } else {
+                    $error = $this->errorData;
+                    $error->setCode($responseArray["error"]["code"]);
+                    $error->setCode($responseArray["error"]["message"]);
+                    $responseData->setError($error);
+                }
+
                 $endTime = time() - $startTime;
                 $milliSeconds = $endTime * 1000;
 
@@ -178,7 +220,6 @@ class SimplClient extends AbstractHelper
             } else {
                 $this->logger->info( 'Please configure API settings');
             }
-            return $responseData;
 
         }catch (GuzzleException $exception) {
 
@@ -190,14 +231,8 @@ class SimplClient extends AbstractHelper
 
             $this->logger->error('Exception ' . get_class($exception) . ' while API call: ' . $exception->getMessage());
         }
-    }
 
-    /**
-     * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    private function getDomain() {
-        return $this->storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+        return $responseData;
     }
 
 
@@ -209,9 +244,9 @@ class SimplClient extends AbstractHelper
     private function generateSignature(string $nonce,string $clientId = null) {
 
         if (!$clientId)
-            $clientId = $this->getClientId();
+            $clientId = $this->clientId;
 
-        $clientSecret = $this->getSecret();
+        $clientSecret = $this->secret;
         $data = $nonce . "-" . $clientId;
 
         return hash_hmac('sha1', $data, $clientSecret);

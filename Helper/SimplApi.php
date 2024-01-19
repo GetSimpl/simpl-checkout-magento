@@ -5,8 +5,7 @@ namespace Simpl\Checkout\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 
-class SimplApi extends AbstractHelper
-{
+class SimplApi extends AbstractHelper {
 
     const INSTALL_API = 'api/v1/mogento/app/install';
     const PAYMENT_INIT_API = 'api/v1/mogento/payment/initiate';
@@ -26,28 +25,6 @@ class SimplApi extends AbstractHelper
     }
 
     /**
-     * @param $response
-     * @return bool
-     */
-    private function isSuccess($response) {
-        if (isset($response["data"]["success"]) and $response["data"]["success"] == true) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param $response
-     * @return null|string
-     */
-    private function getErrorMessage($response) {
-        if (isset($response["data"]["error"]) and isset($response["data"]["error"]["message"])) {
-            return $response["data"]["error"]["message"];
-        }
-        return NULL;
-    }
-
-    /**
      * API to install plugin
      * @param string $secret
      * @param string $clientId
@@ -57,20 +34,15 @@ class SimplApi extends AbstractHelper
         $this->simplClient->setClientId($clientId);
         $this->simplClient->setSecret($secret);
         $response = $this->simplClient->callSimplApi(self::INSTALL_API);
-        if ($this->isSuccess($response)) {
+        if ($response->getSuccess()) {
             return [
                 'status' => true,
                 'message' => 'Congratulations! Valid Credentials'
             ];
-        } elseif ($this->getErrorMessage($response)) {
-            return [
-                'status' => false,
-                'message' => $this->getErrorMessage($response)
-            ];
         }
         return [
             'status' => false,
-            'message' => 'Invalid Credentials!'
+            'message' => $response->getError()->getMessage()
         ];
     }
 
@@ -82,8 +54,9 @@ class SimplApi extends AbstractHelper
     public function initPayment($data) {
         $url = '';
         $response = $this->simplClient->callSimplApi(self::PAYMENT_INIT_API, $data);
-        if ($this->isSuccess($response)) {
-            $url = $response["data"]["success"]["data"]["redirection_url"];
+        if ($response->getSuccess()) {
+            $data = $response->getData();
+            $url = $data["redirection_url"];
         }
         return $url;
     }
