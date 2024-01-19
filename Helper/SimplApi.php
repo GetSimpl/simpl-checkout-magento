@@ -32,8 +32,8 @@ class SimplApi extends AbstractHelper {
     public function install(string $secret, string $clientId) {
         $this->simplClient->setClientId($clientId);
         $this->simplClient->setSecret($secret);
-        $response = $this->simplClient->callSimplApi(self::INSTALL_API);
-        if ($response->getSuccess()) {
+        $response = $this->simplClient->postRequest(self::INSTALL_API);
+        if ($response->isSuccess()) {
             return [
                 'status' => true,
                 'message' => 'Congratulations! Valid Credentials'
@@ -41,7 +41,7 @@ class SimplApi extends AbstractHelper {
         }
         return [
             'status' => false,
-            'message' => $response->getError()->getMessage()
+            'message' => $response->getErrorMessage()
         ];
     }
 }
