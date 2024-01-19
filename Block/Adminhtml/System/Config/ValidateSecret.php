@@ -69,7 +69,7 @@ class ValidateSecret extends Field {
      * @return string
      */
     public function getSecretId() {
-        if ($this->config->getSimplMode() == 'live') {
+        if ($this->config->getIntegrationMode() == 'live') {
             return 'payment_other_simplcheckout_live_secret';
         }
         return 'payment_other_simplcheckout_test_secret';
