@@ -40,6 +40,7 @@ class SimplClient extends AbstractHelper {
      * @param Json $json
      * @param Config $config
      * @param Logger $logger
+     * @param ApiResponseDataInterface $apiResponseData
      * @param Context $context
      */
     public function __construct(

@@ -24,28 +24,6 @@ class SimplApi extends AbstractHelper {
     }
 
     /**
-     * @param $response
-     * @return bool
-     */
-    private function isSuccess($response) {
-        if (isset($response["data"]["success"]) and $response["data"]["success"] == true) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @param $response
-     * @return null|string
-     */
-    private function getErrorMessage($response) {
-        if (isset($response["data"]["error"]) and isset($response["data"]["error"]["message"])) {
-            return $response["data"]["error"]["message"];
-        }
-        return NULL;
-    }
-
-    /**
      * API to install plugin
      * @param string $secret
      * @param string $clientId
@@ -75,8 +53,9 @@ class SimplApi extends AbstractHelper {
     public function initPayment($data) {
         $url = '';
         $response = $this->simplClient->callSimplApi(self::PAYMENT_INIT_API, $data);
-        if ($this->isSuccess($response)) {
-            $url = $response["data"]["success"]["data"]["redirection_url"];
+        if ($response->getSuccess()) {
+            $data = $response->getData();
+            $url = $data["redirection_url"];
         }
         return $url;
     }
