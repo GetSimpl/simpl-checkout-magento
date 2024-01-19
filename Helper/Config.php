@@ -4,6 +4,7 @@ namespace Simpl\Checkout\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Framework\App\Helper\Context;
 
 class Config extends AbstractHelper {
 
@@ -27,11 +28,11 @@ class Config extends AbstractHelper {
 
     /**
      * @param StoreManagerInterface $storeManager
-     * @param \Magento\Framework\App\Helper\Context $context
+     * @param Context $context
      */
     public function __construct(
         StoreManagerInterface $storeManager,
-        \Magento\Framework\App\Helper\Context $context
+        Context $context
     ) {
         $this->storeManager = $storeManager;
         parent::__construct($context);
