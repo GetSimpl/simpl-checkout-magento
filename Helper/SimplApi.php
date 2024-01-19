@@ -9,6 +9,7 @@ class SimplApi extends AbstractHelper
 {
 
     const INSTALL_API = 'api/v1/mogento/app/install';
+    const PAYMENT_INIT_API = 'api/v1/mogento/payment/initiate';
 
     /**
      * @var SimplClient
@@ -71,5 +72,19 @@ class SimplApi extends AbstractHelper
             'status' => false,
             'message' => 'Invalid Credentials!'
         ];
+    }
+
+    /**
+     * Function Integrate API to init payment.
+     * @param $data
+     * @return string
+     */
+    public function initPayment($data) {
+        $url = '';
+        $response = $this->simplClient->callSimplApi(self::PAYMENT_INIT_API, $data);
+        if ($this->isSuccess($response)) {
+            $url = $response["data"]["success"]["data"]["redirection_url"];
+        }
+        return $url;
     }
 }
