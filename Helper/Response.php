@@ -2,8 +2,7 @@
 
 namespace Simpl\Checkout\Helper;
 
-class Response
-{
+class Response {
 
     /**
      * @var array
@@ -40,6 +39,9 @@ class Response
      * @return string
      */
     public function getErrorMessage() {
-        return $this->data["error"]["message"];
+        if (isset($this->data["error"])) {
+            return $this->data["error"]["message"];
+        }
+        return "";
     }
 }
