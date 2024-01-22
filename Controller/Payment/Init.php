@@ -7,8 +7,7 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Simpl\Checkout\Model\Simpl;
 
-class Init implements HttpGetActionInterface
-{
+class Init implements HttpGetActionInterface {
 
     /**
      * @var JsonFactory
@@ -25,8 +24,7 @@ class Init implements HttpGetActionInterface
     public function __construct(
         JsonFactory $jsonFactory,
         Simpl $simpl
-    )
-    {
+    ) {
         $this->jsonFactory = $jsonFactory;
         $this->simpl = $simpl;
     }
@@ -34,12 +32,11 @@ class Init implements HttpGetActionInterface
     /**
      * @inheritDoc
      */
-    public function execute()
-    {
+    public function execute() {
         $data = ['status' => 'error'];
-        $url = $this->simpl->init();
-        if ($url) {
-            $data = ['url' => $url, 'status' => 'success'];
+        $redirectionURL = $this->simpl->init();
+        if ($redirectionURL) {
+            $data = ['url' => $redirectionURL, 'status' => 'success'];
         }
         $resultJson = $this->jsonFactory->create();
         $resultJson->setData($data);

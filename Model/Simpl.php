@@ -8,8 +8,8 @@ use Magento\Checkout\Model\Session as CheckoutSession;
 use Simpl\Checkout\Helper\SimplApi as SimplApi;
 use Magento\Framework\UrlInterface;
 
-class Simpl
-{
+class Simpl {
+
     /**
      * @var OrderRepositoryInterface
      */
@@ -39,6 +39,9 @@ class Simpl
      * @param OrderRepositoryInterface $orderRepository
      * @param CheckoutSession $checkoutSession
      * @param OrderFactory $order
+     * @param SimplApi $simpl
+     * @param UrlInterface $url
+     * @param \Magento\Framework\Api\ExtensibleDataObjectConverter $dataObjectConverter
      */
     public function __construct(
         OrderRepositoryInterface $orderRepository,
@@ -82,13 +85,14 @@ class Simpl
      * To get order data as per the payment initiate api contract
      * @param $id
      * @return array|null
+     * @throws \Exception
      */
     public function getOrderInitRequestData($id) {
         $data = null;
         try {
             $order = $this->orderRepository->get($id);
         }catch (\Exception $e) {
-            return $data;
+            throw new \Exception('Error getting order');
         }
         $data["order_id"] = $id;
         $data["checkout_url"] = $this->url->getCurrentUrl();
@@ -103,6 +107,7 @@ class Simpl
         $data["billing_address"] = $order->getBillingAddress()->getData();
 
         $data["totals"] = $this->getTotals($order);
+        $data["total_segments"] = $this->getTotalsSegments($order);
 
         $data["shipping_method_code"] = $order->getShippingMethod();
         $data["shipping_carrier_code"] = $order->getShippingMethod();
@@ -117,8 +122,40 @@ class Simpl
 
     /**
      * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @return array
      */
-    public function getTotals($order) {
+    private function getTotalsSegments($order) {
+
+        $totals = [];
+        $orderNew = $this->order->create()->loadByIncrementId($order->getIncrementId());
+        $totalsSegments = $orderNew->getTotals();
+
+        if ($totalsSegments) {
+            foreach ($totalsSegments as $totalSegment) {
+                $totals[]['code'] = $totalSegment->getCode();
+                $totals[]['title'] = $totalSegment->getTitle();
+                $totals[]['value'] = $totalSegment->getValue();
+            }
+        }
+
+        return $totals;
+    }
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderInterface $order
+     * @return array
+     */
+    private function getTotals($order) {
+
+        $orderItems = $order->getAllItems();
+        $items = [];
+
+        foreach ($orderItems as $orderItem) {
+
+            $orderItemArray = $orderItem->getData();
+            $items[] = $orderItemArray;
+        }
+
         $data = [
             "grand_total" => $order->getGrandTotal(),
             "base_grand_total" => $order->getBaseGrandTotal(),
@@ -138,7 +175,8 @@ class Simpl
             "shipping_incl_tax" => $order->getShippingInclTax(),
             "base_shipping_incl_tax" => $order->getBaseShippingInclTax(),
             "base_currency_code" => $order->getBaseCurrencyCode(),
-            "items_qty" => $order->getTotalQtyOrdered()
+            "items_qty" => $order->getTotalQtyOrdered(),
+            "items" => $items
         ];
         return $data;
     }
