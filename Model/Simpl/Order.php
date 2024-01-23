@@ -52,9 +52,9 @@ class Order {
      * Function to init payment, called from frontend.
      * @return array
      */
-    public function init() {
+    public function getCurrentOrder() {
         $orderId = $this->checkoutSession->getLastRealOrder();
-        return $this->getOrderInitRequestData($orderId);
+        return $this->getOrder($orderId);
     }
 
 
@@ -64,7 +64,7 @@ class Order {
      * @return array|null
      * @throws \Exception
      */
-    public function getOrderInitRequestData($id) {
+    public function getOrder($id) {
         $data = null;
         try {
             $order = $this->orderRepository->get($id);

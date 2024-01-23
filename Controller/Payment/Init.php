@@ -44,7 +44,7 @@ class Init implements HttpGetActionInterface {
      */
     public function execute() {
         $data = ['status' => 'error'];
-        $request = $this->order->init();
+        $request = $this->order->getCurrentOrder();
         $redirectionURL = $this->simplApi->initPayment($request);
         if ($redirectionURL) {
             $data = ['url' => $redirectionURL, 'status' => 'success'];

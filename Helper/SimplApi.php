@@ -55,7 +55,7 @@ class SimplApi extends AbstractHelper {
         $response = $this->simplClient->callSimplApi(self::PAYMENT_INIT_API, $data);
         if ($response->getSuccess()) {
             $data = $response->getData();
-            $url = $data["redirection_url"];
+            return $data["redirection_url"];
         }
         return $url;
     }
