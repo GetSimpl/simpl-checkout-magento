@@ -2,12 +2,10 @@
 
 namespace Simpl\Checkout\Model\Data;
 
-use Simpl\Checkout\Api\Data\OrderConfirmSuccessDataInterface;
+use Simpl\Checkout\Api\Data\ApiDataInterface;
 
-class OrderConfirmSuccessData
-    extends ApiResponseData
-    implements OrderConfirmSuccessDataInterface
-{
+class ApiData extends ApiResponseData implements ApiDataInterface {
+
     private $data;
 
     /**

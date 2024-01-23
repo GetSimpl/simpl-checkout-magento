@@ -1,8 +1,8 @@
 <?php
 
-namespace Simpl\Checkout\Model\Data;
+namespace Simpl\Checkout\Model\Data\Order;
 
-use Simpl\Checkout\Api\Data\RedirectionUrlDataInterface;
+use Simpl\Checkout\Api\Data\Order\RedirectionUrlDataInterface;
 
 class RedirectionUrlData implements RedirectionUrlDataInterface
 {

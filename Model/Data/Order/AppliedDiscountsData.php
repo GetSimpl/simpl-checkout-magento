@@ -1,8 +1,8 @@
 <?php
 
-namespace Simpl\Checkout\Model\Data;
+namespace Simpl\Checkout\Model\Data\Order;
 
-use Simpl\Checkout\Api\Data\AppliedDiscountsDataInterface;
+use Simpl\Checkout\Api\Data\Order\AppliedDiscountsDataInterface;
 
 class AppliedDiscountsData implements AppliedDiscountsDataInterface
 {

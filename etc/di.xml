@@ -33,7 +33,7 @@
         </arguments>
     </type>
 
-    <!-- API -->
+    <!-- For API -->
     <preference for="Simpl\Checkout\Api\OrderUpdateManagementInterface"
                 type="Simpl\Checkout\Model\OrderUpdateManagement"/>
     <preference for="Simpl\Checkout\Api\CreditMemoDetailsInterface"
@@ -50,10 +50,10 @@
                 type="Simpl\Checkout\Model\Data\AppliedDiscountsData"/>
     <preference for="Simpl\Checkout\Api\Data\ApiResponseDataInterface"
                 type="Simpl\Checkout\Model\Data\ApiResponseData"/>
-    <preference for="Simpl\Checkout\Api\Data\RedirectionUrlDataInterface"
-                type="Simpl\Checkout\Model\Data\RedirectionUrlData"/>
-    <preference for="Simpl\Checkout\Api\Data\OrderConfirmSuccessDataInterface"
-                type="Simpl\Checkout\Model\Data\OrderConfirmSuccessData"/>
+    <preference for="Simpl\Checkout\Api\Data\Order\RedirectionUrlDataInterface"
+                type="Simpl\Checkout\Model\Data\Order\RedirectionUrlData"/>
+    <preference for="Simpl\Checkout\Api\Data\Order\OrderConfirmSuccessDataInterface"
+                type="Simpl\Checkout\Model\Data\Order\OrderConfirmSuccessData"/>
     <preference for="Simpl\Checkout\Api\Data\ErrorDataInterface"
                 type="Simpl\Checkout\Model\Data\ErrorData"/>
     <preference for="Simpl\Checkout\Api\RefundManagementInterface"
@@ -62,6 +62,10 @@
                 type="Simpl\Checkout\Model\Data\MessageData"/>
     <preference for="Simpl\Checkout\Api\Data\ApiDataInterface"
                 type="Simpl\Checkout\Model\Data\ApiData"/>
+    <preference for="Simpl\Checkout\Api\Data\CreditMemoDataInterface"
+                type="Simpl\Checkout\Model\Data\CreditMemoData"/>
+    <preference for="Simpl\Checkout\Api\Data\OrderDataInterface"
+                type="Simpl\Checkout\Model\Data\OrderData"/>
 
     <type name="Simpl\Checkout\Logger\Handler">
         <arguments>

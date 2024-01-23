@@ -1,8 +1,8 @@
 <?php
 
-namespace Simpl\Checkout\Model\Data;
+namespace Simpl\Checkout\Model\Data\Order;
 
-use Simpl\Checkout\Api\Data\TransactionDataInterface;
+use Simpl\Checkout\Api\Data\Order\TransactionDataInterface;
 
 class TransactionData implements TransactionDataInterface
 {

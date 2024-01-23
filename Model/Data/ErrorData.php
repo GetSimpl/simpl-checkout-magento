@@ -4,8 +4,8 @@ namespace Simpl\Checkout\Model\Data;
 
 use Simpl\Checkout\Api\Data\ErrorDataInterface;
 
-class ErrorData implements ErrorDataInterface
-{
+class ErrorData implements ErrorDataInterface {
+
     private $code;
     private $message;
 

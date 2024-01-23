@@ -1,6 +1,6 @@
 <?php
 
-namespace Simpl\Checkout\Api\Data;
+namespace Simpl\Checkout\Api\Data\Order;
 
 interface PaymentDataInterface
 {
