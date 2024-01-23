@@ -3,18 +3,26 @@
 namespace Simpl\Checkout\Controller\Payment;
 
 use Magento\Framework\App\Action\HttpGetActionInterface;
-use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
-use Simpl\Checkout\Model\Simpl;
+use Simpl\Checkout\Model\Simpl\Order;
+use Simpl\Checkout\Helper\SimplApi;
 
 class Init implements HttpGetActionInterface {
 
     /**
      * @var JsonFactory
      */
-    private $jsonFactory;
+    protected $jsonFactory;
 
-    private $simpl;
+    /**
+     * @var Order
+     */
+    protected $order;
+
+    /**
+     * @var SimplApi
+     */
+    protected $simplApi;
 
     /**
      * JsonResponse constructor.
@@ -23,10 +31,12 @@ class Init implements HttpGetActionInterface {
      */
     public function __construct(
         JsonFactory $jsonFactory,
-        Simpl $simpl
+        Order $order,
+        SimplApi $simplApi
     ) {
         $this->jsonFactory = $jsonFactory;
-        $this->simpl = $simpl;
+        $this->order = $order;
+        $this->simplApi = $simplApi;
     }
 
     /**
@@ -34,7 +44,8 @@ class Init implements HttpGetActionInterface {
      */
     public function execute() {
         $data = ['status' => 'error'];
-        $redirectionURL = $this->simpl->init();
+        $request = $this->order->init();
+        $redirectionURL = $this->simplApi->initPayment($request);
         if ($redirectionURL) {
             $data = ['url' => $redirectionURL, 'status' => 'success'];
         }
