@@ -6,6 +6,7 @@ use Magento\Sales\Api\InvoiceRepositoryInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Api\CreditmemoRepositoryInterface;
+use Magento\Sales\Model\Order\Payment\Transaction;
 use Magento\Sales\Model\Order\Payment\Transaction\BuilderInterface;
 use Magento\Sales\Model\OrderFactory;
 use Magento\Sales\Model\Service\InvoiceService;
@@ -211,19 +212,7 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
      * @return int
      * @throws \Exception
      */
-    public function updateTransaction($order, $paymentData, $transactionData) {
-        return $this->processTransaction($order, $paymentData, $transactionData, true);
-    }
-
-    /**
-     * @param $order
-     * @param PaymentDataInterface $paymentData
-     * @param TransactionDataInterface $transactionData
-     * @param false $update
-     * @return int
-     * @throws \Exception
-     */
-    private function processTransaction($order, $paymentData, $transactionData, $update = false) {
+    private function processTransaction($order, $paymentData, $transactionData) {
         $canProcessInvoice = false;
         try {
             //get payment object from order object
@@ -247,11 +236,7 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
                 $order->getGrandTotal()
             );
 
-            if ($update) {
-                $message = __('Amount %1 refunded via Simpl Checkout.', $formatedPrice);
-            } else {
-                $message = __('Amount %1 paid via Simpl Checkout.', $formatedPrice);
-            }
+            $message = __('Amount %1 paid via Simpl Checkout.', $formatedPrice);
             //get the object of builder class
             $trans = $this->transactionBuilder;
 
@@ -266,21 +251,12 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
             ];
 
             //build method creates the transaction and returns the object
-            if ($update) {
-                $transaction = $trans->setPayment($payment)
-                    ->setOrder($order)
-                    ->setTransactionId($transactionData->getId())
-                    ->setAdditionalInformation($transData)
-                    ->setFailSafe(true)
-                    ->build(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_REFUND);
-            } else {
-                $transaction = $trans->setPayment($payment)
-                    ->setOrder($order)
-                    ->setTransactionId($transactionData->getId())
-                    ->setAdditionalInformation($transData)
-                    ->setFailSafe(true)
-                    ->build(\Magento\Sales\Model\Order\Payment\Transaction::TYPE_CAPTURE);
-            }
+            $transaction = $trans->setPayment($payment)
+                ->setOrder($order)
+                ->setTransactionId($transactionData->getId())
+                ->setAdditionalInformation($transData)
+                ->setFailSafe(true)
+                ->build(Transaction::TYPE_CAPTURE);
 
             $payment->addTransactionCommentsToOrder(
                 $transaction,
@@ -292,17 +268,10 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
                 $payment->setParentTransactionId(null);
             }
 
-            if ($update) {
-                if ($paymentData->getStatus() == 'refunded') {
-                    $order->setState(Order::STATE_CANCELED);
-                    $order->setStatus(Order::STATE_CANCELED);
-                }
-            } else {
-                if ($paymentData->getMode() != 'cod') {
-                    $order->setState(Order::STATE_PROCESSING);
-                    $order->setStatus(Order::STATE_PROCESSING);
-                    $canProcessInvoice = true;
-                }
+            if ($paymentData->getMode() != 'cod') {
+                $order->setState(Order::STATE_PROCESSING);
+                $order->setStatus(Order::STATE_PROCESSING);
+                $canProcessInvoice = true;
             }
 
             $payment->save();
