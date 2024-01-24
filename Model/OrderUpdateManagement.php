@@ -20,6 +20,7 @@ use Simpl\Checkout\Api\OrderUpdateManagementInterface;
 use Simpl\Checkout\Api\Data\OrderDataInterface;
 use Simpl\Checkout\Api\Data\CreditMemoDataInterface;
 use Simpl\Checkout\Model\Data\Order\Response as OrderResponse;
+use Simpl\Checkout\Helper\Config;
 
 
 class OrderUpdateManagement implements OrderUpdateManagementInterface {
@@ -128,15 +129,20 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
             return $this->orderResponse->setError($e->getCode(), $e->getMessage());
         }
 
-        $payment = $order->getPayment();
-        if ($payment && $payment->getLastTransId()) {
+        $orderPayment = $order->getPayment();
+        if ($orderPayment && $orderPayment->getLastTransId()) {
 
-            return $this->orderResponse->setError("1", "Order already updated");
+            return $this->orderResponse->setError("order_confirm_failed", "Order already updated");
+        }
+
+        if (!$orderPayment || $orderPayment->getMethod() != Config::KEY_PAYMENT_CODE) {
+
+            return $this->orderResponse->setError("order_confirm_failed", "Not a simpl checkout order");
         }
 
         if (!$this->simplApi->validatePayment($order, $payment, $transaction)) {
 
-            return $this->orderResponse->setError("2", "Order validation failed");
+            return $this->orderResponse->setError("order_confirm_failed", "Order validation failed");
         }
 
         $order = $this->applyCharges($order, $appliedCharges);
@@ -145,7 +151,7 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
             $this->createTransaction($order, $payment, $transaction);
         } catch (\Exception $e) {
 
-            return $this->orderResponse->setError($e->getCode(), $e->getMessage());
+            return $this->orderResponse->setError("order_confirm_failed", $e->getMessage());
         }
 
         $redirectUrl = $this->simplApi->getRedirectUrl(["order_id" => $orderId]);
