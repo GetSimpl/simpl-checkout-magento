@@ -85,15 +85,20 @@ class SimplCheckout  extends Adapter {
         try {
 
             $order = $payment->getOrder();
-            if (!is_numeric($amount)) $amount = 0;
-            $amount = round((float)$amount, 2);
+            $creditmemo = $payment->getCreditmemo();
+            $orderId = $order->getIncrementId();
 
-            $order->setTotalRefunded($order->getTotalRefunded() + $amount);
-            $order->setBaseTotalRefunded($order->getBaseTotalRefunded() + $amount);
-            $order->setState(Order::STATE_CLOSED);
-            $order->setStatus(Order::STATE_CLOSED);
+            // Refund API request data
+            $data["order_id"] = $orderId;
+            $data["currency"] = $order->getBaseCurrencyCode();
+            $data["credit_memo"]["id"] = $creditmemo->getId();
+            $data["credit_memo"]["amount"] = $amount;
+            $data["credit_memo"]["status"] = "pending";
 
-            // TODO API to init refund
+            // API to init refund
+            if(!$this->simplApi->initRefund($orderId, $data)) {
+                throw new Exception(__('Error in API call'));
+            }
 
         } catch (\Exception $e) {
             throw new CouldNotSaveException(__('Refund can not be processed'));
@@ -104,12 +109,10 @@ class SimplCheckout  extends Adapter {
 
     public function cancel(InfoInterface $payment, $amount = null) {
         try {
-
+            $this->initRefund($payment, $amount);
             $order = $payment->getOrder();
             $order->setState(Order::STATE_CLOSED);
             $order->setStatus(Order::STATE_CLOSED);
-
-            // TODO API to init cancel
 
         } catch (\Exception $e) {
             throw new CouldNotSaveException(__('Refund can not be processed'));

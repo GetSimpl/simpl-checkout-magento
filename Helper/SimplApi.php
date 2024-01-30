@@ -9,6 +9,7 @@ class SimplApi extends AbstractHelper {
 
     const INSTALL_API = 'api/v1/mogento/app/install';
     const PAYMENT_INIT_API = 'api/v1/mogento/payment/initiate';
+    const REFUND_INIT_API = 'api/v1/mogento/order/:order_id/refund';
 
     /**
      * @var SimplClient
@@ -58,5 +59,19 @@ class SimplApi extends AbstractHelper {
             return $data["redirection_url"];
         }
         return $url;
+    }
+
+    /**
+     * Function to init refund
+     * @param $data
+     * @return string
+     */
+    public function initRefund($orderId, $data) {
+        $endPoint = str_replace(':order_id', $orderId, self::REFUND_INIT_API);
+        $response = $this->simplClient->postRequest($endPoint, $data);
+        if ($response->isSuccess()) {
+            return true;
+        }
+        return false;
     }
 }
