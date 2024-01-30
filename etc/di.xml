@@ -38,6 +38,8 @@
                 type="Simpl\Checkout\Model\OrderUpdateManagement"/>
     <preference for="Simpl\Checkout\Api\CreditMemoDetailsInterface"
                 type="Simpl\Checkout\Model\CreditMemoDetails"/>
+    <preference for="Simpl\Checkout\Api\OrderDetailsInterface"
+                type="Simpl\Checkout\Model\OrderDetails"/>
     <preference for="Simpl\Checkout\Api\Data\PaymentDataInterface"
                 type="Simpl\Checkout\Model\Data\PaymentData"/>
     <preference for="Simpl\Checkout\Api\Data\TransactionDataInterface"
