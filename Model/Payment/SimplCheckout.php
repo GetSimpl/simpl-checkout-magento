@@ -16,16 +16,23 @@ use Magento\Payment\Gateway\Data\PaymentDataObjectFactory;
 use Magento\Payment\Gateway\Validator\ValidatorPoolInterface;
 use Magento\Payment\Model\InfoInterface;
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Creditmemo;
 use Psr\Log\LoggerInterface;
 use Simpl\Checkout\Helper\Config as SimplConfig;
 use Magento\Payment\Model\Method\Adapter;
 use Magento\Quote\Api\Data\CartInterface;
+use Simpl\Checkout\Helper\SimplApi;
+use Magento\Sales\Model\Order\CreditmemoRepository;
 
 class SimplCheckout  extends Adapter {
 
     protected $_code = "simplcheckout";
 
     protected $simplConfig;
+
+    protected $simplApi;
+
+    protected $creditmemoRepository;
 
     public function __construct(
         ManagerInterface $eventManager,
@@ -35,12 +42,16 @@ class SimplCheckout  extends Adapter {
         $formBlockType,
         $infoBlockType,
         SimplConfig $simplConfig,
+        SimplApi $simplApi,
+        CreditmemoRepository $creditmemoRepository,
         CommandPoolInterface $commandPool = null,
         ValidatorPoolInterface $validatorPool = null,
         CommandManagerInterface $commandExecutor = null,
         LoggerInterface $logger = null
     ) {
         $this->simplConfig = $simplConfig;
+        $this->simplApi = $simplApi;
+        $this->creditmemoRepository = $creditmemoRepository;
 
         parent::__construct(
             $eventManager,
@@ -71,17 +82,15 @@ class SimplCheckout  extends Adapter {
 
     public function refund(InfoInterface $payment, $amount) {
         $this->initRefund($payment, $amount);
-
         return $this;
     }
 
     public function void(InfoInterface $payment) {
         $this->cancel($payment);
-
         return $this;
     }
 
-    public function initRefund(InfoInterface $payment, $amount = null) {
+    public function initRefund(InfoInterface $payment, $amount = null, $isCancel = false) {
         try {
 
             $order = $payment->getOrder();
@@ -97,7 +106,12 @@ class SimplCheckout  extends Adapter {
 
             // API to init refund
             if(!$this->simplApi->initRefund($orderId, $data)) {
-                throw new Exception(__('Error in API call'));
+                throw new \Exception('Error in API call');
+            }
+
+            if (!$isCancel) {
+                $creditmemo->setState(Creditmemo::STATE_OPEN);
+                $this->creditmemoRepository->save($creditmemo);
             }
 
         } catch (\Exception $e) {
@@ -109,7 +123,7 @@ class SimplCheckout  extends Adapter {
 
     public function cancel(InfoInterface $payment, $amount = null) {
         try {
-            $this->initRefund($payment, $amount);
+            $this->initRefund($payment, $amount, true);
             $order = $payment->getOrder();
             $order->setState(Order::STATE_CLOSED);
             $order->setStatus(Order::STATE_CLOSED);
