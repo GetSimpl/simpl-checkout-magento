@@ -40,45 +40,25 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
      */
     protected $transactionBuilder;
 
-    /**
-     * @var InvoiceService
-     */
     protected $invoiceService;
 
-    /**
-     * @var InvoiceSender
-     */
     protected $invoiceSender;
 
-    /**
-     * @var InvoiceRepositoryInterface
-     */
     protected $invoiceRepository;
 
-    /**
-     * @var CreditmemoRepositoryInterface
-     */
     protected $creditmemoRepository;
 
-    /**
-     * @var SimplApi
-     */
+    protected $response;
+
     protected $simplApi;
 
-    /**
-     * @var OrderDataInterface
-     */
     protected $orderData;
 
-    /**
-     * @var CreditMemoDataInterface
-     */
     protected $creditMemoData;
 
-    /**
-     * @var OrderResponse
-     */
     protected $orderResponse;
+
+    protected $config;
 
     /**
      * @param OrderFactory $orderFactory
@@ -90,6 +70,9 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
      * @param CreditmemoRepositoryInterface $creditmemoRepository
      * @param SimplApi $simplApi
      * @param OrderDataInterface $orderData
+     * @param CreditMemoDataInterface $creditMemoData
+     * @param OrderResponse $orderResponse
+     * @param Config $config
      */
     public function __construct(
         OrderFactory                     $orderFactory,
@@ -102,7 +85,8 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
         SimplApi                         $simplApi,
         OrderDataInterface               $orderData,
         CreditMemoDataInterface          $creditMemoData,
-        OrderResponse                    $orderResponse
+        OrderResponse                    $orderResponse,
+        Config                           $config
     ) {
         $this->orderRepository = $orderRepository;
         $this->orderFactory = $orderFactory;
@@ -115,6 +99,7 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
         $this->orderData = $orderData;
         $this->creditMemoData = $creditMemoData;
         $this->orderResponse = $orderResponse;
+        $this->config = $config;
     }
 
     /**
@@ -148,10 +133,11 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
         $order = $this->applyCharges($order, $appliedCharges);
         $order = $this->applyDiscount($order, $appliedDiscounts);
         try {
+
             $this->createTransaction($order, $payment, $transaction);
         } catch (\Exception $e) {
 
-            return $this->orderResponse->setError("order_confirm_failed", $e->getMessage());
+            return $this->orderResponse->setError($e->getCode(), $e->getMessage());
         }
 
         $redirectUrl = $this->simplApi->getRedirectUrl(["order_id" => $orderId]);
@@ -218,6 +204,18 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
      * @return int
      * @throws \Exception
      */
+    public function updateTransaction($order, $paymentData, $transactionData) {
+        return $this->processTransaction($order, $paymentData, $transactionData);
+    }
+
+    /**
+     * @param $order
+     * @param PaymentDataInterface $paymentData
+     * @param TransactionDataInterface $transactionData
+     * @param false $update
+     * @return int
+     * @throws \Exception
+     */
     private function processTransaction($order, $paymentData, $transactionData) {
         $canProcessInvoice = false;
         try {
@@ -277,7 +275,13 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
             if ($paymentData->getMode() != 'cod') {
                 $order->setState(Order::STATE_PROCESSING);
                 $order->setStatus(Order::STATE_PROCESSING);
+                $order->setCustomerNoteNotify(true);
                 $canProcessInvoice = true;
+            } else {
+                $newOrderStatus = $this->config->getNewOrderStatus();
+                $order->setState(Order::STATE_NEW);
+                $order->setStatus($newOrderStatus);
+                $canProcessInvoice = false;
             }
 
             $payment->save();
@@ -323,4 +327,26 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
         throw new \Exception('Error processing the request: id');
     }
 
+    private function invoiceOrder($order, $transactionId = null,) {
+        if ($order->canInvoice())
+        {
+            try {
+                $invoice = $this->invoiceService->prepareInvoice($order);
+                $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
+
+                if ($transactionId)
+                {
+                    $invoice->setTransactionId($transactionId);
+                }
+                $invoice->register();
+                $this->invoiceRepository->save($invoice);
+                $this->invoiceSender->send($invoice);
+
+                return true;
+            } catch (\Exception $e) {
+                throw new \Exception('Error processing invoice');
+            }
+        }
+        return null;
+    }
 }
