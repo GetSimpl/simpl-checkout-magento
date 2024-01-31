@@ -4,7 +4,7 @@ namespace Simpl\Checkout\Model;
 
 use Magento\Sales\Api\CreditmemoRepositoryInterface;
 use Simpl\Checkout\Api\CreditMemoDetailsInterface;
-use Simpl\Checkout\Model\Data\Order\Response;
+use Simpl\Checkout\Model\Data\CreditmemoResponse as Response;
 
 class CreditMemoDetails implements CreditMemoDetailsInterface {
 
