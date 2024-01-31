@@ -6,6 +6,7 @@ use Magento\Sales\Api\InvoiceRepositoryInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Api\CreditmemoRepositoryInterface;
+use Magento\Sales\Model\Order\Invoice;
 use Magento\Sales\Model\Order\Payment\Transaction;
 use Magento\Sales\Model\Order\Payment\Transaction\BuilderInterface;
 use Magento\Sales\Model\OrderFactory;
@@ -19,7 +20,7 @@ use Simpl\Checkout\Helper\SimplApi;
 use Simpl\Checkout\Api\OrderUpdateManagementInterface;
 use Simpl\Checkout\Api\Data\OrderDataInterface;
 use Simpl\Checkout\Api\Data\CreditMemoDataInterface;
-use Simpl\Checkout\Model\Data\Order\Response as OrderResponse;
+use Simpl\Checkout\Model\Data\Order\OrderResponse;
 use Simpl\Checkout\Helper\Config;
 
 
@@ -141,7 +142,7 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
         }
 
         $redirectUrl = $this->simplApi->getRedirectUrl(["order_id" => $orderId]);
-        return $this->orderResponse->setUrl($redirectUrl);
+        return $this->orderResponse->setRedirectionURL($redirectUrl);
     }
 
     /**
@@ -153,10 +154,10 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
         $amount = 0;
         $comment = '';
         foreach ($appliedCharges as $appliedCharge) {
-            $amount += $appliedCharge->getChargesAmountInPaise();
+            $amount += $appliedCharge->getChargesAmount();
             $comment .= 'Simpl Checkout ' . $appliedCharge->getTitle() .
                 ' charge added with description ' .  $appliedCharge->getDescription() .
-                ' and amount added is ' . $appliedCharge->getChargesAmountInPaise();
+                ' and amount added is ' . $appliedCharge->getChargesAmount();
         }
         if ($amount) {
             $order->setData('simpl_applied_charges', $amount);
@@ -174,10 +175,10 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
         $amount = 0;
         $comment = '';
         foreach ($appliedDiscounts as $appliedDiscount) {
-            $amount += $appliedDiscount->getDiscountAmountInPaise();
+            $amount += $appliedDiscount->getDiscountAmount();
             $comment .= 'Simpl Checkout ' . $appliedDiscount->getTitle() .
                 ' discount added with description ' .  $appliedDiscount->getDescription() .
-                ' and amount discounted is ' . $appliedDiscount->getDiscountAmountInPaise();
+                ' and amount discounted is ' . $appliedDiscount->getDiscountAmount();
         }
         if ($amount) {
             $order->setData('simpl_applied_discounts', -$amount);
@@ -193,7 +194,7 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
      * @return int
      * @throws \Exception
      */
-    public function createTransaction($order, $paymentData, $transactionData) {
+    private function createTransaction($order, $paymentData, $transactionData) {
         return $this->processTransaction($order, $paymentData, $transactionData);
     }
 
@@ -204,7 +205,7 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
      * @return int
      * @throws \Exception
      */
-    public function updateTransaction($order, $paymentData, $transactionData) {
+    private function updateTransaction($order, $paymentData, $transactionData) {
         return $this->processTransaction($order, $paymentData, $transactionData);
     }
 
@@ -332,10 +333,9 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface {
         {
             try {
                 $invoice = $this->invoiceService->prepareInvoice($order);
-                $invoice->setRequestedCaptureCase(\Magento\Sales\Model\Order\Invoice::CAPTURE_ONLINE);
+                $invoice->setRequestedCaptureCase(Invoice::CAPTURE_ONLINE);
 
-                if ($transactionId)
-                {
+                if ($transactionId) {
                     $invoice->setTransactionId($transactionId);
                 }
                 $invoice->register();
