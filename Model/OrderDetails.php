@@ -4,7 +4,7 @@ namespace Simpl\Checkout\Model;
 
 use Simpl\Checkout\Api\OrderDetailsInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
-use Simpl\Checkout\Model\Data\Order\Response;
+use Simpl\Checkout\Model\Data\Order\OrderResponse as Response;
 
 class OrderDetails implements OrderDetailsInterface {
 
