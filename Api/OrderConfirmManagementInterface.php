@@ -10,7 +10,7 @@ use Simpl\Checkout\Api\Data\Order\PaymentDataInterface;
 use Simpl\Checkout\Api\Data\Order\TransactionDataInterface;
 use Simpl\Checkout\Api\Data\Order\OrderConfirmSuccessDataInterface;
 
-interface OrderUpdateManagementInterface
+interface OrderConfirmManagementInterface
 {
     /**
      * Confirm Simpl Checkout Order by ID
@@ -24,5 +24,4 @@ interface OrderUpdateManagementInterface
      * @throws LocalizedException
      */
     public function confirm($orderId, $payment, $transaction, $appliedCharges, $appliedDiscounts);
-
 }

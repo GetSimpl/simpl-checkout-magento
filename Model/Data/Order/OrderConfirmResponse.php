@@ -7,9 +7,8 @@ use Simpl\Checkout\Api\Data\Order\OrderConfirmSuccessDataInterface;
 use Simpl\Checkout\Api\Data\ErrorDataInterface;
 use Simpl\Checkout\Api\Data\ApiDataInterface;
 use Simpl\Checkout\Api\Data\MessageDataInterface;
-use Simpl\Checkout\Api\Data\OrderDataInterface;
 
-class OrderResponse
+class OrderConfirmResponse
 {
     /**
      * @var ApiDataInterface
@@ -36,33 +35,24 @@ class OrderResponse
     protected $orderConfirmSuccessData;
 
     /**
-     * @var OrderDataInterface
-     */
-    protected $orderData;
-
-    /**
      * @param ApiDataInterface $apiData
      * @param ErrorDataInterface $errorData
      * @param MessageDataInterface $messageData
      * @param RedirectionUrlDataInterface $redirectionUrlData
      * @param OrderConfirmSuccessDataInterface $orderConfirmSuccessData
-     * @param OrderDataInterface $orderData
      */
     public function __construct(
         ApiDataInterface $apiData,
         ErrorDataInterface $errorData,
         MessageDataInterface $messageData,
         RedirectionUrlDataInterface $redirectionUrlData,
-        OrderConfirmSuccessDataInterface $orderConfirmSuccessData,
-        OrderDataInterface $orderData
+        OrderConfirmSuccessDataInterface $orderConfirmSuccessData
     ) {
-
         $this->apiData = $apiData;
         $this->errorData = $errorData;
         $this->messageData = $messageData;
         $this->redirectionUrlData = $redirectionUrlData;
         $this->orderConfirmSuccessData = $orderConfirmSuccessData;
-        $this->orderData = $orderData;
     }
 
     /**
@@ -101,29 +91,5 @@ class OrderResponse
         $this->messageData->setMessage($message);
         $this->apiData->setData($this->messageData);
         return $this->apiData;
-    }
-
-
-    /**
-     * @param $order
-     * @return OrderDataInterface
-     */
-    public function setOrder($order) {
-
-        $this->orderData->setData($order);
-        $this->orderData->setSuccess(true);
-        return $this->orderData;
-    }
-
-    /**
-     * @return OrderDataInterface
-     */
-    public function orderNotFoundError() {
-
-        $this->orderData->setSuccess(false);
-        $this->errorData->setCode("order_not_found");
-        $this->errorData->setMessage("Order not found");
-        $this->orderData->setError($this->errorData);
-        return $this->orderData;
     }
 }

@@ -36,6 +36,8 @@
     <!-- For API -->
     <preference for="Simpl\Checkout\Api\OrderUpdateManagementInterface"
                 type="Simpl\Checkout\Model\OrderUpdateManagement"/>
+    <preference for="Simpl\Checkout\Api\OrderConfirmManagementInterface"
+                type="Simpl\Checkout\Model\OrderConfirmManagement"/>
     <preference for="Simpl\Checkout\Api\CreditMemoDetailsInterface"
                 type="Simpl\Checkout\Model\CreditMemoDetails"/>
     <preference for="Simpl\Checkout\Api\OrderDetailsInterface"

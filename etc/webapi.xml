@@ -2,7 +2,7 @@
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
     <route url="/V1/simpl-checkout/order/:orderId/confirm" method="POST">
-        <service class="Simpl\Checkout\Api\OrderUpdateManagementInterface" method="confirm"/>
+        <service class="Simpl\Checkout\Api\OrderConfirmManagementInterface" method="confirm"/>
         <resources>
             <resource ref="simpl"/>
         </resources>
