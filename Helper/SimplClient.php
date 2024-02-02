@@ -32,9 +32,9 @@ class SimplClient extends AbstractHelper {
     protected $config;
 
     /**
-     * @var Signature
+     * @var AuthHelper
      */
-    protected $signature;
+    protected $authHelper;
 
     /**
      * @param GuzzleHttpClient $client
@@ -48,14 +48,14 @@ class SimplClient extends AbstractHelper {
         Json $json,
         Config $config,
         Logger $logger,
-        AuthHelper $signature,
+        AuthHelper $authHelper,
         Context $context
     ) {
         $this->config = $config;
         $this->logger = $logger;
         $this->client = $client;
         $this->json = $json;
-        $this->signature = $signature;
+        $this->authHelper = $authHelper;
         parent::__construct($context);
     }
 
@@ -66,9 +66,9 @@ class SimplClient extends AbstractHelper {
      * @throws \Exception
      */
     private function getHeaders() {
-        $clientId = $this->signature->getClientId();
-        $nonce = $this->signature->generateUuid();
-        $signature = $this->signature->generateSignature($nonce);
+        $clientId = $this->authHelper->getClientId();
+        $nonce = $this->authHelper->generateUuid();
+        $signature = $this->authHelper->generateSignature($nonce);
         $domain = $this->config->getDomain();
 
         return [
