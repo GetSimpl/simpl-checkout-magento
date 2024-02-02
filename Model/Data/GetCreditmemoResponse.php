@@ -7,7 +7,7 @@ use Simpl\Checkout\Api\Data\ApiDataInterface;
 use Simpl\Checkout\Api\Data\MessageDataInterface;
 use Simpl\Checkout\Api\Data\CreditMemoDataInterface;
 
-class CreditmemoResponse
+class GetCreditmemoResponse
 {
     /**
      * @var ApiDataInterface
