@@ -90,7 +90,27 @@ class SimplCheckout  extends Adapter {
         return $this;
     }
 
-    public function initRefund(InfoInterface $payment, $amount = null, $isCancel = false) {
+    public function initCancel(InfoInterface $payment, $amount = null) {
+        try {
+
+            $order = $payment->getOrder();
+            $orderId = $order->getIncrementId();
+            $data["order_id"] = $orderId;
+            $data["currency"] = $order->getBaseCurrencyCode();
+
+            // API to init cancel
+            if(!$this->simplApi->initCancel($orderId, $data)) {
+                throw new \Exception('Error in API call');
+            }
+
+        } catch (\Exception $e) {
+            throw new CouldNotSaveException(__('Can not cancel this order, Try again.'));
+        }
+
+        return $this;
+    }
+
+    public function initRefund(InfoInterface $payment, $amount = null) {
         try {
 
             $order = $payment->getOrder();
@@ -109,10 +129,8 @@ class SimplCheckout  extends Adapter {
                 throw new \Exception('Error in API call');
             }
 
-            if (!$isCancel) {
-                $creditmemo->setState(Creditmemo::STATE_OPEN);
-                $this->creditmemoRepository->save($creditmemo);
-            }
+            $creditmemo->setState(Creditmemo::STATE_OPEN);
+            $this->creditmemoRepository->save($creditmemo);
 
         } catch (\Exception $e) {
             throw new CouldNotSaveException(__('Refund can not be processed'));
@@ -123,7 +141,7 @@ class SimplCheckout  extends Adapter {
 
     public function cancel(InfoInterface $payment, $amount = null) {
         try {
-            $this->initRefund($payment, $amount, true);
+            $this->initCancel($payment, $amount);
             $order = $payment->getOrder();
             $order->setState(Order::STATE_CLOSED);
             $order->setStatus(Order::STATE_CLOSED);
