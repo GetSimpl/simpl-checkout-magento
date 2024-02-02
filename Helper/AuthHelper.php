@@ -5,7 +5,7 @@ namespace Simpl\Checkout\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 
-class Signature extends AbstractHelper
+class AuthHelper extends AbstractHelper
 {
     /**
      * @var Config

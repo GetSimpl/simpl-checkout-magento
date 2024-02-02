@@ -4,16 +4,16 @@ namespace Simpl\Checkout\Model\Plugin;
 
 use Magento\Framework\Authorization;
 use Closure;
-use Simpl\Checkout\Helper\Signature;
+use Simpl\Checkout\Helper\AuthHelper;
 use Magento\Framework\HTTP\PhpEnvironment\Request;
 use Simpl\Checkout\Logger\Logger;
 
 class SimplAuthorization
 {
     /**
-     * @var Signature
+     * @var AuthHelper
      */
-    protected $signature;
+    protected $authHelper;
 
     /**
      * @var Request
@@ -26,11 +26,11 @@ class SimplAuthorization
     protected $logger;
 
     public function __construct(
-        Signature $signature,
+        AuthHelper $authHelper,
         Request $request,
         Logger $logger
     ) {
-        $this->signature = $signature;
+        $this->authHelper = $authHelper;
         $this->request = $request;
         $this->logger = $logger;
     }
@@ -65,7 +65,7 @@ class SimplAuthorization
             $signature = $this->request->getHeader('SIMPL-SERVICE-SIGNATURE');
 
             try {
-                return $this->signature->validateSignature($clientId, $nonce, $signature);
+                return $this->authHelper->validateSignature($clientId, $nonce, $signature);
             } catch (\Exception $e) {
 
                 $this->logger->error('Exception in API Authorization: ' . $e->getMessage());
