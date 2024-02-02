@@ -5,7 +5,7 @@ namespace Simpl\Checkout\Model\Data\Order;
 use Simpl\Checkout\Api\Data\ErrorDataInterface;
 use Simpl\Checkout\Api\Data\OrderDataInterface;
 
-class OrderResponse
+class GetOrderResponse
 {
     /**
      * @var ErrorDataInterface
