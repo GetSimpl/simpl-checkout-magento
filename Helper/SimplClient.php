@@ -48,7 +48,7 @@ class SimplClient extends AbstractHelper {
         Json $json,
         Config $config,
         Logger $logger,
-        Signature $signature,
+        AuthHelper $signature,
         Context $context
     ) {
         $this->config = $config;
