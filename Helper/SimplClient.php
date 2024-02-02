@@ -31,16 +31,16 @@ class SimplClient extends AbstractHelper {
      */
     protected $config;
 
-    private $clientId;
-
-    private $secret;
+    /**
+     * @var Signature
+     */
+    protected $signature;
 
     /**
      * @param GuzzleHttpClient $client
      * @param Json $json
      * @param Config $config
      * @param Logger $logger
-     * @param ApiResponseDataInterface $apiResponseData
      * @param Context $context
      */
     public function __construct(
@@ -48,41 +48,15 @@ class SimplClient extends AbstractHelper {
         Json $json,
         Config $config,
         Logger $logger,
+        AuthHelper $signature,
         Context $context
     ) {
         $this->config = $config;
         $this->logger = $logger;
         $this->client = $client;
         $this->json = $json;
-        $this->clientId = $this->config->getClientId();
-        $this->secret = $this->config->getSecret();
+        $this->signature = $signature;
         parent::__construct($context);
-    }
-
-    /**
-     * @param string $clientId
-     * @param string $nonce
-     * @param string $signature
-     * @return bool
-     * @throws \Exception
-     */
-    public function validateSignature(string $clientId,string  $nonce,string  $signature) {
-        $localSignature = $this->generateSignature($nonce, $clientId);
-        return $signature == $localSignature;
-    }
-
-    /**
-     * @param $clientId
-     */
-    public function setClientId($clientId) {
-        $this->clientId = $clientId;
-    }
-
-    /**
-     * @param $secret
-     */
-    public function setSecret($secret) {
-        $this->secret = $secret;
     }
 
     /**
@@ -92,9 +66,9 @@ class SimplClient extends AbstractHelper {
      * @throws \Exception
      */
     private function getHeaders() {
-        $clientId = $this->clientId;
-        $nonce = $this->generateUuid();
-        $signature = $this->generateSignature($nonce);
+        $clientId = $this->signature->getClientId();
+        $nonce = $this->signature->generateUuid();
+        $signature = $this->signature->generateSignature($nonce);
         $domain = $this->config->getDomain();
 
         return [
@@ -192,33 +166,5 @@ class SimplClient extends AbstractHelper {
         }
 
         return new Response($responseArray);
-    }
-
-
-    /**
-     * @param string $nonce
-     * @param string|null $clientId
-     * @return false|string
-     */
-    private function generateSignature(string $nonce,string $clientId = null) {
-
-        if (!$clientId)
-            $clientId = $this->clientId;
-
-        $clientSecret = $this->secret;
-        $data = $nonce . "-" . $clientId;
-
-        return hash_hmac('sha1', $data, $clientSecret);
-    }
-
-    /**
-     * @return string
-     * @throws \Exception
-     */
-    private function generateUuid() {
-        $b = random_bytes(16);
-        $b[6] = chr(ord($b[6]) & 0x0f | 0x40);
-        $b[8] = chr(ord($b[8]) & 0x3f | 0x80);
-        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($b), 4));
     }
 }
