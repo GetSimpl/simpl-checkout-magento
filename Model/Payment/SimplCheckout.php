@@ -97,6 +97,7 @@ class SimplCheckout  extends Adapter {
             $orderId = $order->getIncrementId();
             $data["order_id"] = $orderId;
             $data["currency"] = $order->getBaseCurrencyCode();
+            $data["reason"] = "admin triggered cancel";
 
             // API to init cancel
             if(!$this->simplApi->initCancel($orderId, $data)) {
