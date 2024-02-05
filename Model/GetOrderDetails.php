@@ -6,7 +6,7 @@ use Simpl\Checkout\Api\OrderDetailsInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Simpl\Checkout\Model\Data\Order\GetOrderResponse;
 
-class OrderDetails implements OrderDetailsInterface {
+class GetOrderDetails implements OrderDetailsInterface {
 
     /**
      * @var OrderRepositoryInterface
