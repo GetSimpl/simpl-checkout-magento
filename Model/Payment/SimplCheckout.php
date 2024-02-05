@@ -90,27 +90,6 @@ class SimplCheckout  extends Adapter {
         return $this;
     }
 
-    public function initCancel(InfoInterface $payment, $amount = null) {
-        try {
-
-            $order = $payment->getOrder();
-            $orderId = $order->getIncrementId();
-            $data["order_id"] = $orderId;
-            $data["currency"] = $order->getBaseCurrencyCode();
-            $data["reason"] = "admin triggered cancel";
-
-            // API to init cancel
-            if(!$this->simplApi->initCancel($orderId, $data)) {
-                throw new \Exception('Error in API call');
-            }
-
-        } catch (\Exception $e) {
-            throw new CouldNotSaveException(__('Can not cancel this order, Try again.'));
-        }
-
-        return $this;
-    }
-
     public function initRefund(InfoInterface $payment, $amount = null) {
         try {
 
@@ -143,6 +122,18 @@ class SimplCheckout  extends Adapter {
     public function cancel(InfoInterface $payment, $amount = null) {
         try {
             $this->initCancel($payment, $amount);
+
+            $order = $payment->getOrder();
+            $orderId = $order->getIncrementId();
+            $data["order_id"] = $orderId;
+            $data["currency"] = $order->getBaseCurrencyCode();
+            $data["reason"] = "admin triggered cancel";
+
+            // API to init cancel
+            if(!$this->simplApi->cancel($orderId, $data)) {
+                throw new \Exception('Error in API call');
+            }
+
             $order = $payment->getOrder();
             $order->setState(Order::STATE_CLOSED);
             $order->setStatus(Order::STATE_CLOSED);

@@ -70,7 +70,7 @@ class SimplApi extends AbstractHelper {
      * @param $data
      * @return bool
      */
-    public function initCancel($orderId, $data) {
+    public function cancel($orderId, $data) {
         $endPoint = str_replace(':order_id', $orderId, self::CANCEL_INIT_API);
         $response = $this->simplClient->postRequest($endPoint, $data);
         if ($response->isSuccess()) {
