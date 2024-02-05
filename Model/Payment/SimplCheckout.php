@@ -121,8 +121,6 @@ class SimplCheckout  extends Adapter {
 
     public function cancel(InfoInterface $payment, $amount = null) {
         try {
-            $this->initCancel($payment, $amount);
-
             $order = $payment->getOrder();
             $orderId = $order->getIncrementId();
             $data["order_id"] = $orderId;
