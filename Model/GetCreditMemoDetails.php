@@ -6,7 +6,7 @@ use Magento\Sales\Api\CreditmemoRepositoryInterface;
 use Simpl\Checkout\Api\CreditMemoDetailsInterface;
 use Simpl\Checkout\Model\Data\GetCreditmemoResponse;
 
-class CreditMemoDetails implements CreditMemoDetailsInterface {
+class GetCreditMemoDetails implements CreditMemoDetailsInterface {
 
     /**
      * @var CreditmemoRepositoryInterface
