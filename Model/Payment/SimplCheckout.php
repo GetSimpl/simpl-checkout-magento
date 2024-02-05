@@ -148,7 +148,7 @@ class SimplCheckout  extends Adapter {
             $order->setStatus(Order::STATE_CLOSED);
 
         } catch (\Exception $e) {
-            throw new CouldNotSaveException(__('Refund can not be processed'));
+            throw new CouldNotSaveException(__('Can not cancel this order, Try again.'));
         }
 
         return $this;
