@@ -7,4 +7,10 @@
             <resource ref="simpl"/>
         </resources>
     </route>
+    <route url="/V1/simpl-checkout/order/:orderId/update" method="PUT">
+        <service class="Simpl\Checkout\Api\OrderUpdateManagementInterface" method="update"/>
+        <resources>
+            <resource ref="simpl"/>
+        </resources>
+    </route>
 </routes>
