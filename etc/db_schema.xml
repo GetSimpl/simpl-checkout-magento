@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="quote">
+        <column name="simpl_applied_charges" nullable="true" xsi:type="decimal" comment="Simpl Charges" scale="4" precision="20"/>
+        <column name="simpl_applied_discounts" nullable="true" xsi:type="decimal" comment="Simpl Discounts" scale="4" precision="20"/>
+    </table>
+    <table name="sales_order">
+        <column name="simpl_applied_charges" nullable="true" xsi:type="decimal" comment="Simpl Charges" scale="4" precision="20"/>
+        <column name="simpl_applied_discounts" nullable="true" xsi:type="decimal" comment="Simpl Discounts" scale="4" precision="20"/>
+    </table>
+    <table name="sales_invoice">
+        <column name="simpl_applied_charges" nullable="true" xsi:type="decimal" comment="Simpl Charges" scale="4" precision="20"/>
+        <column name="simpl_applied_discounts" nullable="true" xsi:type="decimal" comment="Simpl Discounts" scale="4" precision="20"/>
+    </table>
+    <table name="sales_creditmemo">
+        <column name="simpl_applied_charges" nullable="true" xsi:type="decimal" comment="Simpl Charges" scale="4" precision="20"/>
+        <column name="simpl_applied_discounts" nullable="true" xsi:type="decimal" comment="Simpl Discounts" scale="4" precision="20"/>
+    </table>
+</schema>

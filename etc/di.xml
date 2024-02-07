@@ -38,18 +38,18 @@
                 type="Simpl\Checkout\Model\OrderUpdateManagement"/>
     <preference for="Simpl\Checkout\Api\OrderConfirmManagementInterface"
                 type="Simpl\Checkout\Model\OrderConfirmManagement"/>
+    <preference for="Simpl\Checkout\Api\OrderDetailsInterface"
+                type="Simpl\Checkout\Model\GetOrderDetails"/>
     <preference for="Simpl\Checkout\Api\CreditMemoDetailsInterface"
                 type="Simpl\Checkout\Model\CreditMemoDetails"/>
-    <preference for="Simpl\Checkout\Api\OrderDetailsInterface"
-                type="Simpl\Checkout\Model\OrderDetails"/>
-    <preference for="Simpl\Checkout\Api\Data\PaymentDataInterface"
-                type="Simpl\Checkout\Model\Data\PaymentData"/>
-    <preference for="Simpl\Checkout\Api\Data\TransactionDataInterface"
-                type="Simpl\Checkout\Model\Data\TransactionData"/>
-    <preference for="Simpl\Checkout\Api\Data\AppliedChargesDataInterface"
-                type="Simpl\Checkout\Model\Data\AppliedChargesData"/>
-    <preference for="Simpl\Checkout\Api\Data\AppliedDiscountsDataInterface"
-                type="Simpl\Checkout\Model\Data\AppliedDiscountsData"/>
+    <preference for="Simpl\Checkout\Api\Data\Order\PaymentDataInterface"
+                type="Simpl\Checkout\Model\Data\Order\PaymentData"/>
+    <preference for="Simpl\Checkout\Api\Data\Order\TransactionDataInterface"
+                type="Simpl\Checkout\Model\Data\Order\TransactionData"/>
+    <preference for="Simpl\Checkout\Api\Data\Order\AppliedChargesDataInterface"
+                type="Simpl\Checkout\Model\Data\Order\AppliedChargesData"/>
+    <preference for="Simpl\Checkout\Api\Data\Order\AppliedDiscountsDataInterface"
+                type="Simpl\Checkout\Model\Data\Order\AppliedDiscountsData"/>
     <preference for="Simpl\Checkout\Api\Data\ApiResponseDataInterface"
                 type="Simpl\Checkout\Model\Data\ApiResponseData"/>
     <preference for="Simpl\Checkout\Api\Data\Order\RedirectionUrlDataInterface"
@@ -69,6 +69,7 @@
     <preference for="Simpl\Checkout\Api\Data\OrderDataInterface"
                 type="Simpl\Checkout\Model\Data\OrderData"/>
 
+    <!-- For log -->
     <type name="Simpl\Checkout\Logger\Handler">
         <arguments>
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
