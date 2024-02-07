@@ -9,11 +9,13 @@ use Simpl\Checkout\Api\Data\Order\PaymentDataInterface;
 
 class SimplApi extends AbstractHelper {
 
-    const INSTALL_API = 'api/v1/mogento/app/install';
-    const PAYMENT_INIT_API = 'api/v1/mogento/payment/initiate';
-    const REFUND_INIT_API = 'api/v1/mogento/order/:order_id/refund';
-    const CANCEL_INIT_API = 'api/v1/mogento/order/:order_id/cancel';
+    const INSTALL_API = 'api/v1/magento/app/install';
+    const PAYMENT_INIT_API = 'api/v1/magento/payment/initiate';
+    const REFUND_INIT_API = 'api/v1/magento/order/:order_id/refund';
+    const CANCEL_INIT_API = 'api/v1/magento/order/:order_id/cancel';
     const FETCH_PAYMENT_API = 'api/v1/magento/payment_order/';
+    const FETCH_REFUND_API = 'api/v1/magento/refund/';
+    const ALERT_API = 'api/v1/magento/alert/track';
 
     /**
      * @var SimplClient

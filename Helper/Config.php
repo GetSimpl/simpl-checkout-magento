@@ -19,8 +19,8 @@ class Config extends AbstractHelper {
     const KEY_ORDER_STATUS = 'order_status';
     const KEY_TITLE_FRONTEND = 'title_for_frontend';
     const KEY_PAYMENT_INS = 'instructions';
-    const KEY_SIMPL_LIVE_HOST_URL = 'LIVE_URL_HERE';
-    const KEY_SIMPL_TEST_HOST_URL = 'TEST_URL_HERE';
+    const KEY_SIMPL_LIVE_HOST_URL = 'https://checkout-platform-integrations.getsimpl.com/';
+    const KEY_SIMPL_TEST_HOST_URL = 'https://checkout-platform-integrations.stagingsimpl.com/';
 
     /**
      * @var StoreManagerInterface
@@ -145,12 +145,26 @@ class Config extends AbstractHelper {
         return $this->getIntegrationMode() == 'live';
     }
 
+
+    /**
+     * @param $url
+     * @return string
+     */
+    private function cleanURL($url) {
+        // Remove http:// or https:// from the beginning of the URL
+        $url = preg_replace("#^https?://#i", "", $url);
+        $url = rtrim($url, '/');
+
+        return $url;
+    }
+
     /**
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getDomain() {
-        return $this->storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+        $url = $this->storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+        return $this->cleanURL($url);
     }
 
 }
