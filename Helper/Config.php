@@ -11,6 +11,7 @@ class Config extends AbstractHelper {
     const SCOPE = 'website';
     const KEY_PAYMENT_CODE = 'simplcheckout';
     const KEY_CHECKOUT_ACTIVE = 'active';
+    const KEY_LOG = 'logging';
     const KEY_MODE = 'mode';
     const KEY_CLIENT_ID = 'client_id';
     const KEY_TEST_SECRET = 'test_secret';
@@ -46,6 +47,15 @@ class Config extends AbstractHelper {
      */
     public function isEnabled() {
         return $this->getSimplConfig(self::KEY_CHECKOUT_ACTIVE);
+    }
+
+    /**
+     * Check if logging is enabled
+     *
+     * @return bool
+     */
+    public function isLogEnabled() {
+        return $this->getSimplConfig(self::KEY_LOG);
     }
 
     /**

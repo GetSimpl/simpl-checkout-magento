@@ -5,6 +5,7 @@ namespace Simpl\Checkout\Model;
 use Simpl\Checkout\Api\OrderDetailsInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Simpl\Checkout\Model\Data\Order\GetOrderResponse;
+use Simpl\Checkout\Helper\SimplApi;
 
 class GetOrderDetails implements OrderDetailsInterface {
 
@@ -24,10 +25,12 @@ class GetOrderDetails implements OrderDetailsInterface {
      */
     public function __construct(
         OrderRepositoryInterface $orderRepository,
-        GetOrderResponse $getOrderResponse
+        GetOrderResponse $getOrderResponse,
+        SimplApi $simplApi
     ) {
         $this->orderRepository = $orderRepository;
         $this->getOrderResponse = $getOrderResponse;
+        $this->simplApi = $simplApi;
     }
 
     /**
@@ -40,7 +43,7 @@ class GetOrderDetails implements OrderDetailsInterface {
             $order = $this->orderRepository->get($orderId);
             return $this->getOrderResponse->setOrder($order);
         } catch (\Exception $e) {
-
+            $this->simplApi->alert($e->getMessage(), 'INFO', $e->getTraceAsString());
             return $this->getOrderResponse->orderNotFoundError();
         }
     }

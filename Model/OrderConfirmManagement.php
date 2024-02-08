@@ -161,6 +161,7 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface {
 
         } catch (\Exception $e) {
 
+            $this->simplApi->alert($e->getMessage(), 'INFO', $e->getTraceAsString());
             return $this->orderConfirmResponse->setError($e->getCode(), $e->getMessage());
         }
 

@@ -65,6 +65,10 @@
                 <field id="instructions" type="textarea" sortOrder="70" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
                     <label>Instructions</label>
                 </field>
+                <field id="logging" type="select" sortOrder="999" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                    <label>Enabled Logging</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
         </section>
     </system>

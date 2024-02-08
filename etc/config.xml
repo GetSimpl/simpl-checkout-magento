@@ -4,6 +4,7 @@
 		<payment>
 			<simplcheckout>
 				<active>1</active>
+                <logging>1</logging>
                 <title>SimplCheckout</title>
                 <title_for_frontend>SimplCheckout</title_for_frontend>
                 <client_id  backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
