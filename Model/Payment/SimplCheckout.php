@@ -16,16 +16,23 @@ use Magento\Payment\Gateway\Data\PaymentDataObjectFactory;
 use Magento\Payment\Gateway\Validator\ValidatorPoolInterface;
 use Magento\Payment\Model\InfoInterface;
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Creditmemo;
 use Psr\Log\LoggerInterface;
 use Simpl\Checkout\Helper\Config as SimplConfig;
 use Magento\Payment\Model\Method\Adapter;
 use Magento\Quote\Api\Data\CartInterface;
+use Simpl\Checkout\Helper\SimplApi;
+use Magento\Sales\Model\Order\CreditmemoRepository;
 
 class SimplCheckout  extends Adapter {
 
     protected $_code = "simplcheckout";
 
     protected $simplConfig;
+
+    protected $simplApi;
+
+    protected $creditmemoRepository;
 
     public function __construct(
         ManagerInterface $eventManager,
@@ -35,12 +42,16 @@ class SimplCheckout  extends Adapter {
         $formBlockType,
         $infoBlockType,
         SimplConfig $simplConfig,
+        SimplApi $simplApi,
+        CreditmemoRepository $creditmemoRepository,
         CommandPoolInterface $commandPool = null,
         ValidatorPoolInterface $validatorPool = null,
         CommandManagerInterface $commandExecutor = null,
         LoggerInterface $logger = null
     ) {
         $this->simplConfig = $simplConfig;
+        $this->simplApi = $simplApi;
+        $this->creditmemoRepository = $creditmemoRepository;
 
         parent::__construct(
             $eventManager,
@@ -71,13 +82,11 @@ class SimplCheckout  extends Adapter {
 
     public function refund(InfoInterface $payment, $amount) {
         $this->initRefund($payment, $amount);
-
         return $this;
     }
 
     public function void(InfoInterface $payment) {
         $this->cancel($payment);
-
         return $this;
     }
 
@@ -85,15 +94,23 @@ class SimplCheckout  extends Adapter {
         try {
 
             $order = $payment->getOrder();
-            if (!is_numeric($amount)) $amount = 0;
-            $amount = round((float)$amount, 2);
+            $creditmemo = $payment->getCreditmemo();
+            $orderId = $order->getIncrementId();
 
-            $order->setTotalRefunded($order->getTotalRefunded() + $amount);
-            $order->setBaseTotalRefunded($order->getBaseTotalRefunded() + $amount);
-            $order->setState(Order::STATE_CLOSED);
-            $order->setStatus(Order::STATE_CLOSED);
+            // Refund API request data
+            $data["order_id"] = $orderId;
+            $data["currency"] = $order->getBaseCurrencyCode();
+            $data["credit_memo"]["id"] = $creditmemo->getId();
+            $data["credit_memo"]["amount"] = $amount;
+            $data["credit_memo"]["status"] = "pending";
 
-            // TODO API to init refund
+            // API to init refund
+            if(!$this->simplApi->initRefund($orderId, $data)) {
+                throw new \Exception('Error in API call');
+            }
+
+            $creditmemo->setState(Creditmemo::STATE_OPEN);
+            $this->creditmemoRepository->save($creditmemo);
 
         } catch (\Exception $e) {
             throw new CouldNotSaveException(__('Refund can not be processed'));
@@ -104,15 +121,23 @@ class SimplCheckout  extends Adapter {
 
     public function cancel(InfoInterface $payment, $amount = null) {
         try {
+            $order = $payment->getOrder();
+            $orderId = $order->getIncrementId();
+            $data["order_id"] = $orderId;
+            $data["currency"] = $order->getBaseCurrencyCode();
+            $data["reason"] = "admin triggered cancel";
+
+            // API to init cancel
+            if(!$this->simplApi->cancel($orderId, $data)) {
+                throw new \Exception('Error in API call');
+            }
 
             $order = $payment->getOrder();
             $order->setState(Order::STATE_CLOSED);
             $order->setStatus(Order::STATE_CLOSED);
 
-            // TODO API to init cancel
-
         } catch (\Exception $e) {
-            throw new CouldNotSaveException(__('Refund can not be processed'));
+            throw new CouldNotSaveException(__('Can not cancel this order, Try again.'));
         }
 
         return $this;

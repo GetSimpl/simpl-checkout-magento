@@ -12,6 +12,8 @@ class SimplApi extends AbstractHelper {
     const INSTALL_API = 'api/v1/mogento/app/install';
     const PAYMENT_INIT_API = 'api/v1/mogento/payment/initiate';
     const FETCH_REFUND_API = 'api/v1/magento/refund/';
+    const REFUND_INIT_API = 'api/v1/mogento/order/:order_id/refund';
+    const CANCEL_INIT_API = 'api/v1/mogento/order/:order_id/cancel';
     const FETCH_PAYMENT_API = 'api/v1/magento/payment_order/';
 
     /**
@@ -64,6 +66,33 @@ class SimplApi extends AbstractHelper {
         return $url;
     }
 
+     * @param $orderId
+     * @param $data
+     * @return bool
+     */
+    public function cancel($orderId, $data) {
+        $endPoint = str_replace(':order_id', $orderId, self::CANCEL_INIT_API);
+        $response = $this->simplClient->postRequest($endPoint, $data);
+        if ($response->isSuccess()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Function to init refund
+     * @param $data
+     * @return string
+     */
+    public function initRefund($orderId, $data) {
+        $endPoint = str_replace(':order_id', $orderId, self::REFUND_INIT_API);
+        $response = $this->simplClient->postRequest($endPoint, $data);
+        if ($response->isSuccess()) {
+            return true;
+        }
+        return false;
+    }
+  
     /**
      * @param $creditMemoId
      * @param $orderId

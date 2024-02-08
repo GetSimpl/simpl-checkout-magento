@@ -4,9 +4,9 @@ namespace Simpl\Checkout\Model;
 
 use Magento\Sales\Api\CreditmemoRepositoryInterface;
 use Simpl\Checkout\Api\CreditMemoDetailsInterface;
-use Simpl\Checkout\Model\Data\Order\Response;
+use Simpl\Checkout\Model\Data\GetCreditmemoResponse;
 
-class CreditMemoDetails implements CreditMemoDetailsInterface {
+class GetCreditMemoDetails implements CreditMemoDetailsInterface {
 
     /**
      * @var CreditmemoRepositoryInterface
@@ -14,20 +14,20 @@ class CreditMemoDetails implements CreditMemoDetailsInterface {
     protected $creditmemoRepository;
 
     /**
-     * @var Response
+     * @var GetCreditmemoResponse
      */
     protected $response;
 
     /**
      * @param CreditmemoRepositoryInterface $creditmemoRepository
-     * @param Response $response
+     * @param GetCreditmemoResponse $getCreditmemoResponse
      */
     public function __construct(
         CreditmemoRepositoryInterface $creditmemoRepository,
-        Response $response
+        GetCreditmemoResponse $getCreditmemoResponse
     ) {
         $this->creditmemoRepository = $creditmemoRepository;
-        $this->response = $response;
+        $this->getCreditmemoResponse = $getCreditmemoResponse;
     }
 
     /**
@@ -38,10 +38,10 @@ class CreditMemoDetails implements CreditMemoDetailsInterface {
         try {
 
             $creditMemo = $this->creditmemoRepository->get($creditMemoId);
-            return $this->response->setCreditMemo($creditMemo);
+            return $this->getCreditmemoResponse->setCreditMemo($creditMemo);
         } catch (\Exception $e) {
 
-            return $this->response->creditMemoNotFoundError();
+            return $this->getCreditmemoResponse->creditMemoNotFoundError();
         }
     }
 }
