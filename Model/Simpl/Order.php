@@ -67,7 +67,11 @@ class Order {
     public function getOrder($order) {
         $data = $order->getData();
         $data["checkout_url"] = $this->url->getCurrentUrl();
-        $data["shipping_address"] = $order->getShippingAddress()->getData();
+
+        if ($order->getIsNotVirtual()) {
+            $data["shipping_address"] = $order->getShippingAddress()->getData();
+        }
+
         $data["billing_address"] = $order->getBillingAddress()->getData();
 
         $orderItems = $order->getAllItems();
