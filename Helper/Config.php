@@ -147,24 +147,13 @@ class Config extends AbstractHelper {
 
 
     /**
-     * @param $url
-     * @return string
-     */
-    private function cleanURL($url) {
-        // Remove http:// or https:// from the beginning of the URL
-        $url = preg_replace("#^https?://#i", "", $url);
-        $url = rtrim($url, '/');
-
-        return $url;
-    }
-
-    /**
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getDomain() {
         $url = $this->storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
-        return $this->cleanURL($url);
+        $parsedUrl = parse_url($url);
+        return $parsedUrl["host"];
     }
 
 }
