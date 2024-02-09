@@ -18,7 +18,7 @@
                     <comment><![CDATA[Enter your Merchant ID from Simpl here]]></comment>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="test_secret" translate="label" type="text" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="test_secret" translate="label" type="obscure" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Test Client Secret</label>
                     <comment>
                         <![CDATA[<a target="_blank" rel="noopener noreferrer" href="https://www.simpl.com/">Your Simpl Account</a> &gt; Test Secret]]>
@@ -28,7 +28,7 @@
                     </depends>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
-                <field id="live_secret" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="live_secret" translate="label" type="obscure" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Live Client Secret</label>
                     <comment>
                         <![CDATA[<a target="_blank" rel="noopener noreferrer" href="https://www.simpl.com/">Your Simpl Account</a> &gt; Live Secret]]>
