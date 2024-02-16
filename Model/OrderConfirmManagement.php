@@ -133,28 +133,41 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface {
 
 
         try {
-            $canProcessInvoice = false;
 
-            $order = $this->applyCharges($order, $appliedCharges);
-            $order = $this->applyDiscount($order, $appliedDiscounts);
-
-            if ($payment->getMode() != 'cod') {
-                $order->setState(Order::STATE_PROCESSING);
-                $order->setStatus(Order::STATE_PROCESSING);
-                $order->setCustomerNoteNotify(true);
-                $canProcessInvoice = true;
-            } else {
-                $newOrderStatus = $this->config->getNewOrderStatus();
-                $order->setState(Order::STATE_NEW);
-                $order->setStatus($newOrderStatus);
+            if ($payment->getStatus() == 'SUCCEEDED') {
                 $canProcessInvoice = false;
-            }
 
-            $transactionId = $this->processTransaction($order, $payment, $transaction);
-
-            if ($transactionId and $canProcessInvoice) {
-                $this->invoiceOrder($order, $transactionId);
-                $order->setTotalPaid($order->getGrandTotal());
+                $order = $this->applyCharges($order, $appliedCharges);
+                $order = $this->applyDiscount($order, $appliedDiscounts);
+    
+                if ($payment->getMode() != 'COD') {
+                    $order->setState(Order::STATE_PROCESSING);
+                    $order->setStatus(Order::STATE_PROCESSING);
+                    $order->setCustomerNoteNotify(true);
+                    $canProcessInvoice = true;
+                } else {
+                    $newOrderStatus = $this->config->getNewOrderStatus();
+                    $order->setState(Order::STATE_NEW);
+                    $order->setStatus($newOrderStatus);
+                    $canProcessInvoice = false;
+                }
+    
+                $transactionId = $this->processTransaction($order, $payment, $transaction);
+    
+                if ($transactionId and $canProcessInvoice) {
+                    $this->invoiceOrder($order, $transactionId);
+                    $order->setTotalPaid($order->getGrandTotal());
+                }
+            } elseif ($payment->getStatus() == 'FAILED') {
+                $order->setState(Order::STATE_CANCELED);
+                $order->setStatus(Order::STATE_CANCELED);
+                $statusComment = "Payment failed";
+                $order->addStatusHistoryComment($statusComment);
+            } else {
+                $order->setState(Order::STATUS_FRAUD);
+                $order->setStatus(Order::STATUS_FRAUD);
+                $statusComment = "Fraud detected";
+                $order->addStatusHistoryComment($statusComment);
             }
 
             $order->save();
