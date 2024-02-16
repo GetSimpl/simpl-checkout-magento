@@ -142,6 +142,7 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface {
                 $order->setState(Order::STATE_PROCESSING);
                 $order->setStatus(Order::STATE_PROCESSING);
                 $order->setCustomerNoteNotify(true);
+                $transactionId = $this->processTransaction($order, $payment, $transaction);
                 $canProcessInvoice = true;
             } else {
                 $newOrderStatus = $this->config->getNewOrderStatus();
@@ -149,8 +150,6 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface {
                 $order->setStatus($newOrderStatus);
                 $canProcessInvoice = false;
             }
-
-            $transactionId = $this->processTransaction($order, $payment, $transaction);
 
             if ($transactionId and $canProcessInvoice) {
                 $this->invoiceOrder($order, $transactionId);
