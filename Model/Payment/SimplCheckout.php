@@ -95,6 +95,8 @@ class SimplCheckout  extends Adapter {
 
             $order = $payment->getOrder();
             $creditmemo = $payment->getCreditmemo();
+            $creditmemo->setState(Creditmemo::STATE_OPEN);
+            $creditmemo = $this->creditmemoRepository->save($creditmemo);
             $orderId = $order->getIncrementId();
 
             // Refund API request data
@@ -108,9 +110,6 @@ class SimplCheckout  extends Adapter {
             if(!$this->simplApi->initRefund($orderId, $data)) {
                 throw new \Exception('Error in API call');
             }
-
-            $creditmemo->setState(Creditmemo::STATE_OPEN);
-            $this->creditmemoRepository->save($creditmemo);
 
         } catch (\Exception $e) {
             throw new CouldNotSaveException(__('Refund can not be processed'));
