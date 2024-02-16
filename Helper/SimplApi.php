@@ -125,7 +125,7 @@ class SimplApi extends AbstractHelper {
      */
     public function validatePayment($order, $payment, $transaction) {
 
-        $apiEndPoint = self::FETCH_PAYMENT_API . $order->getId();
+        $apiEndPoint = self::FETCH_PAYMENT_API . $transaction->getId();
         $response = $this->simplClient->getRequest($apiEndPoint);
         if ($response->isSuccess()) {
             $data = $response->getData();
