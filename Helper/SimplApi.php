@@ -16,6 +16,7 @@ class SimplApi extends AbstractHelper {
     const REFUND_INIT_API = 'api/v1/mogento/order/:order_id/refund';
     const CANCEL_INIT_API = 'api/v1/mogento/order/:order_id/cancel';
     const FETCH_PAYMENT_API = 'api/v1/magento/payment_order/';
+    const ALERT_API = 'api/v1/magento/alert/track';
 
     /**
      * @var SimplClient
@@ -180,36 +181,16 @@ class SimplApi extends AbstractHelper {
     }
 
     /**
-     * @param $message
-     * @param $type
-     * @param $stacktrace
+     * @param $data
      * @return bool
      */
-    public function alert($message, $type, $stacktrace ) {
+    public function alert($data) {
 
-        if (!$this->config->isLogEnabled()) {
-            return false;
+        $endPoint = self::ALERT_API;
+        $response = $this->simplClient->postRequest($endPoint, $data);
+        if ($response->isSuccess()) {
+            return true;
         }
-
-        $this->logger->info($message, ["type" => $type, "stacktrace" => $stacktrace]);
-
-        if ($type == 'ERROR' || $type == 'CRITICAL') {
-            $endPoint = self::ALERT_API;
-            $data["error"]["message"] = $message;
-            $data["error"]["level"] = $type;
-            $data["error"]["stacktrace"] = $stacktrace;
-            $data["merchant_details"] = [
-                "domain" => $this->config->getDomain(),
-                "client_id" => $this->config->getClientId()
-            ];
-            $data["current_url"] = $this->url->getCurrentUrl();
-            $data["environment"] = $this->config->getIntegrationMode();
-            $data["extension_version"] = $this->config->getVersion();
-            $data["device"]["name"] = $_SERVER['HTTP_USER_AGENT'];
-            $data["device"]["ip"] = $_SERVER['REMOTE_ADDR'];
-            $this->simplClient->postRequest($endPoint, $data);
-        }
-
-        return true;
+        return false;
     }
 }

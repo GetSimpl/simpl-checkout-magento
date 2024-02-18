@@ -22,6 +22,7 @@ use Simpl\Checkout\Api\Data\OrderDataInterface;
 use Simpl\Checkout\Api\Data\CreditMemoDataInterface;
 use Simpl\Checkout\Model\Data\Order\OrderConfirmResponse;
 use Simpl\Checkout\Helper\Config;
+use Simpl\Checkout\Helper\Alert;
 
 
 class OrderConfirmManagement implements OrderConfirmManagementInterface {
@@ -61,6 +62,8 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface {
 
     protected $config;
 
+    protected $alert;
+
     /**
      * @param OrderFactory $orderFactory
      * @param BuilderInterface $transactionBuilder
@@ -74,6 +77,7 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface {
      * @param CreditMemoDataInterface $creditMemoData
      * @param OrderConfirmResponse $orderConfirmResponse
      * @param Config $config
+     * @param Alert $alert
      */
     public function __construct(
         OrderFactory                     $orderFactory,
@@ -87,7 +91,8 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface {
         OrderDataInterface               $orderData,
         CreditMemoDataInterface          $creditMemoData,
         OrderConfirmResponse             $orderConfirmResponse,
-        Config                           $config
+        Config                           $config,
+        Alert                            $alert
     ) {
         $this->orderRepository = $orderRepository;
         $this->orderFactory = $orderFactory;
@@ -101,6 +106,7 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface {
         $this->creditMemoData = $creditMemoData;
         $this->orderConfirmResponse = $orderConfirmResponse;
         $this->config = $config;
+        $this->alert = $alert;
     }
 
     /**
@@ -138,19 +144,18 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface {
             $order = $this->applyCharges($order, $appliedCharges);
             $order = $this->applyDiscount($order, $appliedDiscounts);
 
-            if ($payment->getMode() != 'cod') {
+            if ($payment->getMode() != 'COD') {
                 $order->setState(Order::STATE_PROCESSING);
                 $order->setStatus(Order::STATE_PROCESSING);
                 $order->setCustomerNoteNotify(true);
                 $canProcessInvoice = true;
+                $transactionId = $this->processTransaction($order, $payment, $transaction);
             } else {
                 $newOrderStatus = $this->config->getNewOrderStatus();
                 $order->setState(Order::STATE_NEW);
                 $order->setStatus($newOrderStatus);
                 $canProcessInvoice = false;
             }
-
-            $transactionId = $this->processTransaction($order, $payment, $transaction);
 
             if ($transactionId and $canProcessInvoice) {
                 $this->invoiceOrder($order, $transactionId);
@@ -161,7 +166,7 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface {
 
         } catch (\Exception $e) {
 
-            $this->simplApi->alert($e->getMessage(), 'INFO', $e->getTraceAsString());
+            $this->alert->alert($e->getMessage(), 'ERROR', $e->getTraceAsString());
             return $this->orderConfirmResponse->setError($e->getCode(), $e->getMessage());
         }
 
