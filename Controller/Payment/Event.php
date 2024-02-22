@@ -84,44 +84,50 @@ class Event implements HttpPostActionInterface
 
         $event = $this->getParam('event');
         $payload = $this->getFingerprint();
-        $payload["user_details"] = $this->getUserDetails();
 
         switch ($event) {
             case "platform_checkout_pageview":
                 $payload["cart_details"] = $this->getCartDetails();
-                $this->simplApi->event("checkout_started",$payload,"platform_checkout_pageview");
+                $payload["user_details"] = $this->getUserDetails();
+                $this->simplApi->event("checkout_pageview",$payload,"merchant_page_events");
                 break;
 
             case "platform_payment_mode_selected":
                 $payload["cart_details"] = $this->getCartDetails();
+                $payload["user_details"] = $this->getUserDetails();
                 if ($this->checkoutSession->getQuote()->getPayment())
                     $payload["payment_mode_details"] = $this->checkoutSession->getQuote()->getPayment()->getData();
-                $this->simplApi->event("payment_selected",$payload,"platform_payment_mode_selected");
+                $this->simplApi->event("payment_info_submitted",$payload,"merchant_page_events");
                 break;
 
             case "platform_payment_address_update":
                 $payload["cart_details"] = $this->getCartDetails();
+                $payload["user_details"] = $this->getUserDetails();
                 if ($this->checkoutSession->getQuote()->getPayment())
                     $payload["payment_mode_details"] = $this->checkoutSession->getQuote()->getPayment()->getData();
-                $this->simplApi->event("address_updated",$payload,"platform_payment_address_update");
+                $this->simplApi->event("address_info_submitted",$payload,"merchant_page_events");
                 break;
 
             case "platform_payment_initiate":
                 $payload["cart_details"] = $this->getCartDetails();
+                $payload["user_details"] = $this->getUserDetails();
                 if ($this->checkoutSession->getQuote()->getPayment())
                     $payload["payment_mode_details"] = $this->checkoutSession->getQuote()->getPayment()->getData();
                 $payload["button_text"] = $this->getParam("button_text");
-                $this->simplApi->event("payment_initiated",$payload,"platform_payment_initiate");
+                $this->simplApi->event("payment_initiate",$payload,"merchant_page_events");
                 break;
 
             case "platform_order_confirm":
                 $payload["order_details"] = $this->getOrderDetails();
-                $this->simplApi->event("order_confirmed",$payload,"platform_order_confirm");
+                $payload["user_details"] = $this->getUserDetails(true);
+                $this->simplApi->event("order_confirm",$payload,"merchant_page_events");
                 break;
 
             case "platform_thankyou_pageview":
                 $payload["order_details"] = $this->getOrderDetails();
-                $this->simplApi->event("order_success",$payload,"platform_thankyou_pageview");
+                $payload["user_details"] = $this->getUserDetails(true);
+                $this->simplApi->event("order_confirm",$payload,"merchant_page_events");
+                $this->simplApi->event("thank_you_pageview",$payload,"merchant_page_events");
                 break;
         }
 
@@ -135,13 +141,29 @@ class Event implements HttpPostActionInterface
      * Function to get user details from session
      * @return array
      */
-    private function getUserDetails() {
+    private function getUserDetails($isOrder = false) {
 
         $userDetails["is_logged_in"] = false;
         if ($this->customerSession->isLoggedIn()) {
-
             $userDetails = $this->customerSession->getCustomer()->getData();
+            $userDetails["password_hash"] = null;
+            $userDetails["rp_token"] = null;
+            $userDetails["rp_token_created_at"] = null;
             $userDetails["is_logged_in"] = true;
+        }
+
+        if ($isOrder) {
+            $order = $this->checkoutSession->getLastRealOrder();
+            if ($order->getIsNotVirtual()) {
+                $userDetails["shipping_address"] = $order->getShippingAddress()->getData();
+            }
+            $userDetails["billing_address"] = $order->getBillingAddress()->getData();
+        } else {
+            $quote = $this->checkoutSession->getQuote();
+            if (!$quote->getIsVirtual()) {
+                $userDetails["shipping_address"] = $quote->getShippingAddress()->getData();
+            }
+            $userDetails["billing_address"] = $quote->getBillingAddress()->getData();
         }
 
         return $userDetails;
@@ -197,7 +219,7 @@ class Event implements HttpPostActionInterface
         $orderDetails = [];
 
         try {
-            $orderId = $this->getParam("order_id");
+            $orderId = $this->checkoutSession->getLastRealOrder()->getIncrementId();
             $order = $this->order->loadByIncrementId($orderId);
             $orderDetails = $order->getData();
             $itemsData = [];
@@ -206,6 +228,7 @@ class Event implements HttpPostActionInterface
                 $itemsData[] = $item->getData();
             }
             $orderDetails["items"] = $itemsData;
+            $orderDetails["payment_mode_details"] = $order->getPayment()->getData();
         } catch (\Exception $e) {
 
             $this->logger->error($e->getMessage());
