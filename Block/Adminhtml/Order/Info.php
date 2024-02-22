@@ -6,8 +6,9 @@ use Magento\Shipping\Helper\Data as ShippingHelper;
 use Magento\Tax\Helper\Data as TaxHelper;
 use Simpl\Checkout\Model\SimplFactory;
 use Simpl\Checkout\Model\ResourceModel\Simpl as SimplResource;
+use Magento\Sales\Block\Adminhtml\Order\View\Tab\Info as TabInfo;
 
-class Info extends \Magento\Sales\Block\Adminhtml\Order\View\Tab\Info
+class Info extends TabInfo
 {
     protected $simplFactory;
 
