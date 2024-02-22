@@ -6,6 +6,9 @@ var config = {
             },
             'Magento_Checkout/js/view/billing-address': {
                 'Simpl_Checkout/js/mixin/billing-address-mixin': true
+            },
+            'Magento_Checkout/js/action/place-order': {
+                'Simpl_Checkout/js/mixin/place-order-mixin': true
             }
         }
     }

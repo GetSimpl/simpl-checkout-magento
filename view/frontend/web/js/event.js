@@ -11,7 +11,7 @@ require(
     ) {
         'use strict';
         $(function() {
-            var eventUrl = url.build('simpl/payment/event')
+            var eventUrl = window.BASE_URL + 'simpl/payment/event';
             var eventType = "platform_checkout_pageview";
             const checkoutSuccessPage = /checkout\/onepage\/success/gm;
 
@@ -20,7 +20,8 @@ require(
             }
 
             var payload = JSON.stringify({
-                event: eventType
+                event: eventType,
+                page_url: window.location.href
                 }
             );
 

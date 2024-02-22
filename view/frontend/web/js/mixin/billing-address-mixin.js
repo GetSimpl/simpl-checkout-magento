@@ -14,7 +14,8 @@ define([
 
                 const eventUrl = url.build('simpl/payment/event');
                 const payload = JSON.stringify({
-                        event: "platform_payment_address_update"
+                        event: "platform_payment_address_update",
+                        page_url: window.location.href
                     }
                 );
                 storage.post(
