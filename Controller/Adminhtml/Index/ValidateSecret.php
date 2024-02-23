@@ -10,8 +10,10 @@ use Magento\Framework\View\Result\PageFactory;
 use Psr\Log\LoggerInterface;
 use Magento\Framework\App\RequestInterface;
 use Simpl\Checkout\Helper\SimplApi;
+use Simpl\Checkout\Helper\Alert;
 
-class ValidateSecret implements HttpPostActionInterface {
+class ValidateSecret implements HttpPostActionInterface
+{
 
     /**
      * @var PageFactory
@@ -40,12 +42,16 @@ class ValidateSecret implements HttpPostActionInterface {
 
     protected $simplApi;
 
+    protected $alert;
+
     /**
      * @param PageFactory $resultPageFactory
      * @param Json $json
      * @param LoggerInterface $logger
      * @param Http $http
      * @param RequestInterface $request
+     * @param SimplApi $simplApi
+     * @param Alert $alert
      */
     public function __construct(
         PageFactory $resultPageFactory,
@@ -53,7 +59,8 @@ class ValidateSecret implements HttpPostActionInterface {
         LoggerInterface $logger,
         Http $http,
         RequestInterface $request,
-        SimplApi $simplApi
+        SimplApi $simplApi,
+        Alert $alert
     ) {
         $this->resultPageFactory = $resultPageFactory;
         $this->serializer = $json;
@@ -61,23 +68,25 @@ class ValidateSecret implements HttpPostActionInterface {
         $this->http = $http;
         $this->request = $request;
         $this->simplApi = $simplApi;
+        $this->alert = $alert;
     }
 
     /**
      * Validate secret
      *
      */
-    public function execute() {
+    public function execute()
+    {
         try {
             $secret = $this->request->getParam('client_secret');
             $clientId = $this->request->getParam('client_id');
 
-            $response = $this->simplApi->install($secret,$clientId);
-
+            $response = $this->simplApi->install($secret, $clientId);
         } catch (LocalizedException $e) {
+            $this->alert->alert($e->getMessage(), 'ERROR', $e->getTraceAsString());
             $response = ['status'=> false, 'message'=>$e->getMessage()];
         } catch (\Exception $e) {
-            $this->logger->critical($e);
+            $this->alert->alert($e->getMessage(), 'CRITICAL', $e->getTraceAsString());
             $response = ['status'=> false, 'message'=>$e->getMessage()];
         }
         return $this->jsonResponse($response);
@@ -86,7 +95,8 @@ class ValidateSecret implements HttpPostActionInterface {
     /**
      * Create json response
      */
-    private function jsonResponse($response = '') {
+    private function jsonResponse($response = '')
+    {
         $this->http->getHeaders()->clearHeaders();
         $this->http->setHeader('Content-Type', 'application/json');
         return $this->http->setBody(
