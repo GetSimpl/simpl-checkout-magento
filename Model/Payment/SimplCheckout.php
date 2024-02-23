@@ -15,6 +15,7 @@ use Magento\Payment\Gateway\Config\ValueHandlerPoolInterface;
 use Magento\Payment\Gateway\Data\PaymentDataObjectFactory;
 use Magento\Payment\Gateway\Validator\ValidatorPoolInterface;
 use Magento\Payment\Model\InfoInterface;
+use Magento\Quote\Model\Quote;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Creditmemo;
 use Psr\Log\LoggerInterface;
@@ -24,7 +25,8 @@ use Magento\Quote\Api\Data\CartInterface;
 use Simpl\Checkout\Helper\SimplApi;
 use Magento\Sales\Model\Order\CreditmemoRepository;
 
-class SimplCheckout  extends Adapter {
+class SimplCheckout extends Adapter
+{
 
     protected $_code = "simplcheckout";
 
@@ -70,32 +72,63 @@ class SimplCheckout  extends Adapter {
     public function isAvailable(
         CartInterface $quote = null
     ) {
-        if (!$this->simplConfig->isEnabled())
+        if (!$this->simplConfig->isEnabled()) {
             return false;
+        }
+
+        if ($this->isVirtual($quote) and !$this->simplConfig->isVirtualProductEnabled()) {
+            return false;
+        }
 
         return parent::isAvailable($quote);
     }
 
-    public function capture(InfoInterface $payment, $amount) {
+    /**
+     * @param $quote
+     * @return bool
+     */
+    private function isVirtual($quote)
+    {
+
+        if ($quote->getIsVirtual()) {
+            return true;
+        }
+
+        $items = $quote->getAllItems();
+        foreach ($items as $item) {
+            if ($item->getIsVirtual()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function capture(InfoInterface $payment, $amount)
+    {
         return $this;
     }
 
-    public function refund(InfoInterface $payment, $amount) {
+    public function refund(InfoInterface $payment, $amount)
+    {
         $this->initRefund($payment, $amount);
         return $this;
     }
 
-    public function void(InfoInterface $payment) {
+    public function void(InfoInterface $payment)
+    {
         $this->cancel($payment);
         return $this;
     }
 
-    public function initRefund(InfoInterface $payment, $amount = null) {
+    public function initRefund(InfoInterface $payment, $amount = null)
+    {
         try {
-
             $order = $payment->getOrder();
             $creditmemo = $payment->getCreditmemo();
-            $orderId = $order->getIncrementId();
+            $creditmemo->setState(Creditmemo::STATE_OPEN);
+            $creditmemo = $this->creditmemoRepository->save($creditmemo);
+            $orderId = $order->getId();
+            $payment->setIsTransactionClosed(0);
 
             // Refund API request data
             $data["order_id"] = $orderId;
@@ -105,13 +138,9 @@ class SimplCheckout  extends Adapter {
             $data["credit_memo"]["status"] = "pending";
 
             // API to init refund
-            if(!$this->simplApi->initRefund($orderId, $data)) {
+            if (!$this->simplApi->initRefund($orderId, $data)) {
                 throw new \Exception('Error in API call');
             }
-
-            $creditmemo->setState(Creditmemo::STATE_OPEN);
-            $this->creditmemoRepository->save($creditmemo);
-
         } catch (\Exception $e) {
             throw new CouldNotSaveException(__('Refund can not be processed'));
         }
@@ -119,29 +148,27 @@ class SimplCheckout  extends Adapter {
         return $this;
     }
 
-    public function cancel(InfoInterface $payment, $amount = null) {
+    public function cancel(InfoInterface $payment, $amount = null)
+    {
         try {
             $order = $payment->getOrder();
-            $orderId = $order->getIncrementId();
+            $orderId = $order->getId();
             $data["order_id"] = $orderId;
             $data["currency"] = $order->getBaseCurrencyCode();
             $data["reason"] = "admin triggered cancel";
 
             // API to init cancel
-            if(!$this->simplApi->cancel($orderId, $data)) {
+            if (!$this->simplApi->cancel($orderId, $data)) {
                 throw new \Exception('Error in API call');
             }
 
             $order = $payment->getOrder();
             $order->setState(Order::STATE_CLOSED);
             $order->setStatus(Order::STATE_CLOSED);
-
         } catch (\Exception $e) {
-            throw new CouldNotSaveException(__('Can not cancel this order, Try again.'));
+            throw new CouldNotSaveException(__('Refund can not be processed'));
         }
 
         return $this;
     }
-
 }
-
