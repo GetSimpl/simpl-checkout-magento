@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Sales:etc/sales.xsd">
+
+    <section name="order_invoice">
+        <group name="totals">
+            <item name="simpl_additional_fields"
+                  instance="Simpl\Checkout\Model\Total\Invoice\SimplAdditionalFields"
+                  sort_order="159"/>
+        </group>
+    </section>
+    <section name="order_creditmemo">
+        <group name="totals">
+            <item name="simpl_additional_fields"
+                  instance="Simpl\Checkout\Model\Total\Creditmemo\SimplAdditionalFields"
+                  sort_order="161"/>
+        </group>
+    </section>
+</config>
