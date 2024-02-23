@@ -18,7 +18,7 @@ use Simpl\Checkout\Api\Data\OrderDataInterface;
 use Simpl\Checkout\Api\Data\CreditMemoDataInterface;
 use Simpl\Checkout\Model\Data\Order\OrderUpdateResponse;
 use Simpl\Checkout\Helper\Config;
-use Simpl\Checkout\Helper\Alert;
+use Simpl\Checkout\Logger\Logger;
 
 class OrderUpdateManagement implements OrderUpdateManagementInterface
 {
@@ -43,27 +43,27 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface
      */
     protected $simplApi;
 
-    protected $alert;
+    protected $logger;
 
     /**
      * @param OrderFactory $orderFactory
      * @param BuilderInterface $transactionBuilder
      * @param SimplApi $simplApi
      * @param OrderUpdateResponse $orderUpdateResponse
-     * @param Alert $alert
+     * @param Logger $logger
      */
     public function __construct(
         OrderFactory                     $orderFactory,
         BuilderInterface                 $transactionBuilder,
         SimplApi                         $simplApi,
         OrderUpdateResponse              $orderUpdateResponse,
-        Alert                            $alert
+        Logger                           $logger
     ) {
         $this->orderFactory = $orderFactory;
         $this->transactionBuilder = $transactionBuilder;
         $this->simplApi = $simplApi;
         $this->orderUpdateResponse = $orderUpdateResponse;
-        $this->alert = $alert;
+        $this->logger = $logger;
     }
 
     /**
@@ -175,7 +175,7 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface
         try {
             $this->updateTransaction($order, $payment, $transaction);
         } catch (\Exception $e) {
-            $this->alert->alert($e->getMessage(), 'ERROR', $e->getTraceAsString());
+            $this->logger->error($e->getMessage(),['stacktrace' => $e->getTraceAsString()]);
         }
 
         return $this->orderUpdateResponse->setMessage('updated successfully');

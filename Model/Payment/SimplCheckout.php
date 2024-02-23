@@ -80,6 +80,15 @@ class SimplCheckout extends Adapter
             return false;
         }
 
+        if ($this->simplConfig->getAllowedEmails()) {
+            $emails = explode(',', $this->simplConfig->getAllowedEmails());
+            $customerEmail = $quote->getCustomerEmail();
+            if (in_array($customerEmail, $emails, true)) {
+                return true;
+            }
+            return false;
+        }
+
         return parent::isAvailable($quote);
     }
 

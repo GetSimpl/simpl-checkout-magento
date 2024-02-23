@@ -7,10 +7,9 @@ use Magento\Framework\App\Response\Http;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\View\Result\PageFactory;
-use Psr\Log\LoggerInterface;
 use Magento\Framework\App\RequestInterface;
 use Simpl\Checkout\Helper\SimplApi;
-use Simpl\Checkout\Helper\Alert;
+use Simpl\Checkout\Logger\Logger;
 
 class ValidateSecret implements HttpPostActionInterface
 {
@@ -25,9 +24,6 @@ class ValidateSecret implements HttpPostActionInterface
      */
     protected $serializer;
 
-    /**
-     * @var LoggerInterface
-     */
     protected $logger;
 
     /**
@@ -42,25 +38,21 @@ class ValidateSecret implements HttpPostActionInterface
 
     protected $simplApi;
 
-    protected $alert;
-
     /**
      * @param PageFactory $resultPageFactory
      * @param Json $json
-     * @param LoggerInterface $logger
      * @param Http $http
      * @param RequestInterface $request
      * @param SimplApi $simplApi
-     * @param Alert $alert
+     * @param Logger $logger
      */
     public function __construct(
         PageFactory $resultPageFactory,
         Json $json,
-        LoggerInterface $logger,
         Http $http,
         RequestInterface $request,
         SimplApi $simplApi,
-        Alert $alert
+        Logger $logger
     ) {
         $this->resultPageFactory = $resultPageFactory;
         $this->serializer = $json;
@@ -68,7 +60,6 @@ class ValidateSecret implements HttpPostActionInterface
         $this->http = $http;
         $this->request = $request;
         $this->simplApi = $simplApi;
-        $this->alert = $alert;
     }
 
     /**
@@ -83,10 +74,10 @@ class ValidateSecret implements HttpPostActionInterface
 
             $response = $this->simplApi->install($secret, $clientId);
         } catch (LocalizedException $e) {
-            $this->alert->alert($e->getMessage(), 'ERROR', $e->getTraceAsString());
+            $this->logger->error($e->getMessage(),['stacktrace' => $e->getTraceAsString()]);
             $response = ['status'=> false, 'message'=>$e->getMessage()];
         } catch (\Exception $e) {
-            $this->alert->alert($e->getMessage(), 'CRITICAL', $e->getTraceAsString());
+            $this->logger->error($e->getMessage(),['stacktrace' => $e->getTraceAsString()]);
             $response = ['status'=> false, 'message'=>$e->getMessage()];
         }
         return $this->jsonResponse($response);

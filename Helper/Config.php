@@ -20,6 +20,7 @@ class Config extends AbstractHelper
     const KEY_TEST_SECRET = 'test_secret';
     const KEY_LIVE_SECRET = 'live_secret';
     const KEY_TITLE = 'title';
+    const KEY_ALLOWED_EMAILS = 'allowed_emails';
     const KEY_BUTTON_LABEL = 'place_order_button_label';
     const KEY_ORDER_STATUS = 'order_status';
     const KEY_TITLE_FRONTEND = 'title_for_frontend';
@@ -127,6 +128,16 @@ class Config extends AbstractHelper
     public function getTitle()
     {
         return $this->getSimplConfig(self::KEY_TITLE);
+    }
+
+    /**
+     * Get Title
+     *
+     * @return string
+     */
+    public function getAllowedEmails()
+    {
+        return $this->getSimplConfig(self::KEY_ALLOWED_EMAILS);
     }
 
     /**

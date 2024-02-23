@@ -5,7 +5,7 @@ namespace Simpl\Checkout\Model;
 use Magento\Sales\Api\CreditmemoRepositoryInterface;
 use Simpl\Checkout\Api\CreditMemoDetailsInterface;
 use Simpl\Checkout\Model\Data\GetCreditmemoResponse;
-use Simpl\Checkout\Helper\Alert;
+use Simpl\Checkout\Logger\Logger;
 
 class GetCreditMemoDetails implements CreditMemoDetailsInterface
 {
@@ -20,21 +20,21 @@ class GetCreditMemoDetails implements CreditMemoDetailsInterface
      */
     protected $getCreditmemoResponse;
 
-    protected $alert;
+    protected $logger;
 
     /**
      * @param CreditmemoRepositoryInterface $creditmemoRepository
      * @param GetCreditmemoResponse $getCreditmemoResponse
-     * @param Alert $alert
+     * @param Logger $logger
      */
     public function __construct(
         CreditmemoRepositoryInterface $creditmemoRepository,
         GetCreditmemoResponse $getCreditmemoResponse,
-        Alert $alert
+        Logger $logger
     ) {
         $this->creditmemoRepository = $creditmemoRepository;
         $this->getCreditmemoResponse = $getCreditmemoResponse;
-        $this->alert = $alert;
+        $this->logger = $logger;
     }
 
     /**
@@ -46,7 +46,7 @@ class GetCreditMemoDetails implements CreditMemoDetailsInterface
             $creditMemo = $this->creditmemoRepository->get($creditMemoId);
             return $this->getCreditmemoResponse->setCreditMemo($creditMemo);
         } catch (\Exception $e) {
-            $this->alert->alert($e->getMessage(), 'ERROR', $e->getTraceAsString());
+            $this->logger->error($e->getMessage(),['stacktrace' => $e->getTraceAsString()]);
             return $this->getCreditmemoResponse->creditMemoNotFoundError();
         }
     }

@@ -19,7 +19,6 @@ use Simpl\Checkout\Api\Data\Order\PaymentDataInterface;
 use Simpl\Checkout\Api\Data\Order\TransactionDataInterface;
 use Simpl\Checkout\Api\Data\OrderDataInterface;
 use Simpl\Checkout\Api\OrderConfirmManagementInterface;
-use Simpl\Checkout\Helper\Alert;
 use Simpl\Checkout\Helper\Config;
 use Simpl\Checkout\Helper\SimplApi;
 use Simpl\Checkout\Logger\Logger;
@@ -66,8 +65,6 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
 
     protected $config;
 
-    protected $alert;
-
     protected $logger;
 
     protected $simplFactory;
@@ -89,7 +86,6 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
      * @param CreditMemoDataInterface $creditMemoData
      * @param OrderConfirmResponse $orderConfirmResponse
      * @param Config $config
-     * @param Alert $alert
      * @param Logger $logger
      * @param SimplFactory $simplFactory
      * @param SimplResource $simplResource
@@ -108,7 +104,6 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
         CreditMemoDataInterface          $creditMemoData,
         OrderConfirmResponse             $orderConfirmResponse,
         Config                           $config,
-        Alert                            $alert,
         Logger                           $logger,
         SimplFactory                     $simplFactory,
         SimplResource                    $simplResource,
@@ -126,7 +121,6 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
         $this->creditMemoData = $creditMemoData;
         $this->orderConfirmResponse = $orderConfirmResponse;
         $this->config = $config;
-        $this->alert = $alert;
         $this->logger = $logger;
         $this->simplFactory = $simplFactory;
         $this->simplResource = $simplResource;
@@ -227,7 +221,7 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
                 $order->save();
             }
         } catch (\Exception $e) {
-            $this->alert->alert($e->getMessage(), 'ERROR', $e->getTraceAsString());
+            $this->logger->error($e->getMessage(),['stacktrace' => $e->getTraceAsString()]);
             return $this->orderConfirmResponse->setError($e->getCode(), $e->getMessage());
         }
 

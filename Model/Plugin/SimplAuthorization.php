@@ -66,7 +66,8 @@ class SimplAuthorization
             try {
                 return $this->authHelper->validateSignature($clientId, $nonce, $signature);
             } catch (\Exception $e) {
-                $this->logger->error('Exception in API Authorization: ' . $e->getMessage());
+                $this->logger->error('Exception in API Authorization: ' . $e->getMessage(),
+                    ['stacktrace' => $e->getTraceAsString()]);
                 return $proceed($resource, $privilege);
             }
         } else {

@@ -73,6 +73,10 @@
                     <label>Enable For Virtual Product</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="allowed_emails" type="text" sortOrder="90" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                    <label>Allowed Customer Emails (comma separated)</label>
+                    <comment><![CDATA[Leave empty to enable for all customers.]]></comment>
+                </field>
                 <field id="logging" type="select" sortOrder="999" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
                     <label>Enabled Logging</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>

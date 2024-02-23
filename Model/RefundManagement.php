@@ -11,7 +11,7 @@ use Magento\Sales\Api\Data\TransactionSearchResultInterfaceFactory;
 use Simpl\Checkout\Model\Data\RefundConfirmResponse;
 use Simpl\Checkout\Api\RefundManagementInterface;
 use Simpl\Checkout\Helper\SimplApi;
-use Simpl\Checkout\Helper\Alert;
+use Simpl\Checkout\Logger\Logger;
 
 class RefundManagement implements RefundManagementInterface
 {
@@ -26,7 +26,7 @@ class RefundManagement implements RefundManagementInterface
 
     protected $simplApi;
 
-    protected $alert;
+    protected $logger;
 
     protected $transactionRepository;
 
@@ -38,7 +38,7 @@ class RefundManagement implements RefundManagementInterface
      * @param CreditmemoRepository $creditmemoRepository
      * @param CreditmemoCommentInterface $creditmemoComment
      * @param SimplApi $simplApi
-     * @param Alert $alert
+     * @param Logger $logger
      * @param TransactionRepositoryInterface $transactionRepository
      * @param TransactionSearchResultInterfaceFactory $transactionSearchResultInterfaceFactory
      */
@@ -48,7 +48,7 @@ class RefundManagement implements RefundManagementInterface
         CreditmemoRepository    $creditmemoRepository,
         CreditmemoCommentInterface  $creditmemoComment,
         SimplApi    $simplApi,
-        Alert $alert,
+        Logger $logger,
         TransactionRepositoryInterface $transactionRepository,
         TransactionSearchResultInterfaceFactory $transactionSearchResultInterfaceFactory
     ) {
@@ -57,7 +57,7 @@ class RefundManagement implements RefundManagementInterface
         $this->creditmemoRepository = $creditmemoRepository;
         $this->creditmemoComment = $creditmemoComment;
         $this->simplApi = $simplApi;
-        $this->alert = $alert;
+        $this->logger = $logger;
         $this->transactionRepository = $transactionRepository;
         $this->transactionSearchResultInterfaceFactory = $transactionSearchResultInterfaceFactory;
     }
@@ -111,7 +111,7 @@ class RefundManagement implements RefundManagementInterface
             $this->creditmemoRepository->save($creditMemo);
             $this->orderRepository->save($order);
         } catch (\Exception $e) {
-            $this->alert->alert($e->getMessage(), 'ERROR', $e->getTraceAsString());
+            $this->logger->error($e->getMessage(),['stacktrace' => $e->getTraceAsString()]);
             return $this->refundConfirmResponse->setError('error_request', $e->getMessage());
         }
 
