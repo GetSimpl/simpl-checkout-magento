@@ -8,7 +8,7 @@ use Simpl\Checkout\Api\Data\ErrorDataInterface;
 use Simpl\Checkout\Api\Data\ApiDataInterface;
 use Simpl\Checkout\Api\Data\MessageDataInterface;
 
-class OrderConfirmResponse
+class OrderUpdateResponse
 {
     /**
      * @var ApiDataInterface
@@ -56,24 +56,13 @@ class OrderConfirmResponse
     }
 
     /**
-     * @param $url
-     * @return OrderConfirmSuccessDataInterface
-     */
-    public function setRedirectionURL($url)
-    {
-        $this->orderConfirmSuccessData->setSuccess(true);
-        $this->redirectionUrlData->setRedirectionUrl($url);
-        $this->orderConfirmSuccessData->setData($this->redirectionUrlData);
-        return $this->orderConfirmSuccessData;
-    }
-
-    /**
      * @param $code
      * @param $message
      * @return OrderConfirmSuccessDataInterface
      */
     public function setError($code, $message)
     {
+
         $this->orderConfirmSuccessData->setSuccess(false);
         $this->errorData->setCode($code);
         $this->errorData->setMessage($message);
@@ -87,6 +76,7 @@ class OrderConfirmResponse
      */
     public function setMessage($message)
     {
+
         $this->apiData->setSuccess(true);
         $this->messageData->setMessage($message);
         $this->apiData->setData($this->messageData);

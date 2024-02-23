@@ -1,11 +1,8 @@
 <?php
 
-namespace Simpl\Checkout\Model\Data\Order;
+namespace Simpl\Checkout\Model\Data;
 
-use Simpl\Checkout\Api\Data\Order\OrderConfirmSuccessDataInterface;
-use Simpl\Checkout\Model\Data\ApiResponseData;
-
-class OrderConfirmSuccessData extends ApiResponseData implements OrderConfirmSuccessDataInterface
+class CreditMemoData extends ApiResponseData implements \Simpl\Checkout\Api\Data\CreditMemoDataInterface
 {
 
     private $data;

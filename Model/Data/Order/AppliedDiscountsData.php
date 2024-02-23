@@ -15,14 +15,16 @@ class AppliedDiscountsData implements AppliedDiscountsDataInterface
     /**
      * @inheritDoc
      */
-    public function getTitle() {
+    public function getTitle()
+    {
         return $this->title;
     }
 
     /**
      * @inheritDoc
      */
-    public function setTitle($title) {
+    public function setTitle($title)
+    {
         $this->title = $title;
         return $this;
     }
@@ -30,14 +32,16 @@ class AppliedDiscountsData implements AppliedDiscountsDataInterface
     /**
      * @inheritDoc
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
     /**
      * @inheritDoc
      */
-    public function setDescription($description) {
+    public function setDescription($description)
+    {
         $this->description = $description;
         return $this;
     }
@@ -45,14 +49,16 @@ class AppliedDiscountsData implements AppliedDiscountsDataInterface
     /**
      * @inheritDoc
      */
-    public function getDiscountType() {
+    public function getDiscountType()
+    {
         return $this->discountType;
     }
 
     /**
      * @inheritDoc
      */
-    public function setDiscountType($discountType) {
+    public function setDiscountType($discountType)
+    {
         $this->discountType = $discountType;
         return $this;
     }
@@ -60,14 +66,16 @@ class AppliedDiscountsData implements AppliedDiscountsDataInterface
     /**
      * @inheritDoc
      */
-    public function getDiscountCampaignId() {
+    public function getDiscountCampaignId()
+    {
         return $this->discountCampaignId;
     }
 
     /**
      * @inheritDoc
      */
-    public function setDiscountCampaignId($discountCampaignId) {
+    public function setDiscountCampaignId($discountCampaignId)
+    {
         $this->discountCampaignId = $discountCampaignId;
         return $this;
     }
@@ -75,15 +83,17 @@ class AppliedDiscountsData implements AppliedDiscountsDataInterface
     /**
      * @inheritDoc
      */
-    public function getDiscountAmountInPaise() {
+    public function getAmount()
+    {
         return $this->discountAmountInPaise;
     }
 
     /**
      * @inheritDoc
      */
-    public function setDiscountAmountInPaise($discountAmount) {
-        $this->discountAmountInPaise = $discountAmount;
+    public function setAmount($amount)
+    {
+        $this->discountAmountInPaise = $amount;
         return $this;
     }
 }

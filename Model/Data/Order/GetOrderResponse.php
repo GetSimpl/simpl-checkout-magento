@@ -33,8 +33,8 @@ class GetOrderResponse
      * @param $order
      * @return OrderDataInterface
      */
-    public function setOrder($order) {
-
+    public function setOrder($order)
+    {
         $this->orderData->setData($order);
         $this->orderData->setSuccess(true);
         return $this->orderData;
@@ -43,8 +43,8 @@ class GetOrderResponse
     /**
      * @return OrderDataInterface
      */
-    public function orderNotFoundError() {
-
+    public function orderNotFoundError()
+    {
         $this->orderData->setSuccess(false);
         $this->errorData->setCode("order_not_found");
         $this->errorData->setMessage("Order not found");

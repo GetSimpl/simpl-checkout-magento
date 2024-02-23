@@ -3,8 +3,10 @@
 namespace Simpl\Checkout\Model\Data;
 
 use Simpl\Checkout\Api\Data\ApiResponseDataInterface;
+use Magento\Framework\Webapi\Rest\Response;
 
-class ApiResponseData implements ApiResponseDataInterface {
+class ApiResponseData implements ApiResponseDataInterface
+{
 
     private $success;
     private $version;
@@ -13,21 +15,28 @@ class ApiResponseData implements ApiResponseDataInterface {
 
     const VERSION = '1.0.0';
 
-    public function __construct() {
+    protected $response;
+
+    public function __construct(
+        Response $response
+    ) {
+        $this->response = $response;
         $this->success = false;
     }
 
     /**
      * @inheritDoc
      */
-    public function getSuccess() {
+    public function getSuccess()
+    {
         return $this->success;
     }
 
     /**
      * @inheritDoc
      */
-    public function setSuccess($success) {
+    public function setSuccess($success)
+    {
         $this->success = $success;
         return $this;
     }
@@ -35,7 +44,8 @@ class ApiResponseData implements ApiResponseDataInterface {
     /**
      * @inheritDoc
      */
-    public function getVersion() {
+    public function getVersion()
+    {
         if ($this->version) {
             return $this->version;
         }
@@ -45,7 +55,8 @@ class ApiResponseData implements ApiResponseDataInterface {
     /**
      * @inheritDoc
      */
-    public function setVersion($version) {
+    public function setVersion($version)
+    {
         $this->version = $version;
         return $this;
     }
@@ -53,29 +64,35 @@ class ApiResponseData implements ApiResponseDataInterface {
     /**
      * @inheritDoc
      */
-    public function getError() {
+    public function getError()
+    {
         return $this->error;
     }
 
     /**
      * @inheritDoc
      */
-    public function setError($error) {
+    public function setError($error)
+    {
         $this->error = $error;
+        $this->response->setStatusHeader(500, '1.1', 'Server Error');
+        $this->response->setHeader('Status', '500 Server Error');
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function getData() {
+    public function getData()
+    {
         return $this->data;
     }
 
     /**
      * @inheritDoc
      */
-    public function setData($data) {
+    public function setData($data)
+    {
         $this->data = $data;
         return $this;
     }
