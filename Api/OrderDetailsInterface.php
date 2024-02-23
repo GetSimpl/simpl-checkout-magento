@@ -4,7 +4,8 @@ namespace Simpl\Checkout\Api;
 
 use Simpl\Checkout\Api\Data\OrderDataInterface;
 
-interface OrderDetailsInterface {
+interface OrderDetailsInterface
+{
 
     /**
      * @param string $orderId

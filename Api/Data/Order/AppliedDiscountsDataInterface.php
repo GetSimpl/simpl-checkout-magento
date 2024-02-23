@@ -65,17 +65,17 @@ interface AppliedDiscountsDataInterface
     public function setDiscountCampaignId($discountCampaignId);
 
     /**
-     * Get discount amount in paise
+     * Get discount amount
      *
      * @return string|null
      */
-    public function getDiscountAmountInPaise();
+    public function getAmount();
 
     /**
-     * Set discount amount in paise
+     * Set discount amount
      *
      * @param string $discountAmount
      * @return $this
      */
-    public function setDiscountAmountInPaise($discountAmount);
+    public function setAmount($discountAmount);
 }

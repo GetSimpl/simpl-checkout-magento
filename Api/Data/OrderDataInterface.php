@@ -2,19 +2,19 @@
 
 namespace Simpl\Checkout\Api\Data;
 
-interface ApiDataInterface extends ApiResponseDataInterface
+interface OrderDataInterface extends ApiResponseDataInterface
 {
     /**
      * Get Data
      *
-     * @return \Simpl\Checkout\Api\Data\MessageDataInterface|null
+     * @return \Magento\Sales\Api\Data\OrderInterface
      */
     public function getData();
 
     /**
      * Set Data
      *
-     * @param \Simpl\Checkout\Api\Data\MessageDataInterface $data
+     * @param \Magento\Sales\Api\Data\OrderInterface $data
      * @return $this
      */
     public function setData($data);

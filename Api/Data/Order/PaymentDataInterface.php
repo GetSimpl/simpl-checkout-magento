@@ -48,4 +48,34 @@ interface PaymentDataInterface
      * @return $this
      */
     public function setMethod($method);
+
+    /**
+     * Get method
+     *
+     * @return string|null
+     */
+    public function getGrandTotal();
+
+    /**
+     * Set method
+     *
+     * @param string $grandTotal
+     * @return $this
+     */
+    public function setGrandTotal($grandTotal);
+
+    /**
+     * Get method
+     *
+     * @return string|null
+     */
+    public function getTotalPaid();
+
+    /**
+     * Set method
+     *
+     * @param string $totalPaid
+     * @return $this
+     */
+    public function setTotalPaid($totalPaid);
 }
