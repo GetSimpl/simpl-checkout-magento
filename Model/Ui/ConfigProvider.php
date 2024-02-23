@@ -5,7 +5,8 @@ namespace Simpl\Checkout\Model\Ui;
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Simpl\Checkout\Helper\Config;
 
-class ConfigProvider  implements ConfigProviderInterface {
+class ConfigProvider implements ConfigProviderInterface
+{
 
     const CODE = 'simplcheckout';
 
@@ -23,14 +24,16 @@ class ConfigProvider  implements ConfigProviderInterface {
     /**
      * @return string[][][]
      */
-    public function getConfig() {
+    public function getConfig()
+    {
         $data = [];
 
         $data = [
             'payment' => [
                 self::CODE => [
                     'instructions' => $this->config->getInstructions(),
-                    'title_for_frontend' => $this->config->getTitleForFrontend()
+                    'title_for_frontend' => $this->config->getTitleForFrontend(),
+                    'button_label' => $this->config->getButtonLabel()
                 ]
             ]
         ];
