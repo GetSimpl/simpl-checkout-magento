@@ -78,7 +78,10 @@ class Order
     {
         try {
             $data = $order->getData();
-            $data["checkout_url"] = $this->url->getUrl('simpl/cart/restore');
+            $data["checkout_url"] = $this->url->getUrl(
+                'simpl/cart/restore',
+                ['id' => $order->getQuoteId()]
+            );
 
             if ($order->getIsNotVirtual()) {
                 $data["shipping_address"] = $order->getShippingAddress()->getData();

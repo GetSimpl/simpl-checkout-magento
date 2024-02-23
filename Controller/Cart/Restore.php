@@ -12,6 +12,8 @@ use Magento\Framework\Message\ManagerInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
+use Magento\Framework\App\Request\Http;
+use Simpl\Checkout\Logger\Logger;
 
 class Restore implements HttpGetActionInterface
 {
@@ -25,25 +27,35 @@ class Restore implements HttpGetActionInterface
 
     protected $quoteRepository;
 
+    protected $httpRequest;
+
+    protected $logger;
+
     /**
      * @param CheckoutSession $checkoutSession
      * @param ManagerInterface $manager
      * @param OrderRepositoryInterface $orderRepository
      * @param RedirectFactory $resultRedirectFactory
      * @param CartRepositoryInterface $quoteRepository
+     * @param Http $httpRequest
+     * @param Logger $logger
      */
     public function __construct(
         CheckoutSession $checkoutSession,
         ManagerInterface $manager,
         OrderRepositoryInterface $orderRepository,
         RedirectFactory $resultRedirectFactory,
-        CartRepositoryInterface $quoteRepository
+        CartRepositoryInterface $quoteRepository,
+        Http $httpRequest,
+        Logger $logger
     ) {
         $this->checkoutSession = $checkoutSession;
         $this->manager = $manager;
         $this->orderRepository = $orderRepository;
         $this->resultRedirectFactory = $resultRedirectFactory;
         $this->quoteRepository = $quoteRepository;
+        $this->httpRequest = $httpRequest;
+        $this->logger = $logger;
     }
 
     /**
@@ -56,17 +68,19 @@ class Restore implements HttpGetActionInterface
     {
         try {
             // Cancel the last order
-            $order = $this->checkoutSession->getLastRealOrder();
+            $id = $this->httpRequest->getParam('id');
+            $quote = $this->quoteRepository->get($id);
+            $order = $this->orderRepository->get($quote->getOrigOrderId());
             $order->setState(Order::STATE_CANCELED);
             $order->setStatus(Order::STATE_CANCELED);
             $this->orderRepository->save($order);
 
             // Restore the quote
-            $quote = $this->quoteRepository->get($order->getQuoteId());
             $quote->setIsActive(true);
             $this->quoteRepository->save($quote);
             $this->checkoutSession->replaceQuote($quote);
         } catch (\Exception $e) {
+            $this->logger->error($e->getMessage(), ['stacktrace' => $e->getTraceAsString()]);
         }
         $this->manager->addWarningMessage(__("We saw you were about to order. Let's give it another go."));
         $redirect = $this->resultRedirectFactory->create();
