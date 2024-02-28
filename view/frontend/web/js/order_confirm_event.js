@@ -12,11 +12,11 @@ require(
         'use strict';
         $(function() {
             var eventUrl = window.BASE_URL + 'simpl/payment/event';
-            var eventType = "platform_checkout_pageview";
+            var eventType = "checkout_pageview";
             const checkoutSuccessPage = /checkout\/onepage\/success/gm;
 
             if ((checkoutSuccessPage.exec(window.location.href)) !== null) {
-                eventType = "platform_thankyou_pageview";
+                eventType = "thank_you_pageview";
             }
 
             var payload = JSON.stringify({

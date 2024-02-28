@@ -15,7 +15,7 @@ define(
 
                 const eventUrl = url.build('simpl/payment/event');
                 const payload = JSON.stringify({
-                        event: "platform_payment_mode_selected",
+                        event: "payment_info_submitted",
                         page_url: window.location.href
                     }
                 );
