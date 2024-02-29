@@ -84,9 +84,9 @@ class Order
             );
             $this->logger->info('ORDER QUOTE ID: ' . $order->getQuoteId());
             $this->logger->info('checkout_url: ' . $this->url->getUrl(
-                    'simpl/cart/restore',
-                    ['id' => $order->getQuoteId()]
-                ));
+                'simpl/cart/restore',
+                ['id' => $order->getQuoteId()]
+            ));
 
             if ($order->getIsNotVirtual()) {
                 $data["shipping_address"] = $order->getShippingAddress()->getData();
