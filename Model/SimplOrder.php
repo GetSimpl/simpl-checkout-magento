@@ -3,14 +3,14 @@
 namespace Simpl\Checkout\Model;
 
 use Magento\Framework\Model\AbstractModel;
-use Simpl\Checkout\Model\ResourceModel\Simpl as ResourceModel;
+use Simpl\Checkout\Model\ResourceModel\SimplOrder as ResourceModel;
 
-class Simpl extends AbstractModel
+class SimplOrder extends AbstractModel
 {
     /**
      * @var string
      */
-    protected $_eventPrefix = 'simpl_checkout_model';
+    protected $_eventPrefix = 'simpl_order_details_model';
 
     /**
      * Initialize magento model.

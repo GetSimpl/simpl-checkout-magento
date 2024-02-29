@@ -1,17 +1,17 @@
 <?php
 
-namespace Simpl\Checkout\Model\ResourceModel\Simpl;
+namespace Simpl\Checkout\Model\ResourceModel\SimplOrder;
 
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
-use Simpl\Checkout\Model\ResourceModel\Simpl as ResourceModel;
-use Simpl\Checkout\Model\Simpl as Model;
+use Simpl\Checkout\Model\ResourceModel\SimplOrder as ResourceModel;
+use Simpl\Checkout\Model\SimplOrder as Model;
 
 class Collection extends AbstractCollection
 {
     /**
      * @var string
      */
-    protected $_eventPrefix = 'simpl_checkout_collection';
+    protected $_eventPrefix = 'simpl_order_details_collection';
 
     /**
      * Initialize collection model.

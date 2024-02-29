@@ -2,15 +2,15 @@
 
 namespace Simpl\Checkout\Model\CronJob;
 
-use Magento\Framework\App\ObjectManager;
 use Magento\Sales\Api\OrderManagementInterface;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
 use Simpl\Checkout\Helper\Config;
+use Magento\Sales\Model\Order;
 
 /**
  * Class that provides functionality of cleaning expired quotes by cron
  */
-class UpdateOrders
+class ReconOrders
 {
     /**
      * @var Config
@@ -30,16 +30,16 @@ class UpdateOrders
     /**
      * @param Config $config
      * @param CollectionFactory $collectionFactory
-     * @param OrderManagementInterface|null $orderManagement
+     * @param OrderManagementInterface $orderManagement
      */
     public function __construct(
         Config $config,
         CollectionFactory $collectionFactory,
-        OrderManagementInterface $orderManagement = null
+        OrderManagementInterface $orderManagement
     ) {
         $this->config = $config;
         $this->orderCollectionFactory = $collectionFactory;
-        $this->orderManagement = $orderManagement ?: ObjectManager::getInstance()->get(OrderManagementInterface::class);
+        $this->orderManagement = $orderManagement;
     }
 
     /**
@@ -50,7 +50,7 @@ class UpdateOrders
     public function execute()
     {
         $lifetime = $this->config::PENDING_ORDER_LIFE_TIME;
-        $newOrderStatus = $this->config->getNewOrderStatus();
+        $newOrderState = Order::STATE_NEW;
         $orders = $this->orderCollectionFactory->create();
         $orders->getSelect()->joinLeft(
             ['payment' => 'sales_order_payment'],
@@ -58,16 +58,16 @@ class UpdateOrders
             'method'
         );
         $orders->getSelect()->joinLeft(
-            ['simpl' => 'simpl_checkout'],
-            'main_table.entity_id = simpl.order_id',
+            ['simpl_order' => 'simpl_order_details'],
+            'main_table.entity_id = simpl_order.order_id',
             'payment_method'
         );
-        $orders->addFieldToFilter('main_table.status', $newOrderStatus);
+        $orders->addFieldToFilter('main_table.state', $newOrderState);
         $orders->addFieldToFilter('payment.method', $this->config::KEY_PAYMENT_CODE);
         $orders->getSelect()->where(
             new \Zend_Db_Expr('TIME_TO_SEC(TIMEDIFF(CURRENT_TIMESTAMP, `updated_at`)) >= ' . $lifetime * 60)
         );
-        $orders->getSelect()->where('simpl.payment_method IS NULL');
+        $orders->getSelect()->where('simpl_order.payment_method IS NULL');
 
         foreach ($orders->getAllIds() as $entityId) {
             $this->orderManagement->cancel((int) $entityId);

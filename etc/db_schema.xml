@@ -1,9 +1,9 @@
 <?xml version="1.0" ?>
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
-    <table name="simpl_checkout" resource="default" engine="innodb" comment="Simpl Checkout">
+    <table name="simpl_order_details" resource="default" engine="innodb" comment="Simpl Checkout">
         <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true"/>
         <column xsi:type="int" name="order_id" padding="10" unsigned="true" nullable="false"/>
-        <column xsi:type="varchar" name="status" nullable="true" length="32"/>
+        <column xsi:type="varchar" name="payment_status" nullable="true" length="32"/>
         <column xsi:type="varchar" name="transaction_id" nullable="true" length="255"/>
         <column xsi:type="varchar" name="payment_method" nullable="true" length="255"/>
         <column xsi:type="text" name="additional_details" nullable="true"/>
