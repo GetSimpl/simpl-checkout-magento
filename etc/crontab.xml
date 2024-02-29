@@ -7,7 +7,7 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
     <group id="default">
-        <job name="simpl_checkout_update_order" instance="Simpl\Checkout\Model\CronJob\UpdateOrders" method="execute">
+        <job name="simpl_checkout_recon_order" instance="Simpl\Checkout\Model\CronJob\ReconOrders" method="execute">
             <schedule>0 * * * *</schedule>
         </job>
     </group>
