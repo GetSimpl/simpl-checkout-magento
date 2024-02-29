@@ -16,7 +16,7 @@ class AddSimplFieldsToTotalsBlock
             return $order;
         }
 
-        if ($subject->getTotal(SimplAdditionalFields::SIMPL_DISCOUNT) !== false or
+        if ($subject->getTotal(SimplAdditionalFields::SIMPL_DISCOUNT) !== false and
             $subject->getTotal(SimplAdditionalFields::SIMPL_CHARGES) !== false
         ) {
             return $order;
