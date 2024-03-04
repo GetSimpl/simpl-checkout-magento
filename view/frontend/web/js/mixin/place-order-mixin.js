@@ -10,7 +10,7 @@ define([
 
             const eventUrl = url.build('simpl/payment/event');
             const payload = JSON.stringify({
-                    event: "platform_payment_initiate",
+                    event: "payment_initiate",
                     button_text: paymentData.method,
                     page_url: window.location.href
                 }
