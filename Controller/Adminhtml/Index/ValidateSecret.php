@@ -69,17 +69,20 @@ class ValidateSecret implements HttpPostActionInterface
     public function execute()
     {
         try {
+
             $secret = $this->request->getParam('client_secret');
             $clientId = $this->request->getParam('client_id');
-
             $response = $this->simplApi->install($secret, $clientId);
         } catch (LocalizedException $e) {
-            $this->logger->error($e->getMessage(),['stacktrace' => $e->getTraceAsString()]);
-            $response = ['status'=> false, 'message'=>$e->getMessage()];
+
+            $this->logger->error($e->getMessage(), ['stacktrace' => $e->getTraceAsString()]);
+            $response = ['status'=> false, 'message' => 'Invalid Secret Key'];
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(),['stacktrace' => $e->getTraceAsString()]);
-            $response = ['status'=> false, 'message'=>$e->getMessage()];
+
+            $this->logger->error($e->getMessage(), ['stacktrace' => $e->getTraceAsString()]);
+            $response = ['status'=> false, 'message' => 'Error In Registering Secret Key'];
         }
+
         return $this->jsonResponse($response);
     }
 
@@ -88,6 +91,7 @@ class ValidateSecret implements HttpPostActionInterface
      */
     private function jsonResponse($response = '')
     {
+
         $this->http->getHeaders()->clearHeaders();
         $this->http->setHeader('Content-Type', 'application/json');
         return $this->http->setBody(

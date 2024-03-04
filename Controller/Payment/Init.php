@@ -25,8 +25,6 @@ class Init implements HttpGetActionInterface
      */
     protected $simplApi;
 
-    protected $request;
-
     /**
      * JsonResponse constructor.
      * @param JsonFactory $jsonFactory
@@ -48,6 +46,7 @@ class Init implements HttpGetActionInterface
      */
     public function execute()
     {
+
         $data = ['status' => 'error'];
         $request = $this->order->getCurrentOrder();
         $redirectionURL = $this->simplApi->initPayment($request);

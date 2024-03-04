@@ -10,7 +10,7 @@ class AppliedDiscountsData implements AppliedDiscountsDataInterface
     private $description;
     private $discountType;
     private $discountCampaignId;
-    private $discountAmountInPaise;
+    private $amount;
 
     /**
      * @inheritDoc
@@ -85,7 +85,7 @@ class AppliedDiscountsData implements AppliedDiscountsDataInterface
      */
     public function getAmount()
     {
-        return $this->discountAmountInPaise;
+        return $this->amount;
     }
 
     /**
@@ -93,7 +93,7 @@ class AppliedDiscountsData implements AppliedDiscountsDataInterface
      */
     public function setAmount($amount)
     {
-        $this->discountAmountInPaise = $amount;
+        $this->amount = $amount;
         return $this;
     }
 }

@@ -21,7 +21,7 @@
                 <field id="test_secret" translate="label" type="obscure" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Test Client Secret</label>
                     <comment>
-                        <![CDATA[<a target="_blank" rel="noopener noreferrer" href="https://www.getsimpl.com/">Your Simpl Account</a> &gt; Test Secret]]>
+                        <![CDATA[<a target="_blank" rel="noopener noreferrer" href="https://merchants.getsimpl.com/">Your Simpl Account</a> &gt; Test Secret]]>
                     </comment>
                     <depends>
                         <field id="mode">test</field>
@@ -31,7 +31,7 @@
                 <field id="live_secret" translate="label" type="obscure" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Live Client Secret</label>
                     <comment>
-                        <![CDATA[<a target="_blank" rel="noopener noreferrer" href="https://www.getsimpl.com/">Your Simpl Account</a> &gt; Live Secret]]>
+                        <![CDATA[<a target="_blank" rel="noopener noreferrer" href="https://merchants.getsimpl.com/">Your Simpl Account</a> &gt; Live Secret]]>
                     </comment>
                     <depends>
                         <field id="mode">live</field>

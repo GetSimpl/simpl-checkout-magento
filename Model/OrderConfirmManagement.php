@@ -22,8 +22,8 @@ use Simpl\Checkout\Api\OrderConfirmManagementInterface;
 use Simpl\Checkout\Helper\Config;
 use Simpl\Checkout\Helper\SimplApi;
 use Simpl\Checkout\Logger\Logger;
-use Simpl\Checkout\Model\SimplFactory;
-use Simpl\Checkout\Model\ResourceModel\Simpl as SimplResource;
+use Simpl\Checkout\Model\SimplOrderFactory;
+use Simpl\Checkout\Model\ResourceModel\SimplOrder as SimplResource;
 use Simpl\Checkout\Model\Data\Order\OrderConfirmResponse;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 
@@ -71,7 +71,7 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
 
     protected $simplResource;
 
-    protected $orderSender;
+    protected $orderEmailSender;
 
     /**
      * @param OrderFactory $orderFactory
@@ -89,7 +89,7 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
      * @param Logger $logger
      * @param SimplFactory $simplFactory
      * @param SimplResource $simplResource
-     * @param OrderSender $orderSender
+     * @param OrderSender $orderEmailSender
      */
     public function __construct(
         OrderFactory                     $orderFactory,
@@ -105,9 +105,9 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
         OrderConfirmResponse             $orderConfirmResponse,
         Config                           $config,
         Logger                           $logger,
-        SimplFactory                     $simplFactory,
+        SimplOrderFactory                $simplFactory,
         SimplResource                    $simplResource,
-        OrderSender                      $orderSender
+        OrderSender                      $orderEmailSender
     ) {
         $this->orderRepository = $orderRepository;
         $this->orderFactory = $orderFactory;
@@ -124,7 +124,7 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
         $this->logger = $logger;
         $this->simplFactory = $simplFactory;
         $this->simplResource = $simplResource;
-        $this->orderSender = $orderSender;
+        $this->orderEmailSender = $orderEmailSender;
     }
 
     /**
@@ -135,6 +135,10 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
         try {
             $order = $this->loadOrderById($orderId);
         } catch (\Exception $e) {
+
+            $stacktrace = $e->getTraceAsString() ?? null;
+            $message    = $e->getMessage();
+            $this->logger->error($message, ['stacktrace' => $stacktrace]);
             return $this->orderConfirmResponse->setError($e->getCode(), $e->getMessage());
         }
 
@@ -154,66 +158,29 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
             return $this->orderConfirmResponse->setError("order_confirm_failed", "Not a simpl checkout order");
         }
 
-        if (!$this->simplApi->validatePayment($order, $payment, $transaction)) {
-            return $this->orderConfirmResponse->setError("order_confirm_failed", "Order validation failed");
+       if (!$this->simplApi->validatePayment($order, $payment, $transaction)) {
+
+           $message = "Order validation failed";
+           $this->logger->error($message);
+           return $this->orderConfirmResponse->setError("order_confirm_failed", $message);
         }
 
         try {
-            $simpl = $this->simplFactory->create();
-            $this->simplResource->load($simpl, $orderId, 'order_id');
-            if (!$simpl->getId()) {
-                $simpl->setOrderId($orderId);
-            }
-            $simpl->setStatus($payment->getStatus());
-            $simpl->setPaymentMethod($payment->getMethod());
-            $simpl->setTransactionId($transaction->getId());
-            $this->simplResource->save($simpl);
+
+            $this->storeSimplOrderDetails($orderId, $payment, $transaction);
 
             if ($payment->getStatus() == 'SUCCEEDED') {
-                $canProcessInvoice = false;
-                $transactionId = null;
 
-                $order = $this->applyCharges($order, $appliedCharges);
-                $order = $this->applyDiscount($order, $appliedDiscounts);
-
-                $totalPaid = $payment->getTotalPaid();
-                $grandTotal = $payment->getGrandTotal();
-
-                $order->setTotalPaid($totalPaid);
-                $order->setBaseTotalPaid($totalPaid);
-                $order->setGrandTotal($grandTotal);
-                $order->setBaseGrandTotal($grandTotal);
-
-                if ($payment->getMode() != 'COD') {
-                    $order->setState(Order::STATE_PROCESSING);
-                    $order->setStatus(Order::STATE_PROCESSING);
-                    $order->setCustomerNoteNotify(true);
-                    $order->setCanSendNewEmailFlag(true);
-                    $canProcessInvoice = true;
-                    $order->save();
-                    $transactionId = $this->processTransaction($order, $payment, $transaction);
-                } else {
-                    $newOrderStatus = $this->config->getNewOrderStatus();
-                    $order->setState(Order::STATE_NEW);
-                    $order->setStatus($newOrderStatus);
-                    $order->setCustomerNoteNotify(true);
-                    $order->setCanSendNewEmailFlag(true);
-                    $canProcessInvoice = false;
-                    $order->save();
-                }
-
-                $this->orderSender->send($order);
-
-                if ($transactionId and $canProcessInvoice) {
-                    $this->invoiceOrder($order, $payment, $transactionId);
-                }
+                $this->handlePaymentSuccess($order, $payment, $transaction, $appliedCharges, $appliedDiscounts);
             } elseif ($payment->getStatus() == 'FAILED') {
-                $order->setState(Order::STATE_CANCELED);
-                $order->setStatus(Order::STATE_CANCELED);
+
+                $order->setState(Order::STATE_PENDING_PAYMENT);
+                $order->setStatus(Order::STATE_PENDING_PAYMENT);
                 $statusComment = "Payment failed";
                 $order->addStatusHistoryComment($statusComment);
                 $order->save();
             } else {
+
                 $order->setState(Order::STATUS_FRAUD);
                 $order->setStatus(Order::STATUS_FRAUD);
                 $statusComment = "Fraud detected";
@@ -227,6 +194,83 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
 
         $redirectUrl = $this->simplApi->getRedirectUrl(["order_id" => $orderId]);
         return $this->orderConfirmResponse->setRedirectionURL($redirectUrl);
+    }
+
+    /**
+     * @param $orderId
+     * @param $payment
+     * @param $transaction
+     * @return void
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     */
+    private function storeSimplOrderDetails($orderId, $payment, $transaction)
+    {
+
+        $simplOrder = $this->simplFactory->create();
+        $this->simplResource->load($simplOrder, $orderId, 'order_id');
+        if (!$simplOrder->getId()) {
+                $simplOrder->setOrderId($orderId);
+        }
+
+        $simplOrder->setPaymentStatus($payment->getStatus());
+        $simplOrder->setPaymentMethod($payment->getMethod());
+        $simplOrder->setTransactionId($transaction->getId());
+        $this->simplResource->save($simplOrder);
+    }
+
+    /**
+     * @param $order
+     * @param $payment
+     * @param $transaction
+     * @param $appliedCharges
+     * @param $appliedDiscounts
+     * @return void
+     * @throws \Exception
+     */
+    private function handlePaymentSuccess($order, $payment, $transaction, $appliedCharges, $appliedDiscounts)
+    {
+
+        $canProcessInvoice = false;
+        $transactionId = null;
+
+        $order = $this->applyCharges($order, $appliedCharges);
+        $order = $this->applyDiscount($order, $appliedDiscounts);
+
+        $totalPaid = $payment->getTotalPaid();
+        $grandTotal = $payment->getGrandTotal();
+
+        $order->setTotalPaid($totalPaid);
+        $order->setBaseTotalPaid($totalPaid);
+        $order->setGrandTotal($grandTotal);
+        $order->setBaseGrandTotal($grandTotal);
+
+        if ($payment->getMode() != 'COD') {
+
+            $order->setState(Order::STATE_PROCESSING);
+            $order->setStatus(Order::STATE_PROCESSING);
+            $order->setCustomerNoteNotify(true);
+            $order->setCanSendNewEmailFlag(true);
+            $canProcessInvoice = true;
+            $order->save();
+            $transactionId = $this->processTransaction($order, $payment, $transaction);
+
+        } else {
+
+            $newOrderStatus = $this->config->getNewOrderStatus();
+            $order->setState(Order::STATE_NEW);
+            $order->setStatus($newOrderStatus);
+            $order->setCustomerNoteNotify(true);
+            $order->setCanSendNewEmailFlag(true);
+            $canProcessInvoice = false;
+            $order->save();
+        }
+
+        $this->orderEmailSender->send($order);
+
+        if ($transactionId and $canProcessInvoice) {
+
+            $this->invoiceOrder($order, $payment, $transactionId);
+        }
     }
 
     /**

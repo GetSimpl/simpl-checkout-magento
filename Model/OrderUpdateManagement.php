@@ -170,7 +170,7 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface
 
         if (!$this->simplApi->validatePayment($order, $payment, $transaction)) {
             return $this->orderUpdateResponse->setError("order_update_failed", "Order validation failed");
-        }
+        } 
 
         try {
             $this->updateTransaction($order, $payment, $transaction);

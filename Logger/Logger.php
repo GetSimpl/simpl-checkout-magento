@@ -17,12 +17,11 @@ class Logger extends \Monolog\Logger
         SimplAlert $simplAlert,
         string $name,
         array $handlers = [],
-        array $processors = [],
-        ?DateTimeZone $timezone = null
+        array $processors = []
     ) {
         $this->config = $config;
         $this->simplAlert = $simplAlert;
-        parent::__construct($name, $handlers, $processors, $timezone);
+        parent::__construct($name, $handlers, $processors);
     }
 
     public function info($message, array $context = []): void

@@ -81,7 +81,11 @@ class SimplCheckout extends Adapter
         }
 
         if ($this->simplConfig->getAllowedEmails()) {
-            $emails = explode(',', $this->simplConfig->getAllowedEmails());
+
+            $emailsIds = $this->simplConfig->getAllowedEmails();
+            $emailsIds = rtrim($emailsIds, ',');
+            $emailsIds = str_replace(' ', '', $emailsIds);
+            $emails = explode(',', $emailsIds);
             $customerEmail = $quote->getCustomerEmail();
             if (in_array($customerEmail, $emails, true)) {
                 return true;
@@ -159,25 +163,6 @@ class SimplCheckout extends Adapter
 
     public function cancel(InfoInterface $payment, $amount = null)
     {
-        try {
-            $order = $payment->getOrder();
-            $orderId = $order->getId();
-            $data["order_id"] = $orderId;
-            $data["currency"] = $order->getBaseCurrencyCode();
-            $data["reason"] = "admin triggered cancel";
-
-            // API to init cancel
-            if (!$this->simplApi->cancel($orderId, $data)) {
-                throw new \Exception('Error in API call');
-            }
-
-            $order = $payment->getOrder();
-            $order->setState(Order::STATE_CLOSED);
-            $order->setStatus(Order::STATE_CLOSED);
-        } catch (\Exception $e) {
-            throw new CouldNotSaveException(__('Refund can not be processed'));
-        }
-
-        return $this;
+       return $this;
     }
 }

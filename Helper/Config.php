@@ -28,7 +28,7 @@ class Config extends AbstractHelper
     const KEY_SIMPL_LIVE_HOST_URL = 'https://checkout-platform-integrations.getsimpl.com/';
     const KEY_SIMPL_TEST_HOST_URL = 'https://sandbox-checkout-platform-integrations.getsimpl.com/';
 
-    const PENDING_ORDER_LIFE_TIME = 60;
+    const ABANDONED_ORDER_LIFE_TIME = 60;
 
     /**
      * @var StoreManagerInterface

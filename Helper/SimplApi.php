@@ -187,7 +187,7 @@ class SimplApi extends AbstractHelper
      */
     public function getRedirectUrl($param = [])
     {
-        return $this->_getUrl('simpl/index/redirect', $param);
+        return $this->_getUrl('simpl/index/orderstatusredirect', $param);
     }
 
     /**
@@ -211,12 +211,16 @@ class SimplApi extends AbstractHelper
      * @param $type
      * @return bool
      */
-    public function event($name, $payload, $type)
+    public function event($name, $payload, $type, $version)
     {
+        if (empty($version)) {
+
+            $version = $this->config->getVersion();
+        }
 
         $endPoint = self::EVENT_API;
         $data["name"] = $name;
-        $data["version"] = $this->config->getVersion();
+        $data["version"] = $version;
         $data["type"] = $type;
         $data["payload"] = $payload;
         $response = $this->simplClient->postRequest($endPoint, $data);
@@ -225,4 +229,9 @@ class SimplApi extends AbstractHelper
         }
         return false;
     }
+
+
+
+
+
 }

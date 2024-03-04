@@ -9,7 +9,7 @@ class AppliedChargesData implements AppliedChargesDataInterface
     private $title;
     private $description;
     private $chargeType;
-    private $chargesAmountInPaise;
+    private $amount;
 
     /**
      * @inheritDoc
@@ -67,7 +67,7 @@ class AppliedChargesData implements AppliedChargesDataInterface
      */
     public function getAmount()
     {
-        return $this->chargesAmountInPaise;
+        return $this->amount;
     }
 
     /**
@@ -75,7 +75,7 @@ class AppliedChargesData implements AppliedChargesDataInterface
      */
     public function setAmount($amount)
     {
-        $this->chargesAmountInPaise = $amount;
+        $this->amount = $amount;
         return $this;
     }
 }

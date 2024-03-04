@@ -122,10 +122,16 @@ class SimplClient extends AbstractHelper
             $milliSeconds = $endTime * 1000;
             $this->logger->info('time taken by api to execute'.':'.' '.$milliSeconds);
         } catch (GuzzleException $exception) {
-            $responseArray["error"]["message"] = $exception->getMessage();
+
+            if (!isset($responseArray["error"]["message"])) {
+                $responseArray["error"]["message"] = $exception->getMessage();
+            }
             $this->logger->error('Exception ' . get_class($exception) . ' while API call: ' . $exception->getMessage());
         } catch (\InvalidArgumentException | \Exception $exception) {
-            $responseArray["error"]["message"] = $exception->getMessage();
+
+            if (!isset($responseArray["error"]["message"])) {
+                $responseArray["error"]["message"] = $exception->getMessage();
+            }
             $this->logger->error('Exception ' . get_class($exception) . ' while API call: ' . $exception->getMessage());
         }
 
@@ -166,10 +172,16 @@ class SimplClient extends AbstractHelper
             $milliSeconds = $endTime * 1000;
             $this->logger->info('time taken by api to execute'.':'.' '.$milliSeconds);
         } catch (GuzzleException $exception) {
-            $responseArray["error"]["message"] = $exception->getMessage();
+
+            if (!isset($responseArray["error"]["message"])) {
+                $responseArray["error"]["message"] = $exception->getMessage();
+            }
             $this->logger->error('Exception ' . get_class($exception) . ' while API call: ' . $exception->getMessage());
         } catch (\InvalidArgumentException | \Exception $exception) {
-            $responseArray["error"]["message"] = $exception->getMessage();
+
+            if (!isset($responseArray["error"]["message"])) {
+                $responseArray["error"]["message"] = $exception->getMessage();
+            }
             $this->logger->error('Exception ' . get_class($exception) . ' while API call: ' . $exception->getMessage());
         }
 
