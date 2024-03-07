@@ -52,6 +52,7 @@ define(
                             .done(
                                 function (orderId) {
                                     self.orderId =  orderId;
+                                    // Relook this in future, since performance marketing event can be impacted because of this.
                                     self.afterPlaceOrder();
                                     self.initSimplCheckout();
                                 }
