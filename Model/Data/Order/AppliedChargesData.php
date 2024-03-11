@@ -9,19 +9,21 @@ class AppliedChargesData implements AppliedChargesDataInterface
     private $title;
     private $description;
     private $chargeType;
-    private $chargesAmountInPaise;
+    private $amount;
 
     /**
      * @inheritDoc
      */
-    public function getTitle() {
+    public function getTitle()
+    {
         return $this->title;
     }
 
     /**
      * @inheritDoc
      */
-    public function setTitle($title) {
+    public function setTitle($title)
+    {
         $this->title = $title;
         return $this;
     }
@@ -29,14 +31,16 @@ class AppliedChargesData implements AppliedChargesDataInterface
     /**
      * @inheritDoc
      */
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
     /**
      * @inheritDoc
      */
-    public function setDescription($description) {
+    public function setDescription($description)
+    {
         $this->description = $description;
         return $this;
     }
@@ -44,14 +48,16 @@ class AppliedChargesData implements AppliedChargesDataInterface
     /**
      * @inheritDoc
      */
-    public function getChargeType() {
+    public function getChargeType()
+    {
         return $this->chargeType;
     }
 
     /**
      * @inheritDoc
      */
-    public function setChargeType($chargeType) {
+    public function setChargeType($chargeType)
+    {
         $this->chargeType = $chargeType;
         return $this;
     }
@@ -59,15 +65,17 @@ class AppliedChargesData implements AppliedChargesDataInterface
     /**
      * @inheritDoc
      */
-    public function getChargesAmountInPaise() {
-        return $this->chargesAmountInPaise;
+    public function getAmount()
+    {
+        return $this->amount;
     }
 
     /**
      * @inheritDoc
      */
-    public function setChargesAmountInPaise($chargesAmount) {
-        $this->chargesAmountInPaise = $chargesAmount;
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
         return $this;
     }
 }

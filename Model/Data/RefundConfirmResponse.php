@@ -34,7 +34,8 @@ class RefundConfirmResponse
     /**
      * @return ApiDataInterface
      */
-    public function errorMessage() {
+    public function errorMessage()
+    {
         $this->errorData->setCode('validation_failed');
         $this->errorData->setMessage('Validation failed');
         $this->apiData->setError($this->errorData);
@@ -46,7 +47,8 @@ class RefundConfirmResponse
      * @param $message
      * @return ApiDataInterface
      */
-    public function setError($code, $message) {
+    public function setError($code, $message)
+    {
 
         $this->errorData->setCode($code);
         $this->errorData->setMessage($message);
@@ -58,12 +60,12 @@ class RefundConfirmResponse
      * @param $message
      * @return ApiDataInterface
      */
-    public function setMessage($message) {
+    public function setMessage($message)
+    {
 
         $this->apiData->setSuccess(true);
         $this->messageData->setMessage($message);
         $this->apiData->setData($this->messageData);
         return $this->apiData;
     }
-
 }

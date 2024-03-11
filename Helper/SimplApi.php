@@ -6,26 +6,59 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Simpl\Checkout\Api\Data\Order\TransactionDataInterface;
 use Simpl\Checkout\Api\Data\Order\PaymentDataInterface;
+use Magento\Framework\UrlInterface;
+use Simpl\Checkout\Logger\Logger;
 
-class SimplApi extends AbstractHelper {
+class SimplApi extends AbstractHelper
+{
 
-    const INSTALL_API = 'api/v1/mogento/app/install';
-    const PAYMENT_INIT_API = 'api/v1/mogento/payment/initiate';
-    const FETCH_REFUND_API = 'api/v1/magento/refund/';
-    const REFUND_INIT_API = 'api/v1/mogento/order/:order_id/refund';
-    const CANCEL_INIT_API = 'api/v1/mogento/order/:order_id/cancel';
+    const INSTALL_API = 'api/v1/magento/app/install';
+    const PAYMENT_INIT_API = 'api/v1/magento/payment/initiate';
+    const REFUND_INIT_API = 'api/v1/magento/order/:order_id/refund';
+    const CANCEL_INIT_API = 'api/v1/magento/order/:order_id/cancel';
     const FETCH_PAYMENT_API = 'api/v1/magento/payment_order/';
+    const FETCH_REFUND_API = 'api/v1/magento/refund/';
+    const ALERT_API = 'api/v1/magento/alert/track';
+    const EVENT_API = 'api/v1/magento/event/track';
 
     /**
      * @var SimplClient
      */
     protected $simplClient;
 
+    /**
+     * @var Config
+     */
+    protected $config;
+
+    /**
+     * @var UrlInterface
+     */
+    protected $url;
+
+    /**
+     * AuthHelper
+     */
+    protected $authHelper;
+
+    /**
+     * @var Logger
+     */
+    protected $logger;
+
     public function __construct(
         SimplClient $simplClient,
+        Config $config,
+        UrlInterface $url,
+        AuthHelper $authHelper,
+        Logger $logger,
         Context $context
     ) {
         $this->simplClient = $simplClient;
+        $this->config = $config;
+        $this->url = $url;
+        $this->authHelper = $authHelper;
+        $this->logger = $logger;
         parent::__construct($context);
     }
 
@@ -35,9 +68,10 @@ class SimplApi extends AbstractHelper {
      * @param string $clientId
      * @return array
      */
-    public function install(string $secret, string $clientId) {
-        $this->simplClient->setClientId($clientId);
-        $this->simplClient->setSecret($secret);
+    public function install(string $secret, string $clientId)
+    {
+        $this->authHelper->setClientId($clientId);
+        $this->authHelper->setSecret($secret);
         $response = $this->simplClient->postRequest(self::INSTALL_API);
         if ($response->isSuccess()) {
             return [
@@ -56,7 +90,8 @@ class SimplApi extends AbstractHelper {
      * @param $data
      * @return string
      */
-    public function initPayment($data) {
+    public function initPayment($data)
+    {
         $url = '';
         $response = $this->simplClient->postRequest(self::PAYMENT_INIT_API, $data);
         if ($response->isSuccess()) {
@@ -66,11 +101,13 @@ class SimplApi extends AbstractHelper {
         return $url;
     }
 
+    /**
      * @param $orderId
      * @param $data
      * @return bool
      */
-    public function cancel($orderId, $data) {
+    public function cancel($orderId, $data)
+    {
         $endPoint = str_replace(':order_id', $orderId, self::CANCEL_INIT_API);
         $response = $this->simplClient->postRequest($endPoint, $data);
         if ($response->isSuccess()) {
@@ -84,7 +121,8 @@ class SimplApi extends AbstractHelper {
      * @param $data
      * @return string
      */
-    public function initRefund($orderId, $data) {
+    public function initRefund($orderId, $data)
+    {
         $endPoint = str_replace(':order_id', $orderId, self::REFUND_INIT_API);
         $response = $this->simplClient->postRequest($endPoint, $data);
         if ($response->isSuccess()) {
@@ -92,7 +130,7 @@ class SimplApi extends AbstractHelper {
         }
         return false;
     }
-  
+
     /**
      * @param $creditMemoId
      * @param $orderId
@@ -100,9 +138,10 @@ class SimplApi extends AbstractHelper {
      * @param $status
      * @return bool
      */
-    public function validateRefund($creditMemoId, $orderId, $transactionId, $status ) {
+    public function validateRefund($creditMemoId, $orderId, $transactionId, $status)
+    {
 
-        $apiEndPoint = self::FETCH_REFUND_API . $creditMemoId;
+        $apiEndPoint = self::FETCH_REFUND_API . $transactionId;
         $response = $this->simplClient->getRequest($apiEndPoint);
         if ($response->isSuccess()) {
             $data = $response->getData();
@@ -123,9 +162,10 @@ class SimplApi extends AbstractHelper {
      * @param PaymentDataInterface $payment
      * @param TransactionDataInterface $transaction
      */
-    public function validatePayment($order, $payment, $transaction) {
+    public function validatePayment($order, $payment, $transaction)
+    {
 
-        $apiEndPoint = self::FETCH_PAYMENT_API . $order->getId();
+        $apiEndPoint = self::FETCH_PAYMENT_API . $transaction->getId();
         $response = $this->simplClient->getRequest($apiEndPoint);
         if ($response->isSuccess()) {
             $data = $response->getData();
@@ -145,7 +185,44 @@ class SimplApi extends AbstractHelper {
      * @param array $param
      * @return string
      */
-    public function getRedirectUrl($param = []) {
-        return $this->_getUrl('simpl/index/redirect', $param);
+    public function getRedirectUrl($param = [])
+    {
+        return $this->_getUrl('simpl/index/orderstatusredirect', $param);
+    }
+
+    /**
+     * @param $data
+     * @return bool
+     */
+    public function alert($data)
+    {
+
+        $endPoint = self::ALERT_API;
+        $response = $this->simplClient->postRequest($endPoint, $data);
+        if ($response->isSuccess()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param $name
+     * @param $payload
+     * @param $type
+     * @return bool
+     */
+    public function event($name, $payload, $type, $version = '1.0.0')
+    {
+
+        $endPoint = self::EVENT_API;
+        $data["name"] = $name;
+        $data["version"] = $version;
+        $data["type"] = $type;
+        $data["payload"] = $payload;
+        $response = $this->simplClient->postRequest($endPoint, $data);
+        if ($response->isSuccess()) {
+            return true;
+        }
+        return false;
     }
 }

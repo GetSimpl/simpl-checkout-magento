@@ -14,14 +14,16 @@ class TransactionData implements TransactionDataInterface
     /**
      * @inheritDoc
      */
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
     /**
      * @inheritDoc
      */
-    public function setId($id) {
+    public function setId($id)
+    {
         $this->id = $id;
         return $this;
     }
@@ -29,14 +31,16 @@ class TransactionData implements TransactionDataInterface
     /**
      * @inheritDoc
      */
-    public function getParentId() {
+    public function getParentId()
+    {
         return $this->parentId;
     }
 
     /**
      * @inheritDoc
      */
-    public function setParentId($parentId) {
+    public function setParentId($parentId)
+    {
         $this->parentId = $parentId;
         return $this;
     }
@@ -44,14 +48,16 @@ class TransactionData implements TransactionDataInterface
     /**
      * @inheritDoc
      */
-    public function getType() {
+    public function getType()
+    {
         return $this->type;
     }
 
     /**
      * @inheritDoc
      */
-    public function setType($type) {
+    public function setType($type)
+    {
         $this->type = $type;
         return $this;
     }
@@ -59,14 +65,16 @@ class TransactionData implements TransactionDataInterface
     /**
      * @inheritDoc
      */
-    public function isClosed() {
+    public function isClosed()
+    {
         return $this->closed;
     }
 
     /**
      * @inheritDoc
      */
-    public function setClosed($closed) {
+    public function setClosed($closed)
+    {
         $this->closed = $closed;
         return $this;
     }

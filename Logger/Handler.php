@@ -11,9 +11,8 @@ class Handler extends \Magento\Framework\Logger\Handler\Base
     protected $loggerType = Logger::INFO;
 
     /**
-     * File name
+     * Name of the log file
      * @var string
      */
     protected $fileName = '/var/log/simpl.log';
 }
-

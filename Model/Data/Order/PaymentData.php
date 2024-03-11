@@ -9,6 +9,8 @@ class PaymentData implements PaymentDataInterface
     private $status;
     private $mode;
     private $method;
+    private $grandTotal;
+    private $totalPaid;
 
     /**
      * @inheritDoc
@@ -58,6 +60,40 @@ class PaymentData implements PaymentDataInterface
     public function setMethod($method)
     {
         $this->method = $method;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getGrandTotal()
+    {
+        return $this->grandTotal;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setGrandTotal($grandTotal)
+    {
+        $this->grandTotal = $grandTotal;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getTotalPaid()
+    {
+        return $this->totalPaid;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setTotalPaid($totalPaid)
+    {
+        $this->totalPaid = $totalPaid;
         return $this;
     }
 }

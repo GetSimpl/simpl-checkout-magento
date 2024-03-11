@@ -2,7 +2,8 @@
 
 namespace Simpl\Checkout\Helper;
 
-class Response {
+class Response
+{
 
     /**
      * @var array
@@ -21,7 +22,8 @@ class Response {
     /**
      * @return bool
      */
-    public function isSuccess() {
+    public function isSuccess()
+    {
         if (isset($this->data["success"]) and $this->data["success"] == true) {
             return true;
         }
@@ -31,17 +33,22 @@ class Response {
     /**
      * @return array
      */
-    public function getData() {
-        return $this->data["data"];
+    public function getData()
+    {
+        if (isset($this->data["data"])) {
+            return $this->data["data"];
+        }
+        return [];
     }
 
     /**
      * @return string
      */
-    public function getErrorMessage() {
-        if (isset($this->data["error"])) {
+    public function getErrorMessage()
+    {
+        if (isset($this->data["error"]["message"])) {
             return $this->data["error"]["message"];
         }
-        return "";
+        return "Error in response";
     }
 }

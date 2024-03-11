@@ -7,7 +7,8 @@ use Magento\Backend\Block\Template\Context;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Simpl\Checkout\Helper\Config;
 
-class ValidateSecret extends Field {
+class ValidateSecret extends Field
+{
 
     protected $_template = 'system/config/validatesecret.phtml';
 
@@ -33,16 +34,19 @@ class ValidateSecret extends Field {
         parent::__construct($context, $data);
     }
 
-    public function render(AbstractElement $element) {
+    public function render(AbstractElement $element)
+    {
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
         return parent::render($element);
     }
 
-    protected function _getElementHtml(AbstractElement $element) {
+    protected function _getElementHtml(AbstractElement $element)
+    {
         return $this->_toHtml();
     }
 
-    public function getButtonHtml() {
+    public function getButtonHtml()
+    {
         $button = $this->getLayout()->createBlock(
             'Magento\Backend\Block\Widget\Button'
         )->setData(
@@ -60,7 +64,8 @@ class ValidateSecret extends Field {
      * Function to get URL
      * @return string
      */
-    public function getValidateUrl() {
+    public function getValidateUrl()
+    {
         return $this->url->getUrl('simplcheckout/index/validatesecret');
     }
 
@@ -68,7 +73,8 @@ class ValidateSecret extends Field {
      * To get the Simpl payment mode live/test
      * @return string
      */
-    public function getSecretId() {
+    public function getSecretId()
+    {
         if ($this->config->getIntegrationMode() == 'live') {
             return 'payment_other_simplcheckout_live_secret';
         }

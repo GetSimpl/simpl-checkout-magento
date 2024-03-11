@@ -7,11 +7,12 @@ use Magento\Framework\App\Response\Http;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\View\Result\PageFactory;
-use Psr\Log\LoggerInterface;
 use Magento\Framework\App\RequestInterface;
 use Simpl\Checkout\Helper\SimplApi;
+use Simpl\Checkout\Logger\Logger;
 
-class ValidateSecret implements HttpPostActionInterface {
+class ValidateSecret implements HttpPostActionInterface
+{
 
     /**
      * @var PageFactory
@@ -23,9 +24,6 @@ class ValidateSecret implements HttpPostActionInterface {
      */
     protected $serializer;
 
-    /**
-     * @var LoggerInterface
-     */
     protected $logger;
 
     /**
@@ -43,17 +41,18 @@ class ValidateSecret implements HttpPostActionInterface {
     /**
      * @param PageFactory $resultPageFactory
      * @param Json $json
-     * @param LoggerInterface $logger
      * @param Http $http
      * @param RequestInterface $request
+     * @param SimplApi $simplApi
+     * @param Logger $logger
      */
     public function __construct(
         PageFactory $resultPageFactory,
         Json $json,
-        LoggerInterface $logger,
         Http $http,
         RequestInterface $request,
-        SimplApi $simplApi
+        SimplApi $simplApi,
+        Logger $logger
     ) {
         $this->resultPageFactory = $resultPageFactory;
         $this->serializer = $json;
@@ -67,26 +66,32 @@ class ValidateSecret implements HttpPostActionInterface {
      * Validate secret
      *
      */
-    public function execute() {
+    public function execute()
+    {
         try {
+
             $secret = $this->request->getParam('client_secret');
             $clientId = $this->request->getParam('client_id');
-
-            $response = $this->simplApi->install($secret,$clientId);
-
+            $response = $this->simplApi->install($secret, $clientId);
         } catch (LocalizedException $e) {
-            $response = ['status'=> false, 'message'=>$e->getMessage()];
+
+            $this->logger->error($e->getMessage(), ['stacktrace' => $e->getTraceAsString()]);
+            $response = ['status'=> false, 'message' => 'Invalid Secret Key'];
         } catch (\Exception $e) {
-            $this->logger->critical($e);
-            $response = ['status'=> false, 'message'=>$e->getMessage()];
+
+            $this->logger->error($e->getMessage(), ['stacktrace' => $e->getTraceAsString()]);
+            $response = ['status'=> false, 'message' => 'Error In Registering Secret Key'];
         }
+
         return $this->jsonResponse($response);
     }
 
     /**
      * Create json response
      */
-    private function jsonResponse($response = '') {
+    private function jsonResponse($response = '')
+    {
+
         $this->http->getHeaders()->clearHeaders();
         $this->http->setHeader('Content-Type', 'application/json');
         return $this->http->setBody(

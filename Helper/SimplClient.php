@@ -9,7 +9,8 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Serialize\Serializer\Json;
 use Simpl\Checkout\Logger\Logger;
 
-class SimplClient extends AbstractHelper {
+class SimplClient extends AbstractHelper
+{
 
     /**
      * @var GuzzleHttpClient
@@ -65,7 +66,8 @@ class SimplClient extends AbstractHelper {
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Exception
      */
-    private function getHeaders() {
+    private function getHeaders()
+    {
         $clientId = $this->authHelper->getClientId();
         $nonce = $this->authHelper->generateUuid();
         $signature = $this->authHelper->generateSignature($nonce);
@@ -86,38 +88,50 @@ class SimplClient extends AbstractHelper {
      * @param array $body
      * @return Response
      */
-    public function postRequest(string $endpointUrl, array $body = []) {
+    public function postRequest(string $endpointUrl, array $body = [])
+    {
 
         $hostUrl = $this->config->getApiUrl();
         $requestUrl = $hostUrl.$endpointUrl;
         $responseArray = ["success" => false];
+        $body = $this->json->serialize($body);
 
-        try{
+        try {
+            $header = $this->getHeaders();
 
             // LOG
-            $this->logger->info( 'API Call initiated for '.$endpointUrl);
-            $this->logger->info(print_r($body,true));
+            $this->logger->info('API Call initiated for : '.$endpointUrl);
+            $this->logger->info($body);
             $startTime = time();
 
             $response = $this->client->request(
                 'POST',
                 $requestUrl,
                 [
-                    'headers' => $this->getHeaders(),
-                    'body' => $this->json->serialize($body)
+                    'headers' => $header,
+                    'body' => $body
                 ]
             );
-            $responseArray = $this->json->unserialize($response->getBody()->getContents());
+            $contents = $response->getBody()->getContents();
+            $responseArray = $this->json->unserialize($contents);
+            $this->logger->info('API Response : ' . $contents);
+            $this->logger->info('API Status code : ' . $response->getStatusCode());
 
             // LOG
             $endTime = time() - $startTime;
             $milliSeconds = $endTime * 1000;
             $this->logger->info('time taken by api to execute'.':'.' '.$milliSeconds);
-        }catch (GuzzleException $exception) {
+        } catch (GuzzleException $exception) {
 
+            if (!isset($responseArray["error"]["message"])) {
+                $responseArray["error"]["message"] = $exception->getMessage();
+            }
             $this->logger->error('Exception ' . get_class($exception) . ' while API call: ' . $exception->getMessage());
         } catch (\InvalidArgumentException | \Exception $exception) {
 
+            if (!isset($responseArray["error"]["message"])) {
+                $responseArray["error"]["message"] = $exception->getMessage();
+            }
             $this->logger->error('Exception ' . get_class($exception) . ' while API call: ' . $exception->getMessage());
         }
 
@@ -129,17 +143,17 @@ class SimplClient extends AbstractHelper {
      * @param array $params
      * @return Response
      */
-    public function getRequest(string $endpointUrl, array $params = []) {
+    public function getRequest(string $endpointUrl, array $params = [])
+    {
 
         $hostUrl = $this->config->getApiUrl();
         $requestUrl = $hostUrl.$endpointUrl;
         $responseArray = ["success" => false];
 
-        try{
-
+        try {
             // LOG
-            $this->logger->info( 'API Call initiated for '.$endpointUrl);
-            $this->logger->info(print_r($params,true));
+            $this->logger->info('API Call initiated for '.$endpointUrl);
+            $this->logger->info(print_r($params, true));
             $startTime = time();
 
             $response = $this->client->request(
@@ -147,21 +161,27 @@ class SimplClient extends AbstractHelper {
                 $requestUrl,
                 [
                     'headers' => $this->getHeaders(),
-                    'query' => $this->json->serialize($params)
+                    'query' => $params
                 ]
             );
             $responseArray = $this->json->unserialize($response->getBody()->getContents());
+            $this->logger->info(print_r($responseArray, true));
 
             // LOG
             $endTime = time() - $startTime;
             $milliSeconds = $endTime * 1000;
             $this->logger->info('time taken by api to execute'.':'.' '.$milliSeconds);
+        } catch (GuzzleException $exception) {
 
-        }catch (GuzzleException $exception) {
-
+            if (!isset($responseArray["error"]["message"])) {
+                $responseArray["error"]["message"] = $exception->getMessage();
+            }
             $this->logger->error('Exception ' . get_class($exception) . ' while API call: ' . $exception->getMessage());
         } catch (\InvalidArgumentException | \Exception $exception) {
 
+            if (!isset($responseArray["error"]["message"])) {
+                $responseArray["error"]["message"] = $exception->getMessage();
+            }
             $this->logger->error('Exception ' . get_class($exception) . ' while API call: ' . $exception->getMessage());
         }
 

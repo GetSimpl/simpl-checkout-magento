@@ -59,8 +59,8 @@ class OrderConfirmResponse
      * @param $url
      * @return OrderConfirmSuccessDataInterface
      */
-    public function setRedirectionURL($url) {
-
+    public function setRedirectionURL($url)
+    {
         $this->orderConfirmSuccessData->setSuccess(true);
         $this->redirectionUrlData->setRedirectionUrl($url);
         $this->orderConfirmSuccessData->setData($this->redirectionUrlData);
@@ -72,8 +72,8 @@ class OrderConfirmResponse
      * @param $message
      * @return OrderConfirmSuccessDataInterface
      */
-    public function setError($code, $message) {
-
+    public function setError($code, $message)
+    {
         $this->orderConfirmSuccessData->setSuccess(false);
         $this->errorData->setCode($code);
         $this->errorData->setMessage($message);
@@ -85,8 +85,8 @@ class OrderConfirmResponse
      * @param $message
      * @return ApiDataInterface
      */
-    public function setMessage($message) {
-
+    public function setMessage($message)
+    {
         $this->apiData->setSuccess(true);
         $this->messageData->setMessage($message);
         $this->apiData->setData($this->messageData);

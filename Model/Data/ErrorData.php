@@ -4,7 +4,8 @@ namespace Simpl\Checkout\Model\Data;
 
 use Simpl\Checkout\Api\Data\ErrorDataInterface;
 
-class ErrorData implements ErrorDataInterface {
+class ErrorData implements ErrorDataInterface
+{
 
     private $code;
     private $message;
@@ -12,14 +13,16 @@ class ErrorData implements ErrorDataInterface {
     /**
      * @inheritDoc
      */
-    public function getCode() {
+    public function getCode()
+    {
         return $this->code;
     }
 
     /**
      * @inheritDoc
      */
-    public function setCode($code) {
+    public function setCode($code)
+    {
         $this->code = $code;
         return $this;
     }
@@ -27,14 +30,16 @@ class ErrorData implements ErrorDataInterface {
     /**
      * @inheritDoc
      */
-    public function getMessage() {
+    public function getMessage()
+    {
         return $this->message;
     }
 
     /**
      * @inheritDoc
      */
-    public function setMessage($message) {
+    public function setMessage($message)
+    {
         $this->message = $message;
         return $this;
     }

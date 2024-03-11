@@ -29,28 +29,32 @@ class AuthHelper extends AbstractHelper
     /**
      * @return string
      */
-    public function getClientId() {
+    public function getClientId()
+    {
         return $this->clientId;
     }
 
     /**
      * @return string
      */
-    public function getSecret() {
+    public function getSecret()
+    {
         return $this->secret;
     }
 
     /**
      * @param $clientId
      */
-    public function setClientId($clientId) {
+    public function setClientId($clientId)
+    {
         $this->clientId = $clientId;
     }
 
     /**
      * @param $secret
      */
-    public function setSecret($secret) {
+    public function setSecret($secret)
+    {
         $this->secret = $secret;
     }
 
@@ -61,7 +65,8 @@ class AuthHelper extends AbstractHelper
      * @return bool
      * @throws \Exception
      */
-    public function validateSignature(string $clientId,string  $nonce,string  $signature) {
+    public function validateSignature(string $clientId, string  $nonce, string  $signature)
+    {
         $localSignature = $this->generateSignature($nonce, $clientId);
         return $signature == $localSignature;
     }
@@ -71,10 +76,12 @@ class AuthHelper extends AbstractHelper
      * @param string|null $clientId
      * @return false|string
      */
-    public function generateSignature(string $nonce,string $clientId = null) {
+    public function generateSignature(string $nonce, string $clientId = null)
+    {
 
-        if (!$clientId)
+        if (!$clientId) {
             $clientId = $this->getClientId();
+        }
 
         $clientSecret = $this->getSecret();
         $data = $nonce . "-" . $clientId;
@@ -86,7 +93,8 @@ class AuthHelper extends AbstractHelper
      * @return string
      * @throws \Exception
      */
-    public function generateUuid() {
+    public function generateUuid()
+    {
         $b = random_bytes(16);
         $b[6] = chr(ord($b[6]) & 0x0f | 0x40);
         $b[8] = chr(ord($b[8]) & 0x3f | 0x80);

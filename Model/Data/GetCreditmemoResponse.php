@@ -51,7 +51,8 @@ class GetCreditmemoResponse
      * @param $message
      * @return ApiDataInterface
      */
-    public function setMessage($message) {
+    public function setMessage($message)
+    {
 
         $this->apiData->setSuccess(true);
         $this->messageData->setMessage($message);
@@ -63,7 +64,8 @@ class GetCreditmemoResponse
      * @param $creditMemo
      * @return CreditMemoDataInterface
      */
-    public function setCreditMemo($creditMemo) {
+    public function setCreditMemo($creditMemo)
+    {
 
         $this->creditMemoData->setSuccess(true);
         $this->creditMemoData->setData($creditMemo);
@@ -73,7 +75,8 @@ class GetCreditmemoResponse
     /**
      * @return CreditMemoDataInterface
      */
-    public function creditMemoNotFoundError() {
+    public function creditMemoNotFoundError()
+    {
 
         $this->creditMemoData->setSuccess(false);
         $this->errorData->setCode("creditmemo_not_found");

@@ -4,21 +4,24 @@ namespace Simpl\Checkout\Model\Data;
 
 use Simpl\Checkout\Api\Data\MessageDataInterface;
 
-class MessageData implements MessageDataInterface {
+class MessageData implements MessageDataInterface
+{
 
     private $message;
 
     /**
      * @inheritDoc
      */
-    public function getMessage() {
+    public function getMessage()
+    {
         return $this->message;
     }
 
     /**
      * @inheritDoc
      */
-    public function setMessage($message) {
+    public function setMessage($message)
+    {
         $this->message = $message;
         return $this;
     }

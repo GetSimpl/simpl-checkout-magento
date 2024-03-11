@@ -11,7 +11,8 @@ class RedirectionUrlData implements RedirectionUrlDataInterface
     /**
      * @return string
      */
-    public function getRedirectionUrl() {
+    public function getRedirectionUrl()
+    {
         return $this->redirectionUrl;
     }
 
@@ -19,7 +20,8 @@ class RedirectionUrlData implements RedirectionUrlDataInterface
      * @param string $redirectionUrl
      * @return $this
      */
-    public function setRedirectionUrl($redirectionUrl) {
+    public function setRedirectionUrl($redirectionUrl)
+    {
         $this->redirectionUrl = $redirectionUrl;
         return $this;
     }

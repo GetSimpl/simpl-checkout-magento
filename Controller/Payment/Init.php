@@ -7,7 +7,8 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Simpl\Checkout\Model\Simpl\Order;
 use Simpl\Checkout\Helper\SimplApi;
 
-class Init implements HttpGetActionInterface {
+class Init implements HttpGetActionInterface
+{
 
     /**
      * @var JsonFactory
@@ -26,8 +27,9 @@ class Init implements HttpGetActionInterface {
 
     /**
      * JsonResponse constructor.
-     *
      * @param JsonFactory $jsonFactory
+     * @param Order $order
+     * @param SimplApi $simplApi
      */
     public function __construct(
         JsonFactory $jsonFactory,
@@ -42,7 +44,9 @@ class Init implements HttpGetActionInterface {
     /**
      * @inheritDoc
      */
-    public function execute() {
+    public function execute()
+    {
+
         $data = ['status' => 'error'];
         $request = $this->order->getCurrentOrder();
         $redirectionURL = $this->simplApi->initPayment($request);

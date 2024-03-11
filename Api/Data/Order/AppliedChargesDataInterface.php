@@ -54,13 +54,13 @@ interface AppliedChargesDataInterface
      *
      * @return string|null
      */
-    public function getChargesAmountInPaise();
+    public function getAmount();
 
     /**
      * Set charges amount in paise
      *
-     * @param string $chargesAmount
+     * @param string $amount
      * @return $this
      */
-    public function setChargesAmountInPaise($chargesAmount);
+    public function setAmount($amount);
 }

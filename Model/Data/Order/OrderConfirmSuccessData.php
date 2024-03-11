@@ -5,23 +5,24 @@ namespace Simpl\Checkout\Model\Data\Order;
 use Simpl\Checkout\Api\Data\Order\OrderConfirmSuccessDataInterface;
 use Simpl\Checkout\Model\Data\ApiResponseData;
 
-class OrderConfirmSuccessData
-    extends ApiResponseData
-    implements OrderConfirmSuccessDataInterface
+class OrderConfirmSuccessData extends ApiResponseData implements OrderConfirmSuccessDataInterface
 {
+
     private $data;
 
     /**
      * @inheritDoc
      */
-    public function getData() {
+    public function getData()
+    {
         return $this->data;
     }
 
     /**
      * @inheritDoc
      */
-    public function setData($data) {
+    public function setData($data)
+    {
         $this->data = $data;
         return $this;
     }

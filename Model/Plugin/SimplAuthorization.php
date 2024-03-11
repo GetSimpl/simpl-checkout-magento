@@ -54,24 +54,22 @@ class SimplAuthorization
     public function aroundIsAllowed(
         Authorization $subject,
         Closure       $proceed,
-                      $resource,
-                      $privilege = null
+        $resource,
+        $privilege = null
     ) {
         if ($resource == 'simpl') {
-
             // To get header data
             $clientId = $this->request->getHeader('SIMPL-CLIENT-ID');
-            $nonce = $this->request->getHeader('SIMPL-SERVICE-NONCE');
-            $signature = $this->request->getHeader('SIMPL-SERVICE-SIGNATURE');
+            $nonce = $this->request->getHeader('SIMPL-CLIENT-NONCE');
+            $signature = $this->request->getHeader('SIMPL-CLIENT-SIGNATURE');
 
             try {
                 return $this->authHelper->validateSignature($clientId, $nonce, $signature);
             } catch (\Exception $e) {
-
-                $this->logger->error('Exception in API Authorization: ' . $e->getMessage());
+                $this->logger->error('Exception in API Authorization: ' . $e->getMessage(),
+                    ['stacktrace' => $e->getTraceAsString()]);
                 return $proceed($resource, $privilege);
             }
-
         } else {
             return $proceed($resource, $privilege);
         }
