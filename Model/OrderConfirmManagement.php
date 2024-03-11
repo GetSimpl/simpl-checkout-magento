@@ -174,8 +174,8 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
                 $this->handlePaymentSuccess($order, $payment, $transaction, $appliedCharges, $appliedDiscounts);
             } elseif ($payment->getStatus() == 'FAILED') {
 
-                $order->setState(Order::STATE_PENDING_PAYMENT);
-                $order->setStatus(Order::STATE_PENDING_PAYMENT);
+                $order->setState(Order::STATE_CANCELED);
+                $order->setStatus(Order::STATE_CANCELED);
                 $statusComment = "Payment failed";
                 $order->addStatusHistoryComment($statusComment);
                 $order->save();

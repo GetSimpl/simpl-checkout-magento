@@ -75,7 +75,6 @@ class Restore implements HttpGetActionInterface
             // Cancel the last order
             $id = $this->httpRequest->getParam('id');
             $quote = $this->quoteRepository->get($id);
-            echo $quote->getId();
             $incrementId = $quote->getReservedOrderId();
 
             $orderModel = $this->orderFactory->create();

@@ -211,12 +211,8 @@ class SimplApi extends AbstractHelper
      * @param $type
      * @return bool
      */
-    public function event($name, $payload, $type, $version)
+    public function event($name, $payload, $type, $version = '1.0.0')
     {
-        if (empty($version)) {
-
-            $version = $this->config->getVersion();
-        }
 
         $endPoint = self::EVENT_API;
         $data["name"] = $name;
@@ -229,9 +225,4 @@ class SimplApi extends AbstractHelper
         }
         return false;
     }
-
-
-
-
-
 }

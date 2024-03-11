@@ -77,7 +77,7 @@ class RefundManagement implements RefundManagementInterface
 
             if (!$this->simplApi->validateRefund($creditMemoId, $orderId, $transactionId, $status)) {
 
-                $message    = "Validation failed";
+                $message    = "Validation failed for order id " . $orderId;
                 $this->logger->error($message);
                 return $this->refundConfirmResponse->setError('validation_failed', $message);
             }
