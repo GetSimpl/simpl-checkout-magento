@@ -36,6 +36,8 @@ class SimplCheckout extends Adapter
 
     protected $creditmemoRepository;
 
+    protected $_isVirtual;
+
     public function __construct(
         ManagerInterface $eventManager,
         ValueHandlerPoolInterface $valueHandlerPool,
@@ -54,6 +56,7 @@ class SimplCheckout extends Adapter
         $this->simplConfig = $simplConfig;
         $this->simplApi = $simplApi;
         $this->creditmemoRepository = $creditmemoRepository;
+        $this->_isVirtual = false;
 
         parent::__construct(
             $eventManager,
@@ -76,7 +79,14 @@ class SimplCheckout extends Adapter
             return false;
         }
 
-        if ($this->isVirtual($quote) and !$this->simplConfig->isVirtualProductEnabled()) {
+        $this->validateQuote($quote);
+
+        if ($this->_isVirtual and !$this->simplConfig->isVirtualProductEnabled()) {
+            return false;
+        }
+
+        $totalQuantity = $quote->getItemsQty();
+        if(abs($totalQuantity - (int)$totalQuantity) > 0.0001) {
             return false;
         }
 
@@ -100,20 +110,19 @@ class SimplCheckout extends Adapter
      * @param $quote
      * @return bool
      */
-    private function isVirtual($quote)
+    private function validateQuote($quote)
     {
 
         if ($quote->getIsVirtual()) {
-            return true;
+            $this->_isVirtual = true;
         }
 
         $items = $quote->getAllItems();
         foreach ($items as $item) {
             if ($item->getIsVirtual()) {
-                return true;
+                $this->_isVirtual = true;
             }
         }
-        return false;
     }
 
     public function capture(InfoInterface $payment, $amount)
@@ -163,6 +172,6 @@ class SimplCheckout extends Adapter
 
     public function cancel(InfoInterface $payment, $amount = null)
     {
-       return $this;
+        return $this;
     }
 }
