@@ -82,6 +82,11 @@ class Order
                 'simpl/cart/restore',
                 ['id' => $order->getQuoteId()]
             );
+            $this->logger->info('ORDER QUOTE ID: ' . $order->getQuoteId());
+            $this->logger->info('checkout_url: ' . $this->url->getUrl(
+                    'simpl/cart/restore',
+                    ['id' => $order->getQuoteId()]
+                ));
 
             if ($order->getIsNotVirtual()) {
                 $data["shipping_address"] = $order->getShippingAddress()->getData();
@@ -105,9 +110,30 @@ class Order
                 "user_agent" => $_SERVER['HTTP_USER_AGENT']
             ];
         } catch (\Exception $e) {
-            $this->logger->info($e->getMessage());
+            $this->logger->error($e->getMessage());
         }
 
         return $data;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOrderDetails()
+    {
+
+        $orderDetails = [];
+        $orderId = $this->checkoutSession->getLastRealOrder()->getIncrementId();
+        $order = $this->order->loadByIncrementId($orderId);
+        $orderDetails = $order->getData();
+        $itemsData = [];
+        $items = $order->getAllItems();
+        foreach ($items as $item) {
+            $itemsData[] = $item->getData();
+        }
+        $orderDetails["items"] = $itemsData;
+        $orderDetails["payment_mode_details"] = $order->getPayment()->getData();
+
+        return $orderDetails;
     }
 }
