@@ -110,7 +110,7 @@ class Order
                 "user_agent" => $_SERVER['HTTP_USER_AGENT']
             ];
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
+            $this->logger->error($e->getMessage(), ['stacktrace' => $e->getTraceAsString()]);
         }
 
         return $data;
