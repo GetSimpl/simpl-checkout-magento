@@ -36,6 +36,6 @@ class PaymentInitiate extends AbstractEvents {
         $payload["user_details"] = $this->user->getUserDetails();
         $payload["payment_mode_details"] = $this->cart->getPaymentModeDetails();
         $payload["button_text"] = $this->getParam("button_text");
-        $this->simplApi->event("payment_initiate", $payload, "merchant_page_events");
+        $this->simplApi->event("payment_initiate", $payload, "MerchantPageEvents");
     }
 }

@@ -35,6 +35,6 @@ class PaymentInfoSubmitted extends AbstractEvents {
         $payload["cart_details"] = $this->cart->getCartDetails();
         $payload["user_details"] = $this->user->getUserDetails();
         $payload["payment_mode_details"] = $this->cart->getPaymentModeDetails();
-        $this->simplApi->event("payment_info_submitted", $payload, "merchant_page_events");
+        $this->simplApi->event("payment_info_submitted", $payload, "MerchantPageEvents");
     }
 }

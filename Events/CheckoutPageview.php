@@ -34,6 +34,6 @@ class CheckoutPageview extends AbstractEvents {
         $payload = $this->getFingerprint();
         $payload["cart_details"] = $this->cart->getCartDetails();
         $payload["user_details"] = $this->user->getUserDetails();
-        $this->simplApi->event("checkout_pageview", $payload, "merchant_page_events");
+        $this->simplApi->event("checkout_pageview", $payload, "MerchantPageEvents");
     }
 }

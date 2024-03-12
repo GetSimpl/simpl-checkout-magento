@@ -34,6 +34,6 @@ class ThankyouPageview extends AbstractEvents {
         $payload = $this->getFingerprint();
         $payload["order_details"] = $this->order->getOrderDetails();
         $payload["user_details"] = $this->user->getUserDetails();
-        $this->simplApi->event("thank_you_pageview", $payload, "merchant_page_events");
+        $this->simplApi->event("thank_you_pageview", $payload, "MerchantPageEvents");
     }
 }
