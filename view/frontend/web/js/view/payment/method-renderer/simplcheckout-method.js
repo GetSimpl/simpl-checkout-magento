@@ -1,5 +1,6 @@
 define(
     [
+        'jquery',
         'Magento_Checkout/js/view/payment/default',
         'Magento_Checkout/js/action/redirect-on-success',
         'mage/url',
@@ -75,7 +76,8 @@ define(
              */
             errorHandler: function (error) {
                 var errorMessage = error.message || 'An error occurred';
-                document.getElementById('#payment-error-message').text(errorMessage).show();
+                fullScreenLoader.stopLoader();
+                $('#payment-error-message').text(errorMessage).show();
             },
             /**
              * After place order callback
