@@ -3,7 +3,9 @@
 namespace Simpl\Checkout\Controller\Payment;
 
 use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\Request\Http;
 use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\Serialize\Serializer\Json;
 use Simpl\Checkout\Events\CheckoutPageview;
 use Simpl\Checkout\Events\PaymentInitiate;
 use Simpl\Checkout\Events\AddressInfoSubmitted;
@@ -24,7 +26,13 @@ class Event implements HttpPostActionInterface
     protected $paymentInfoSubmitted;
     protected $thankyouPageview;
 
+    protected $request;
+
+    protected $json;
+
     public function __construct(
+        Http $request,
+        Json $json,
         JsonFactory $jsonFactory,
         CheckoutPageview $checkoutPageview,
         PaymentInitiate $paymentInitiate,
@@ -33,6 +41,8 @@ class Event implements HttpPostActionInterface
         PaymentInfoSubmitted  $paymentInfoSubmitted,
         ThankyouPageview $thankyouPageview
     ) {
+        $this->request = $request;
+        $this->json = $json;
         $this->jsonFactory = $jsonFactory;
         $this->checkoutPageview = $checkoutPageview;
         $this->paymentInitiate = $paymentInitiate;
@@ -49,7 +59,7 @@ class Event implements HttpPostActionInterface
     {
         $data["status"] = false;
 
-        $event = $this->checkoutPageview->getParam('event');
+        $event = $this->getParam('event');
 
         switch ($event) {
             case "checkout_pageview":
@@ -81,5 +91,17 @@ class Event implements HttpPostActionInterface
         $resultJson = $this->jsonFactory->create();
         $resultJson->setData($data);
         return $resultJson;
+    }
+
+    /**
+     * @param $key
+     */
+    public function getParam($key)
+    {
+        $content = $this->json->unserialize($this->request->getContent());
+        if (isset($content[$key])) {
+            return $content[$key];
+        }
+        return null;
     }
 }
