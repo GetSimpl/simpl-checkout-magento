@@ -76,7 +76,6 @@ class Restore implements HttpGetActionInterface
             $id = $this->httpRequest->getParam('id');
             $quote = $this->quoteRepository->get($id);
             $incrementId = $quote->getReservedOrderId();
-
             $orderModel = $this->orderFactory->create();
             $order = $orderModel->loadByIncrementId($incrementId);
             if ($order && $order->getId()) {

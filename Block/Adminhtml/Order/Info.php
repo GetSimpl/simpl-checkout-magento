@@ -4,8 +4,8 @@ namespace Simpl\Checkout\Block\Adminhtml\Order;
 
 use Magento\Shipping\Helper\Data as ShippingHelper;
 use Magento\Tax\Helper\Data as TaxHelper;
-use Simpl\Checkout\Model\SimplFactory;
-use Simpl\Checkout\Model\ResourceModel\Simpl as SimplResource;
+use Simpl\Checkout\Model\SimplOrderFactory;
+use Simpl\Checkout\Model\ResourceModel\SimplOrder as SimplResource;
 use Magento\Sales\Block\Adminhtml\Order\View\Tab\Info as TabInfo;
 
 class Info extends TabInfo
@@ -17,7 +17,7 @@ class Info extends TabInfo
     private $simplModel;
 
     public function __construct(
-        SimplFactory $simplFactory,
+        SimplOrderFactory $simplFactory,
         SimplResource $simplResource,
         \Magento\Backend\Block\Template\Context $context,
         \Magento\Framework\Registry $registry,

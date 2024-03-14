@@ -71,6 +71,13 @@ define(
                 return false;
             },
             /**
+             * Error handler function
+             */
+            errorHandler: function (error) {
+                var errorMessage = error.message || 'An error occurred';
+                document.getElementById('#payment-error-message').text(errorMessage).show();
+            },
+            /**
              * After place order callback
              */
             initSimplCheckout: function () {
@@ -81,6 +88,11 @@ define(
                     paymentInit
                 ).fail(
                     function (response) {
+
+                        var error = {
+                            message: 'Payment Init failed. Please try again.'
+                        };
+                        self.errorHandler(error);
                         self.restoreCart();
                     }
                 ).done(
@@ -88,6 +100,10 @@ define(
                         if (response.status !== 'error') {
                             window.location.replace(response.url);
                         } else {
+                            var error = {
+                                message: 'Payment Init failed. Please try again.'
+                            };
+                            self.errorHandler(error);
                             self.restoreCart();
                         }
                     }
@@ -101,7 +117,7 @@ define(
              * Function to restore cart if payment failed.
              */
             restoreCart: function () {
-                var restoreCartUrl = url.build('simpl/payment/restore');
+                var restoreCartUrl = url.build('simpl/payment/restoreinitfailure');
                 var cartUrl = url.build('checkout/cart/');
                 fullScreenLoader.startLoader();
                 storage.get(
