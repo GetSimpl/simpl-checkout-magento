@@ -172,6 +172,6 @@ class SimplCheckout extends Adapter
 
     public function cancel(InfoInterface $payment, $amount = null)
     {
-        return $this;
+       return $this;
     }
 }

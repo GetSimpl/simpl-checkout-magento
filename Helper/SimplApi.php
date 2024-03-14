@@ -226,22 +226,8 @@ class SimplApi extends AbstractHelper
         return false;
     }
 
-    /**
-     * @param $name
-     * @param $payload
-     * @param $type
-     * @return bool
-     */
-    public function event($name, $payload, $type) {
 
-        $endPoint = self::EVENT_API;
-        $data["name"] = $name;
-        $data["version"] = $this->config->getVersion();
-        $data["type"] = $type;
-        $data["payload"] = $payload;
-        $response = $this->simplClient->postRequest($endPoint, $data);
-        if ($response->isSuccess())
-            return true;
-        return false;
-    }
+
+
+
 }

@@ -49,7 +49,7 @@ class Event implements HttpPostActionInterface
     {
         $data["status"] = false;
 
-        $event = $this->getParam('event');
+        $event = $this->checkoutPageview->getParam('event');
 
         switch ($event) {
             case "checkout_pageview":

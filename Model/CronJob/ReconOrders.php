@@ -49,7 +49,7 @@ class ReconOrders
      */
     public function execute()
     {
-        $lifetime = $this->config::PENDING_ORDER_LIFE_TIME;
+        $lifetime = $this->config::ABANDONED_ORDER_LIFE_TIME;
         $newOrderState = Order::STATE_NEW;
         $orders = $this->orderCollectionFactory->create();
         $orders->getSelect()->joinLeft(

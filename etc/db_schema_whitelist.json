@@ -1,11 +1,11 @@
 {
   "simpl_order_details": {
     "column": {
-      "order_id": true,
-      "payment_status": true,
-      "transaction_id": true,
-      "payment_method": true,
-      "additional_details": true
+        "order_id": true, 
+        "payment_status": true,
+        "transaction_id": true,
+        "payment_method": true,
+        "additional_details": true
     },
     "index": {
       "SIMPL_CHECKOUT_ORDER_ID": true

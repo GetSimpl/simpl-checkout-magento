@@ -37,4 +37,9 @@ class Cart {
 
         return $cartDetails;
     }
+
+    public function getPaymentModeDetails()
+    {
+        return $this->checkoutSession->getQuote()->getPayment()->getData();
+    }
 }

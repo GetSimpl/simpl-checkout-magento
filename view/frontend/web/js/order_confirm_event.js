@@ -1,13 +1,13 @@
 require(
     [
-        'jquery',
-        'mage/url',
-        'mage/storage'
+    'jquery',
+    'mage/url',
+    'mage/storage'
     ],
     function (
-        $,
-        url,
-        storage
+    $,
+    url,
+    storage
     ) {
         'use strict';
         $(function() {
@@ -32,8 +32,8 @@ require(
             }
 
             var payload = JSON.stringify({
-                    event: eventType,
-                    page_url: window.location.href
+                event: eventType,
+                page_url: window.location.href
                 }
             );
 
