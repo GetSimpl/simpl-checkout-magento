@@ -9,6 +9,7 @@ define(
         'Magento_Checkout/js/model/full-screen-loader'
     ],
     function (
+        $,
         Component,
         redirectOnSuccessAction,
         url,
