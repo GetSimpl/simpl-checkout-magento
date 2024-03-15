@@ -85,9 +85,16 @@ class SimplCheckout extends Adapter
             return false;
         }
 
+        // Hide Simpl Checkout if quantity in cart is in decimals
         $totalQuantity = $quote->getItemsQty();
         if(abs($totalQuantity - (int)$totalQuantity) > 0.0001) {
             return false;
+        }
+
+        // Hide Simpl checkout if shipping is outside India
+        $countryCode = $quote->getShippingAddress()->getData('country_id');
+        if($countryCode != 'IN') {
+            return false;   
         }
 
         if ($this->simplConfig->getAllowedEmails()) {
