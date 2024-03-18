@@ -3,8 +3,8 @@
 	<default>
 		<payment>
 			<simplcheckout>
-				<active>1</active>
-				<logging>1</logging>
+				<active>0</active>
+				<logging>0</logging>
                 <title>SimplCheckout</title>
                 <place_order_button_label>Pay with Simpl</place_order_button_label>
                 <title_for_frontend>Simpl Checkout (Pay Later / Pay in 3 / Cards / Net Banking / Wallets / COD)</title_for_frontend>
