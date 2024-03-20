@@ -4,6 +4,7 @@ namespace Simpl\Checkout\Controller\Adminhtml\Index;
 
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\Response\Http;
+use Magento\Framework\App\Response\HttpInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\View\Result\PageFactory;
@@ -18,24 +19,25 @@ class ValidateSecret implements HttpPostActionInterface
      * @var PageFactory
      */
     protected $resultPageFactory;
-
     /**
      * @var Json
      */
     protected $serializer;
-
+    /**
+     * @var Logger
+     */
     protected $logger;
-
     /**
      * @var Http
      */
     protected $http;
-
     /**
      * @var RequestInterface
      */
     protected $request;
-
+    /**
+     * @var SimplApi
+     */
     protected $simplApi;
 
     /**
@@ -64,7 +66,6 @@ class ValidateSecret implements HttpPostActionInterface
 
     /**
      * Validate secret
-     *
      */
     public function execute()
     {
@@ -88,6 +89,9 @@ class ValidateSecret implements HttpPostActionInterface
 
     /**
      * Create json response
+     *
+     * @param array|string $response
+     * @return Http|HttpInterface
      */
     private function jsonResponse($response = '')
     {

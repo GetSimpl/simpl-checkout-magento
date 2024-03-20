@@ -4,7 +4,9 @@ namespace Simpl\Checkout\Model\Data;
 
 class CreditMemoData extends ApiResponseData implements \Simpl\Checkout\Api\Data\CreditMemoDataInterface
 {
-
+    /**
+     * @var mixed
+     */
     private $data;
 
     /**

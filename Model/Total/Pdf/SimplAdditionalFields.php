@@ -8,6 +8,7 @@ class SimplAdditionalFields extends \Magento\Sales\Model\Order\Pdf\Total\Default
 {
     /**
      * To show simpl charges and discounts in PDF
+     *
      * @return array
      */
     public function getTotalsForDisplay()

@@ -19,13 +19,15 @@ class GetOrderDetails implements OrderDetailsInterface
      * @var GetOrderResponse
      */
     protected $getOrderResponse;
-
+    /**
+     * @var Logger
+     */
     protected $logger;
 
     /**
      * @param OrderRepositoryInterface $orderRepository
      * @param GetOrderResponse $getOrderResponse
-     * @param Alert $alert
+     * @param Logger $logger
      */
     public function __construct(
         OrderRepositoryInterface $orderRepository,
@@ -46,7 +48,7 @@ class GetOrderDetails implements OrderDetailsInterface
             $order = $this->orderRepository->get($orderId);
             return $this->getOrderResponse->setOrder($order);
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(),['stacktrace' => $e->getTraceAsString()]);
+            $this->logger->error($e->getMessage(), ['stacktrace' => $e->getTraceAsString()]);
             return $this->getOrderResponse->orderNotFoundError();
         }
     }

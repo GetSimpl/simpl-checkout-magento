@@ -19,7 +19,9 @@ class GetCreditMemoDetails implements CreditMemoDetailsInterface
      * @var GetCreditmemoResponse
      */
     protected $getCreditmemoResponse;
-
+    /**
+     * @var Logger
+     */
     protected $logger;
 
     /**
@@ -46,7 +48,7 @@ class GetCreditMemoDetails implements CreditMemoDetailsInterface
             $creditMemo = $this->creditmemoRepository->get($creditMemoId);
             return $this->getCreditmemoResponse->setCreditMemo($creditMemo);
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(),['stacktrace' => $e->getTraceAsString()]);
+            $this->logger->error($e->getMessage(), ['stacktrace' => $e->getTraceAsString()]);
             return $this->getCreditmemoResponse->creditMemoNotFoundError();
         }
     }

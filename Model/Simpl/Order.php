@@ -7,34 +7,34 @@ use Magento\Sales\Model\OrderFactory;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\UrlInterface;
 use Simpl\Checkout\Logger\Logger;
+use Magento\Framework\App\Request\Http;
 
 class Order
 {
-
     /**
      * @var OrderRepositoryInterface
      */
     protected $orderRepository;
-
     /**
      * @var CheckoutSession
      */
     protected $checkoutSession;
-
     /**
      * @var OrderFactory
      */
     protected $order;
-
     /**
      * @var UrlInterface
      */
     protected $url;
-
     /**
      * @var Logger
      */
     protected $logger;
+    /**
+     * @var Http
+     */
+    protected $httpClient;
 
     /**
      * @param OrderRepositoryInterface $orderRepository
@@ -42,23 +42,27 @@ class Order
      * @param OrderFactory $order
      * @param UrlInterface $url
      * @param Logger $logger
+     * @param Http $httpClient
      */
     public function __construct(
         OrderRepositoryInterface $orderRepository,
         CheckoutSession $checkoutSession,
         OrderFactory $order,
         UrlInterface $url,
-        Logger $logger
+        Logger $logger,
+        Http $httpClient,
     ) {
         $this->orderRepository = $orderRepository;
         $this->checkoutSession = $checkoutSession;
         $this->order = $order;
         $this->url = $url;
         $this->logger = $logger;
+        $this->httpClient = $httpClient;
     }
 
     /**
      * Function to init payment, called from frontend.
+     *
      * @return array
      */
     public function getCurrentOrder()
@@ -67,10 +71,10 @@ class Order
         return $this->getOrder($order);
     }
 
-
     /**
      * To get order data as per the payment initiate api contract
-     * @param \Magento\Sales\Model\Order $order
+     *
+     * @param Order $order
      * @return array|null
      * @throws \Exception
      */
@@ -105,9 +109,11 @@ class Order
 
             $data["items"] = $items;
 
+            $userIp = $this->httpClient->getServer()->get('REMOTE_ADDR');
+            $userAgent = $this->httpClient->getServer()->get('HTTP_USER_AGENT');
             $data["figerprint"] = [
-                "user_ip" => $order->getRemoteIp(),
-                "user_agent" => $_SERVER['HTTP_USER_AGENT']
+                "user_ip" => $userIp,
+                "user_agent" => $userAgent
             ];
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage(), ['stacktrace' => $e->getTraceAsString()]);
@@ -117,6 +123,8 @@ class Order
     }
 
     /**
+     * Prepare and retrieve order details.
+     *
      * @return array
      */
     public function getOrderDetails()

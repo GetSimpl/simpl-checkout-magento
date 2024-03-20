@@ -2,6 +2,8 @@
 
 namespace Simpl\Checkout\Model;
 
+use Magento\Framework\Exception\AlreadyExistsException;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\CreditmemoRepositoryInterface;
 use Magento\Sales\Api\InvoiceRepositoryInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
@@ -44,33 +46,57 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
      * @var BuilderInterface
      */
     protected $transactionBuilder;
-
+    /**
+     * @var InvoiceService
+     */
     protected $invoiceService;
-
+    /**
+     * @var InvoiceSender
+     */
     protected $invoiceSender;
-
+    /**
+     * @var InvoiceRepositoryInterface
+     */
     protected $invoiceRepository;
-
+    /**
+     * @var CreditmemoRepositoryInterface
+     */
     protected $creditmemoRepository;
-
-    protected $response;
-
+    /**
+     * @var SimplApi
+     */
     protected $simplApi;
-
+    /**
+     * @var OrderDataInterface
+     */
     protected $orderData;
-
+    /**
+     * @var CreditMemoDataInterface
+     */
     protected $creditMemoData;
-
+    /**
+     * @var OrderConfirmResponse
+     */
     protected $orderConfirmResponse;
-
+    /**
+     * @var Config
+     */
     protected $config;
-
+    /**
+     * @var Logger
+     */
     protected $logger;
-
+    /**
+     * @var SimplOrderFactory
+     */
     protected $simplFactory;
-
+    /**
+     * @var SimplResource
+     */
     protected $simplResource;
-
+    /**
+     * @var OrderSender
+     */
     protected $orderEmailSender;
 
     /**
@@ -87,7 +113,7 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
      * @param OrderConfirmResponse $orderConfirmResponse
      * @param Config $config
      * @param Logger $logger
-     * @param SimplFactory $simplFactory
+     * @param SimplOrderFactory $simplFactory
      * @param SimplResource $simplResource
      * @param OrderSender $orderEmailSender
      */
@@ -135,7 +161,6 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
         try {
             $order = $this->loadOrderById($orderId);
         } catch (\Exception $e) {
-
             $stacktrace = $e->getTraceAsString() ?? null;
             $message    = $e->getMessage();
             $this->logger->error($message, ['stacktrace' => $stacktrace]);
@@ -158,29 +183,24 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
             return $this->orderConfirmResponse->setError("order_confirm_failed", "Not a simpl checkout order");
         }
 
-       if (!$this->simplApi->validatePayment($order, $payment, $transaction)) {
-
-           $message = "Order validation failed";
-           $this->logger->error($message);
-           return $this->orderConfirmResponse->setError("order_confirm_failed", $message);
+        if (!$this->simplApi->validatePayment($order, $payment, $transaction)) {
+            $message = "Order validation failed";
+            $this->logger->error($message);
+            return $this->orderConfirmResponse->setError("order_confirm_failed", $message);
         }
 
         try {
-
             $this->storeSimplOrderDetails($orderId, $payment, $transaction);
 
             if ($payment->getStatus() == 'SUCCEEDED') {
-
                 $this->handlePaymentSuccess($order, $payment, $transaction, $appliedCharges, $appliedDiscounts);
             } elseif ($payment->getStatus() == 'FAILED') {
-
                 $order->setState(Order::STATE_CANCELED);
                 $order->setStatus(Order::STATE_CANCELED);
                 $statusComment = "Payment failed";
                 $order->addStatusHistoryComment($statusComment);
                 $order->save();
             } else {
-
                 $order->setState(Order::STATUS_FRAUD);
                 $order->setStatus(Order::STATUS_FRAUD);
                 $statusComment = "Fraud detected";
@@ -188,7 +208,7 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
                 $order->save();
             }
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(),['stacktrace' => $e->getTraceAsString()]);
+            $this->logger->error($e->getMessage(), ['stacktrace' => $e->getTraceAsString()]);
             return $this->orderConfirmResponse->setError($e->getCode(), $e->getMessage());
         }
 
@@ -197,11 +217,13 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
     }
 
     /**
-     * @param $orderId
-     * @param $payment
-     * @param $transaction
+     * For saving order details to simpl repo
+     *
+     * @param int|string $orderId
+     * @param PaymentDataInterface $payment
+     * @param TransactionDataInterface $transaction
      * @return void
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @throws AlreadyExistsException
      */
     private function storeSimplOrderDetails($orderId, $payment, $transaction)
     {
@@ -219,11 +241,13 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
     }
 
     /**
-     * @param $order
-     * @param $payment
-     * @param $transaction
-     * @param $appliedCharges
-     * @param $appliedDiscounts
+     * Update and process order based on payment status
+     *
+     * @param Order $order
+     * @param PaymentDataInterface $payment
+     * @param TransactionDataInterface $transaction
+     * @param AppliedChargesDataInterface $appliedCharges
+     * @param AppliedDiscountsDataInterface $appliedDiscounts
      * @return void
      * @throws \Exception
      */
@@ -245,7 +269,6 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
         $order->setBaseGrandTotal($grandTotal);
 
         if ($payment->getMode() != 'COD') {
-
             $order->setState(Order::STATE_PROCESSING);
             $order->setStatus(Order::STATE_PROCESSING);
             $order->setCustomerNoteNotify(true);
@@ -253,9 +276,7 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
             $canProcessInvoice = true;
             $order->save();
             $transactionId = $this->processTransaction($order, $payment, $transaction);
-
         } else {
-
             $newOrderStatus = $this->config->getNewOrderStatus();
             $order->setState(Order::STATE_NEW);
             $order->setStatus($newOrderStatus);
@@ -267,14 +288,15 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
 
         $this->orderEmailSender->send($order);
 
-        if ($transactionId and $canProcessInvoice) {
-
+        if ($transactionId && $canProcessInvoice) {
             $this->invoiceOrder($order, $payment, $transactionId);
         }
     }
 
     /**
-     * @param $order
+     * Save the applied charges with order
+     *
+     * @param Order $order
      * @param AppliedChargesDataInterface[] $appliedCharges
      */
     private function applyCharges($order, $appliedCharges)
@@ -295,7 +317,9 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
     }
 
     /**
-     * @param $order
+     * Save the applied discounts with order
+     *
+     * @param Order $order
      * @param AppliedDiscountsDataInterface[] $appliedDiscounts
      */
     private function applyDiscount($order, $appliedDiscounts)
@@ -316,10 +340,11 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
     }
 
     /**
-     * @param $order
+     * Save the transaction details with order
+     *
+     * @param Order $order
      * @param PaymentDataInterface $paymentData
      * @param TransactionDataInterface $transactionData
-     * @param false $update
      * @return int
      * @throws \Exception
      */
@@ -381,15 +406,16 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
             $payment->save();
             return $transaction->save()->getTransactionId();
         } catch (\Exception $e) {
-            throw new \Exception('Error while saving transaction');
+            throw new LocalizedException(__('Error while saving transaction'));
         }
     }
 
     /**
      * Load Order by ID
-     * @param $orderId
-     * @return \Magento\Sales\Model\Order
-     * @throws \Exception
+     *
+     * @param int|string $orderId
+     * @return Order
+     * @throws LocalizedException
      */
     private function loadOrderById($orderId)
     {
@@ -397,13 +423,14 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
         if ($order && $order->getId()) {
             return  $order;
         }
-        throw new \Exception('Error processing the request: id');
+        throw new LocalizedException(__('Error processing the request: id'));
     }
 
     /**
      * Load order by $incrementId
-     * @param $incrementId
-     * @return \Magento\Sales\Model\Order|void|null
+     *
+     * @param string|int $incrementId
+     * @return Order|void|null
      * @throws \Exception
      */
     private function loadOrderByIncrementId($incrementId)
@@ -413,9 +440,18 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
         if ($order && $order->getId()) {
             return  $order;
         }
-        throw new \Exception('Error processing the request: id');
+        throw new LocalizedException(__('Error processing the request: id'));
     }
 
+    /**
+     * Generate invoice for order and send invoice mail
+     *
+     * @param Order $order
+     * @param PaymentDataInterface $payment
+     * @param int|string|null $transactionId
+     * @return true|null
+     * @throws \Exception
+     */
     private function invoiceOrder($order, $payment, $transactionId = null)
     {
         if ($order->canInvoice()) {
@@ -438,7 +474,7 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
 
                 return true;
             } catch (\Exception $e) {
-                throw new \Exception('Error processing invoice');
+                throw new LocalizedException(__('Error processing invoice'));
             }
         }
         return null;

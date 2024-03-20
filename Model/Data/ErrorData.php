@@ -6,8 +6,13 @@ use Simpl\Checkout\Api\Data\ErrorDataInterface;
 
 class ErrorData implements ErrorDataInterface
 {
-
+    /**
+     * @var mixed
+     */
     private $code;
+    /**
+     * @var mixed
+     */
     private $message;
 
     /**

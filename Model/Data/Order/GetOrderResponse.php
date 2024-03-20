@@ -30,7 +30,9 @@ class GetOrderResponse
     }
 
     /**
-     * @param $order
+     * Set order data for response
+     *
+     * @param mixed $order
      * @return OrderDataInterface
      */
     public function setOrder($order)
@@ -41,6 +43,8 @@ class GetOrderResponse
     }
 
     /**
+     * Update response with error if order not found
+     *
      * @return OrderDataInterface
      */
     public function orderNotFoundError()

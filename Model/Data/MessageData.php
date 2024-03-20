@@ -6,7 +6,9 @@ use Simpl\Checkout\Api\Data\MessageDataInterface;
 
 class MessageData implements MessageDataInterface
 {
-
+    /**
+     * @var mixed
+     */
     private $message;
 
     /**

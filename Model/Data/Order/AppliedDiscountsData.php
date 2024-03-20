@@ -6,10 +6,25 @@ use Simpl\Checkout\Api\Data\Order\AppliedDiscountsDataInterface;
 
 class AppliedDiscountsData implements AppliedDiscountsDataInterface
 {
+    /**
+     * @var mixed
+     */
     private $title;
+    /**
+     * @var mixed
+     */
     private $description;
+    /**
+     * @var mixed
+     */
     private $discountType;
+    /**
+     * @var mixed
+     */
     private $discountCampaignId;
+    /**
+     * @var mixed
+     */
     private $amount;
 
     /**

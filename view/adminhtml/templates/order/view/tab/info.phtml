@@ -6,13 +6,15 @@ $paymentMode = $block->getPaymentMode($_order->getId());
 <?php if ($transactionId): ?>
     <div class="admin__field">
         <div>
-            <strong class="admin__field-label"><?= $block->escapeHtml(__('Transaction ID')) ?>:&nbsp;&nbsp;&nbsp;</strong>
-            <span class="admin__field-value"><?= $block->escapeHtml($transactionId) ?></span>
+            <strong class="admin__field-label">
+                <?= $escaper->escapeHtml(__('Transaction ID')) ?>:&nbsp
+            </strong>
+            <span class="admin__field-value"><?= $escaper->escapeHtml($transactionId) ?></span>
         </div>
         <div>
-            <strong class="admin__field-label"><?= $block->escapeHtml(__('Mode Of Payment')) ?>:</strong>
+            <strong class="admin__field-label"><?= $escaper->escapeHtml(__('Mode Of Payment')) ?>:</strong>
             <div class="admin__field-value">
-                <?php echo $paymentMode."\n"; ?>
+                <?= $escaper->escapeHtml($paymentMode)."\n"; ?>
             </div>
         </div>
     </div>

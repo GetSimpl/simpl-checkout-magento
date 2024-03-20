@@ -7,16 +7,34 @@ use Magento\Framework\Webapi\Rest\Response;
 
 class ApiResponseData implements ApiResponseDataInterface
 {
-
+    /**
+     * @var mixed
+     */
     private $success;
+    /**
+     * @var mixed
+     */
     private $version;
+    /**
+     * @var mixed
+     */
     private $error;
+    /**
+     * @var mixed
+     */
     private $data;
-
-    const VERSION = '1.0.0';
-
+    /**
+     * @var string
+     */
+    public const VERSION = '1.0.0';
+    /**
+     * @var mixed
+     */
     protected $response;
 
+    /**
+     * @param Response $response
+     */
     public function __construct(
         Response $response
     ) {

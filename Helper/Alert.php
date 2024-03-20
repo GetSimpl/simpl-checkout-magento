@@ -6,12 +6,16 @@ use GuzzleHttp\Client as GuzzleHttpClient;
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\App\Request\Http;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Framework\UrlInterface;
 
 class Alert extends AbstractHelper
 {
-    const ALERT_API = 'api/v1/magento/alert/track';
+    /**
+     * ALERT API URL
+     */
+    public const ALERT_API = 'api/v1/magento/alert/track';
 
     /**
      * @var GuzzleHttpClient
@@ -22,35 +26,56 @@ class Alert extends AbstractHelper
      * @var Json
      */
     protected $json;
-
+    /**
+     * @var Config
+     */
     protected $config;
-
+    /**
+     * @var UrlInterface
+     */
     protected $url;
-
+    /**
+     * @var AuthHelper
+     */
     protected $authHelper;
+    /**
+     * @var Http
+     */
+    protected $httpClient;
 
+    /**
+     * @param GuzzleHttpClient $client
+     * @param Json $json
+     * @param AuthHelper $authHelper
+     * @param Config $config
+     * @param UrlInterface $url
+     * @param Context $context
+     * @param Http $httpClient
+     */
     public function __construct(
         GuzzleHttpClient $client,
         Json $json,
         AuthHelper $authHelper,
         Config $config,
         UrlInterface $url,
-        Context $context
+        Context $context,
+        Http $httpClient
     ) {
         $this->client = $client;
         $this->json = $json;
         $this->config = $config;
         $this->url = $url;
         $this->authHelper = $authHelper;
+        $this->httpClient = $httpClient;
         parent::__construct($context);
     }
 
-
-
     /**
-     * @param $message
-     * @param $type
-     * @param $stacktrace
+     * This function prepare the payload for sending alerts
+     *
+     * @param string $message
+     * @param string $type
+     * @param string|null $stacktrace
      * @return bool
      */
     public function alert($message, $type, $stacktrace = null)
@@ -65,13 +90,15 @@ class Alert extends AbstractHelper
         $data["current_url"] = $this->url->getCurrentUrl();
         $data["environment"] = $this->config->getIntegrationMode();
         $data["extension_version"] = $this->config->getVersion();
-        $data["device"]["name"] = $_SERVER['HTTP_USER_AGENT'];
-        $data["device"]["ip"] = $_SERVER['REMOTE_ADDR'];
+        $data["device"]["name"] = $this->httpClient->getServer()->get('HTTP_USER_AGENT');
+        $data["device"]["ip"] = $this->httpClient->getServer()->get('REMOTE_ADDR');
 
         return $this->postRequest($data);
     }
 
     /**
+     * For sending post request to simpl
+     *
      * @param array $body
      * @return bool
      * @throws GuzzleException
@@ -102,6 +129,7 @@ class Alert extends AbstractHelper
 
     /**
      * Function to prepare header
+     *
      * @return array
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Exception
@@ -122,6 +150,4 @@ class Alert extends AbstractHelper
             'Content-Type' => 'application/json'
         ];
     }
-
-
 }

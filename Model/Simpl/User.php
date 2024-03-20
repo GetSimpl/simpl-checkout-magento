@@ -4,12 +4,24 @@ namespace Simpl\Checkout\Model\Simpl;
 
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Customer\Model\Session as CustomerSession;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 
-class User {
-
+class User
+{
+    /**
+     * @var CustomerSession
+     */
     protected $customerSession;
+    /**
+     * @var CheckoutSession
+     */
     protected $checkoutSession;
 
+    /**
+     * @param CustomerSession $customerSession
+     * @param CheckoutSession $checkoutSession
+     */
     public function __construct(
         CustomerSession $customerSession,
         CheckoutSession $checkoutSession
@@ -19,8 +31,12 @@ class User {
     }
 
     /**
-     * Function to get user details from session
-     * @return array
+     * Function to get user details from session.
+     *
+     * @param bool $isOrder
+     * @return array|mixed
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function getUserDetails($isOrder = false)
     {

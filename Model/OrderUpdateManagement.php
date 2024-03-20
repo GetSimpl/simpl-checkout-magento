@@ -2,9 +2,11 @@
 
 namespace Simpl\Checkout\Model;
 
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\InvoiceRepositoryInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Api\CreditmemoRepositoryInterface;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Payment\Transaction;
 use Magento\Sales\Model\Order\Payment\Transaction\BuilderInterface;
 use Magento\Sales\Model\OrderFactory;
@@ -27,25 +29,26 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface
      * @var OrderFactory
      */
     protected $orderFactory;
-
     /**
      * @var BuilderInterface
      */
     protected $transactionBuilder;
-
     /**
      * @var OrderUpdateResponse
      */
     protected $orderUpdateResponse;
-
     /**
      * @var SimplApi
      */
     protected $simplApi;
-
+    /**
+     * @var Logger
+     */
     protected $logger;
 
     /**
+     * OrderUpdateManagement constructor.
+     *
      * @param OrderFactory $orderFactory
      * @param BuilderInterface $transactionBuilder
      * @param SimplApi $simplApi
@@ -67,7 +70,9 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface
     }
 
     /**
-     * @param $order
+     * Update transaction details.
+     *
+     * @param Order $order
      * @param PaymentDataInterface $paymentData
      * @param TransactionDataInterface $transactionData
      * @return int
@@ -132,14 +137,15 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface
             $payment->save();
             return $transaction->save()->getTransactionId();
         } catch (\Exception $e) {
-            throw new \Exception('Error while saving transaction');
+            throw new LocalizedException(__('Error while saving transaction'));
         }
     }
 
     /**
      * Load Order by ID
-     * @param $orderId
-     * @return \Magento\Sales\Model\Order
+     *
+     * @param int|string $orderId
+     * @return Order
      * @throws \Exception
      */
     private function loadOrderById($orderId)
@@ -148,7 +154,7 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface
         if ($order && $order->getId()) {
             return  $order;
         }
-        throw new \Exception('Error processing the request: id');
+        throw new LocalizedException(__('Error processing the request: id'));
     }
 
     /**
@@ -170,12 +176,12 @@ class OrderUpdateManagement implements OrderUpdateManagementInterface
 
         if (!$this->simplApi->validatePayment($order, $payment, $transaction)) {
             return $this->orderUpdateResponse->setError("order_update_failed", "Order validation failed");
-        } 
+        }
 
         try {
             $this->updateTransaction($order, $payment, $transaction);
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(),['stacktrace' => $e->getTraceAsString()]);
+            $this->logger->error($e->getMessage(), ['stacktrace' => $e->getTraceAsString()]);
         }
 
         return $this->orderUpdateResponse->setMessage('updated successfully');

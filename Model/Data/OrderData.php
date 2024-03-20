@@ -6,7 +6,9 @@ use Simpl\Checkout\Api\Data\OrderDataInterface;
 
 class OrderData extends ApiResponseData implements OrderDataInterface
 {
-
+    /**
+     * @var mixed
+     */
     private $data;
 
     /**

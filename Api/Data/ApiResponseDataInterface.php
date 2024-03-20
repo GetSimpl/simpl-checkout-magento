@@ -59,7 +59,7 @@ interface ApiResponseDataInterface
     /**
      * Set success status
      *
-     * @param mixed
+     * @param mixed $data
      * @return $this
      */
     public function setData($data);

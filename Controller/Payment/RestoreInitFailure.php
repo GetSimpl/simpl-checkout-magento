@@ -15,20 +15,44 @@ use Simpl\Checkout\Logger\Logger;
 class RestoreInitFailure implements HttpGetActionInterface
 {
 
+    /**
+     * @var CheckoutSession
+     */
     protected $checkoutSession;
-
+    /**
+     * @var RedirectFactory
+     */
     protected $resultRedirectFactory;
-
+    /**
+     * @var OrderRepositoryInterface
+     */
     protected $orderRepository;
-
+    /**
+     * @var ManagerInterface
+     */
     protected $manager;
-
+    /**
+     * @var CartRepositoryInterface
+     */
     protected $quoteRepository;
-
+    /**
+     * @var JsonFactory
+     */
     protected $jsonFactory;
-
+    /**
+     * @var Logger
+     */
     protected $logger;
 
+    /**
+     * @param CheckoutSession $checkoutSession
+     * @param ManagerInterface $manager
+     * @param OrderRepositoryInterface $orderRepository
+     * @param RedirectFactory $resultRedirectFactory
+     * @param CartRepositoryInterface $quoteRepository
+     * @param JsonFactory $jsonFactory
+     * @param Logger $logger
+     */
     public function __construct(
         CheckoutSession $checkoutSession,
         ManagerInterface $manager,

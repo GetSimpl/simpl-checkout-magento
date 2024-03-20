@@ -11,11 +11,22 @@ use Simpl\Checkout\Logger\Logger;
 
 class OrderCancel
 {
+    /**
+     * @var SimplApi
+     */
     protected $simplApi;
+    /**
+     * @var OrderRepositoryInterface
+     */
     protected $orderRepository;
+    /**
+     * @var Logger
+     */
     protected $logger;
 
     /**
+     * OrderCancel constructor.
+     *
      * @param OrderRepositoryInterface $orderRepository
      * @param SimplApi $simplApi
      * @param Logger $logger
@@ -24,21 +35,22 @@ class OrderCancel
         OrderRepositoryInterface $orderRepository,
         SimplApi $simplApi,
         Logger $logger
-
     ) {
+        $this->orderRepository = $orderRepository;
         $this->simplApi = $simplApi;
         $this->logger = $logger;
-        $this->orderRepository = $orderRepository;
     }
 
     /**
+     * Before cancelling an order, trigger cancel action in Simpl if payment method matches.
+     *
      * @param OrderService $subject
      * @param int $id
      * @return array
+     * @throws LocalizedException
      */
     public function beforeCancel(OrderService $subject, $id): array
     {
-
         try {
             $order = $this->orderRepository->get($id);
             if ($order->getPayment()->getMethod() == Config::KEY_PAYMENT_CODE) {
@@ -47,14 +59,11 @@ class OrderCancel
                 $data["currency"] = $order->getBaseCurrencyCode();
                 $data["reason"] = "admin triggered cancel";
                 if (!$this->simplApi->cancel($orderId, $data)) {
-                    throw new LocalizedException(
-                        __('Error in Simpl API call')
-                    );
+                    throw new LocalizedException(__('Error in Simpl API call'));
                 }
             }
         } catch (\Exception $e) {
-
-            $this->logger->error($e->getMessage(),['stacktrace' => $e->getTraceAsString()]);
+            $this->logger->error($e->getMessage(), ['stacktrace' => $e->getTraceAsString()]);
             throw new LocalizedException(
                 __('Order cancellation unsuccessful. Please contact Simpl at merchantsupport@getsimpl.com')
             );

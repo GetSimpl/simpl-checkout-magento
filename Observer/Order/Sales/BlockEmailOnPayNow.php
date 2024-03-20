@@ -6,10 +6,12 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Sales\Model\Order;
 
-class BlockEmailOnPayNow implements ObserverInterface {
+class BlockEmailOnPayNow implements ObserverInterface
+{
 
     /**
      * Sales order place after observer to stop sending mails before payment
+     *
      * @param Observer $observer
      * @return void
      */

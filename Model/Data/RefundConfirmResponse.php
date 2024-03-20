@@ -18,9 +18,16 @@ class RefundConfirmResponse
      * @var ApiDataInterface
      */
     protected $apiData;
-
+    /**
+     * @var mixed
+     */
     protected $messageData;
 
+    /**
+     * @param ApiDataInterface $apiData
+     * @param ErrorDataInterface $errorData
+     * @param MessageDataInterface $messageData
+     */
     public function __construct(
         ApiDataInterface $apiData,
         ErrorDataInterface $errorData,
@@ -32,6 +39,8 @@ class RefundConfirmResponse
     }
 
     /**
+     * Sets error details in the API response data.
+     *
      * @return ApiDataInterface
      */
     public function errorMessage()
@@ -43,13 +52,14 @@ class RefundConfirmResponse
     }
 
     /**
-     * @param $code
-     * @param $message
+     * Sets error data in the API response data.
+     *
+     * @param string $code
+     * @param string $message
      * @return ApiDataInterface
      */
     public function setError($code, $message)
     {
-
         $this->errorData->setCode($code);
         $this->errorData->setMessage($message);
         $this->apiData->setError($this->errorData);
@@ -57,12 +67,13 @@ class RefundConfirmResponse
     }
 
     /**
-     * @param $message
+     * Sets message in the API response data.
+     *
+     * @param string $message
      * @return ApiDataInterface
      */
     public function setMessage($message)
     {
-
         $this->apiData->setSuccess(true);
         $this->messageData->setMessage($message);
         $this->apiData->setData($this->messageData);

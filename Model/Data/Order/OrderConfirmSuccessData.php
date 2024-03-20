@@ -8,6 +8,9 @@ use Simpl\Checkout\Model\Data\ApiResponseData;
 class OrderConfirmSuccessData extends ApiResponseData implements OrderConfirmSuccessDataInterface
 {
 
+    /**
+     * @var string|array
+     */
     private $data;
 
     /**
