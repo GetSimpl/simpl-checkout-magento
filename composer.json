@@ -1,5 +1,5 @@
 {
-    "name": "simpl/module-checkout",
+    "name": "getsimpl/module-checkout",
     "description": "Simpl Checkout",
     "type": "magento2-module",
     "version": "1.0.2",
