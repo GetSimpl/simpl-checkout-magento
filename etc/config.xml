@@ -1,20 +1,20 @@
 <?xml version="1.0" ?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
-	<default>
-		<payment>
-			<simplcheckout>
-				<active>1</active>
-				<logging>1</logging>
+    <default>
+        <payment>
+            <simplcheckout>
+                <active>0</active>
+                <logging>0</logging>
                 <title>SimplCheckout</title>
-                <place_order_button_label>Place Order</place_order_button_label>
-                <title_for_frontend>SimplCheckout</title_for_frontend>
+                <place_order_button_label>Pay with Simpl</place_order_button_label>
+                <title_for_frontend>Simpl Checkout (Pay Later / Pay in 3 / Cards / Net Banking / Wallets / COD)</title_for_frontend>
                 <client_id  backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
                 <test_secret  backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
                 <live_secret  backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
                 <order_status>pending</order_status>
                 <allowspecific>1</allowspecific>
                 <specificcountry>IN</specificcountry>
-				<model>SimplCheckoutPaymentFacade</model>
+                <model>SimplCheckoutPaymentFacade</model>
                 <is_gateway>1</is_gateway>
                 <can_authorize>1</can_authorize>
                 <can_capture>1</can_capture>
@@ -28,7 +28,7 @@
                 <can_use_checkout>1</can_use_checkout>
                 <can_save_cc>0</can_save_cc>
                 <can_use_for_multishipping>0</can_use_for_multishipping>
-			</simplcheckout>
-		</payment>
-	</default>
+            </simplcheckout>
+        </payment>
+    </default>
 </config>
