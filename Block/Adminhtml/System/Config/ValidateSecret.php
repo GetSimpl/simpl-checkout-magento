@@ -10,10 +10,14 @@ use Simpl\Checkout\Helper\Config;
 class ValidateSecret extends Field
 {
 
+    /**
+     * @var string
+     */
     protected $_template = 'system/config/validatesecret.phtml';
-
+    /**
+     * @var \Magento\Framework\UrlInterface
+     */
     protected $url;
-
     /**
      * @var Config
      */
@@ -34,17 +38,35 @@ class ValidateSecret extends Field
         parent::__construct($context, $data);
     }
 
+    /**
+     * Retrieve HTML markup for given form element
+     *
+     * @param AbstractElement $element
+     * @return string
+     */
     public function render(AbstractElement $element)
     {
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
         return parent::render($element);
     }
 
+    /**
+     * Retrieve HTML markup for given form element
+     *
+     * @param AbstractElement $element
+     * @return string
+     */
     protected function _getElementHtml(AbstractElement $element)
     {
         return $this->_toHtml();
     }
 
+    /**
+     * Retrieve HTML button configuration for rendering
+     *
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
     public function getButtonHtml()
     {
         $button = $this->getLayout()->createBlock(
@@ -62,6 +84,7 @@ class ValidateSecret extends Field
 
     /**
      * Function to get URL
+     *
      * @return string
      */
     public function getValidateUrl()
@@ -71,6 +94,7 @@ class ValidateSecret extends Field
 
     /**
      * To get the Simpl payment mode live/test
+     *
      * @return string
      */
     public function getSecretId()

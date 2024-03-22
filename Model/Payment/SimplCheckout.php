@@ -27,24 +27,49 @@ use Magento\Sales\Model\Order\CreditmemoRepository;
 
 class SimplCheckout extends Adapter
 {
-
+    /**
+     * @var string
+     */
     protected $_code = "simplcheckout";
-
+    /**
+     * @var SimplConfig
+     */
     protected $simplConfig;
-
+    /**
+     * @var SimplApi
+     */
     protected $simplApi;
-
+    /**
+     * @var CreditmemoRepository
+     */
     protected $creditmemoRepository;
-
+    /**
+     * @var false
+     */
     protected $_isVirtual;
 
+    /**
+     * @param ManagerInterface $eventManager
+     * @param ValueHandlerPoolInterface $valueHandlerPool
+     * @param PaymentDataObjectFactory $paymentDataObjectFactory
+     * @param string $code
+     * @param string $formBlockType
+     * @param string $infoBlockType
+     * @param SimplConfig $simplConfig
+     * @param SimplApi $simplApi
+     * @param CreditmemoRepository $creditmemoRepository
+     * @param CommandPoolInterface|null $commandPool
+     * @param ValidatorPoolInterface|null $validatorPool
+     * @param CommandManagerInterface|null $commandExecutor
+     * @param LoggerInterface|null $logger
+     */
     public function __construct(
         ManagerInterface $eventManager,
         ValueHandlerPoolInterface $valueHandlerPool,
         PaymentDataObjectFactory $paymentDataObjectFactory,
-        $code,
-        $formBlockType,
-        $infoBlockType,
+        string $code,
+        string $formBlockType,
+        string $infoBlockType,
         SimplConfig $simplConfig,
         SimplApi $simplApi,
         CreditmemoRepository $creditmemoRepository,
@@ -72,6 +97,12 @@ class SimplCheckout extends Adapter
         );
     }
 
+    /**
+     * Check whether payment method can be used
+     *
+     * @param CartInterface|null $quote
+     * @return array|bool|mixed|null
+     */
     public function isAvailable(
         CartInterface $quote = null
     ) {
@@ -81,20 +112,13 @@ class SimplCheckout extends Adapter
 
         $this->validateQuote($quote);
 
-        if ($this->_isVirtual and !$this->simplConfig->isVirtualProductEnabled()) {
+        if ($this->_isVirtual && !$this->simplConfig->isVirtualProductEnabled()) {
             return false;
         }
 
-        // Hide Simpl Checkout if quantity in cart is in decimals
         $totalQuantity = $quote->getItemsQty();
-        if(abs($totalQuantity - (int)$totalQuantity) > 0.0001) {
+        if (abs($totalQuantity - (int)$totalQuantity) > 0.0001) {
             return false;
-        }
-
-        // Hide Simpl checkout if shipping is outside India
-        $countryCode = $quote->getShippingAddress()->getData('country_id');
-        if($countryCode != 'IN') {
-            return false;   
         }
 
         if ($this->simplConfig->getAllowedEmails()) {
@@ -114,7 +138,9 @@ class SimplCheckout extends Adapter
     }
 
     /**
-     * @param $quote
+     * Check the quote is valid to support Simpl payment
+     *
+     * @param Quote $quote
      * @return bool
      */
     private function validateQuote($quote)
@@ -132,23 +158,52 @@ class SimplCheckout extends Adapter
         }
     }
 
+    /**
+     * Capture payment method
+     *
+     * @param InfoInterface $payment
+     * @param float $amount
+     * @return $this|Adapter|SimplCheckout
+     */
     public function capture(InfoInterface $payment, $amount)
     {
         return $this;
     }
 
+    /**
+     * Refund payment method
+     *
+     * @param InfoInterface $payment
+     * @param float $amount
+     * @return $this|Adapter|SimplCheckout
+     * @throws CouldNotSaveException
+     */
     public function refund(InfoInterface $payment, $amount)
     {
         $this->initRefund($payment, $amount);
         return $this;
     }
 
+    /**
+     * Void payment method
+     *
+     * @param InfoInterface $payment
+     * @return $this|Adapter|SimplCheckout
+     */
     public function void(InfoInterface $payment)
     {
         $this->cancel($payment);
         return $this;
     }
 
+    /**
+     * Method to initialize the refund to Simpl
+     *
+     * @param InfoInterface $payment
+     * @param float|null $amount
+     * @return $this
+     * @throws CouldNotSaveException
+     */
     public function initRefund(InfoInterface $payment, $amount = null)
     {
         try {
@@ -165,20 +220,27 @@ class SimplCheckout extends Adapter
             $data["credit_memo"]["id"] = $creditmemo->getId();
             $data["credit_memo"]["amount"] = $amount;
             $data["credit_memo"]["status"] = "pending";
-
-            // API to init refund
-            if (!$this->simplApi->initRefund($orderId, $data)) {
-                throw new \Exception('Error in API call');
-            }
         } catch (\Exception $e) {
+            throw new CouldNotSaveException(__('Refund can not be processed'));
+        }
+
+        // API to init refund
+        if (!$this->simplApi->initRefund($orderId, $data)) {
             throw new CouldNotSaveException(__('Refund can not be processed'));
         }
 
         return $this;
     }
 
+    /**
+     * Cancel payment method
+     *
+     * @param InfoInterface $payment
+     * @param float|null $amount
+     * @return $this|Adapter|SimplCheckout
+     */
     public function cancel(InfoInterface $payment, $amount = null)
     {
-       return $this;
+        return $this;
     }
 }

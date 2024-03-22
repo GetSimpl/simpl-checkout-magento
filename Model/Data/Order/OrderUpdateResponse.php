@@ -56,8 +56,10 @@ class OrderUpdateResponse
     }
 
     /**
-     * @param $code
-     * @param $message
+     * Sets error details in the API response data.
+     *
+     * @param string $code
+     * @param string $message
      * @return OrderConfirmSuccessDataInterface
      */
     public function setError($code, $message)
@@ -71,7 +73,9 @@ class OrderUpdateResponse
     }
 
     /**
-     * @param $message
+     * Sets a message in the API response data.
+     *
+     * @param string $message
      * @return ApiDataInterface
      */
     public function setMessage($message)

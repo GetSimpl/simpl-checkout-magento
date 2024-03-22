@@ -18,20 +18,37 @@ use Magento\Sales\Model\OrderFactory;
 
 class Restore implements HttpGetActionInterface
 {
+    /**
+     * @var CheckoutSession
+     */
     protected $checkoutSession;
-
+    /**
+     * @var RedirectFactory
+     */
     protected $resultRedirectFactory;
-
+    /**
+     * @var OrderRepositoryInterface
+     */
     protected $orderRepository;
-
+    /**
+     * @var ManagerInterface
+     */
     protected $manager;
-
+    /**
+     * @var CartRepositoryInterface
+     */
     protected $quoteRepository;
-
+    /**
+     * @var Http
+     */
     protected $httpRequest;
-
+    /**
+     * @var Logger
+     */
     protected $logger;
-
+    /**
+     * @var OrderFactory
+     */
     protected $orderFactory;
 
     /**
@@ -42,6 +59,7 @@ class Restore implements HttpGetActionInterface
      * @param CartRepositoryInterface $quoteRepository
      * @param Http $httpRequest
      * @param Logger $logger
+     * @param OrderFactory $orderFactory
      */
     public function __construct(
         CheckoutSession $checkoutSession,

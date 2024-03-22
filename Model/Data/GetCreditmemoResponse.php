@@ -40,7 +40,6 @@ class GetCreditmemoResponse
         MessageDataInterface $messageData,
         CreditMemoDataInterface $creditMemoData
     ) {
-
         $this->apiData = $apiData;
         $this->errorData = $errorData;
         $this->messageData = $messageData;
@@ -48,12 +47,13 @@ class GetCreditmemoResponse
     }
 
     /**
-     * @param $message
+     * Sets message in the API response data.
+     *
+     * @param string $message
      * @return ApiDataInterface
      */
     public function setMessage($message)
     {
-
         $this->apiData->setSuccess(true);
         $this->messageData->setMessage($message);
         $this->apiData->setData($this->messageData);
@@ -61,23 +61,25 @@ class GetCreditmemoResponse
     }
 
     /**
-     * @param $creditMemo
+     * Sets credit memo in the API response data.
+     *
+     * @param \Magento\Sales\Api\Data\CreditmemoInterface $creditMemo
      * @return CreditMemoDataInterface
      */
     public function setCreditMemo($creditMemo)
     {
-
         $this->creditMemoData->setSuccess(true);
         $this->creditMemoData->setData($creditMemo);
         return $this->creditMemoData;
     }
 
     /**
+     * Sets error details in the API response data.
+     *
      * @return CreditMemoDataInterface
      */
     public function creditMemoNotFoundError()
     {
-
         $this->creditMemoData->setSuccess(false);
         $this->errorData->setCode("creditmemo_not_found");
         $this->errorData->setMessage("Credit Memo not found");

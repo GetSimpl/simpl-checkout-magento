@@ -7,7 +7,13 @@ use Magento\Config\Block\System\Config\Form\Field;
 
 class Disable extends Field
 {
-    protected function _getElementHtml(AbstractElement $element)
+    /**
+     * Disable the input field.
+     *
+     * @param AbstractElement $element
+     * @return string
+     */
+    protected function _getElementHtml(AbstractElement $element): string
     {
         $element->setDisabled('disabled');
         return $element->getElementHtml();

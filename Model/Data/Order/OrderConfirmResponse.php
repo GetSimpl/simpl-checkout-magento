@@ -56,7 +56,9 @@ class OrderConfirmResponse
     }
 
     /**
-     * @param $url
+     * Sets redirect URL in the API response data.
+     *
+     * @param string $url
      * @return OrderConfirmSuccessDataInterface
      */
     public function setRedirectionURL($url)
@@ -68,8 +70,10 @@ class OrderConfirmResponse
     }
 
     /**
-     * @param $code
-     * @param $message
+     * Sets error details in the API response data.
+     *
+     * @param string $code
+     * @param string $message
      * @return OrderConfirmSuccessDataInterface
      */
     public function setError($code, $message)
@@ -82,7 +86,9 @@ class OrderConfirmResponse
     }
 
     /**
-     * @param $message
+     * Sets a message in the API response data.
+     *
+     * @param string $message
      * @return ApiDataInterface
      */
     public function setMessage($message)

@@ -8,6 +8,8 @@ interface OrderDetailsInterface
 {
 
     /**
+     * API to get the order details by order id
+     *
      * @param string $orderId
      * @return OrderDataInterface
      */

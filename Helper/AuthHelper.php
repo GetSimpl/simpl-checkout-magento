@@ -11,11 +11,19 @@ class AuthHelper extends AbstractHelper
      * @var Config
      */
     protected $config;
-
+    /**
+     * @var string
+     */
     private $clientId;
-
+    /**
+     * @var string
+     */
     private $secret;
 
+    /**
+     * @param Config $config
+     * @param Context $context
+     */
     public function __construct(
         Config $config,
         Context $context
@@ -27,6 +35,8 @@ class AuthHelper extends AbstractHelper
     }
 
     /**
+     *  To get the client id
+     *
      * @return string
      */
     public function getClientId()
@@ -35,6 +45,8 @@ class AuthHelper extends AbstractHelper
     }
 
     /**
+     * To get the client secret
+     *
      * @return string
      */
     public function getSecret()
@@ -43,7 +55,9 @@ class AuthHelper extends AbstractHelper
     }
 
     /**
-     * @param $clientId
+     * For setting the client id
+     *
+     * @param string $clientId
      */
     public function setClientId($clientId)
     {
@@ -51,7 +65,9 @@ class AuthHelper extends AbstractHelper
     }
 
     /**
-     * @param $secret
+     * For setting the secret
+     *
+     * @param string $secret
      */
     public function setSecret($secret)
     {
@@ -59,6 +75,8 @@ class AuthHelper extends AbstractHelper
     }
 
     /**
+     * This will validate the signature and return true if it's valid
+     *
      * @param string $clientId
      * @param string $nonce
      * @param string $signature
@@ -72,6 +90,8 @@ class AuthHelper extends AbstractHelper
     }
 
     /**
+     * For generating the signature based on client id and secret
+     *
      * @param string $nonce
      * @param string|null $clientId
      * @return false|string
@@ -90,6 +110,8 @@ class AuthHelper extends AbstractHelper
     }
 
     /**
+     * For generating the UUID
+     *
      * @return string
      * @throws \Exception
      */

@@ -7,28 +7,31 @@ use Simpl\Checkout\Helper\Config;
 
 class ConfigProvider implements ConfigProviderInterface
 {
+    public const CODE = 'simplcheckout';
 
-    const CODE = 'simplcheckout';
-
+    /**
+     * @var Config
+     */
     protected $config;
 
     /**
-     * @param \Simpl\Checkout\Helper\Config $config
+     * ConfigProvider constructor.
+     *
+     * @param Config $config
      */
-    public function __construct(
-        Config $config
-    ) {
+    public function __construct(Config $config)
+    {
         $this->config = $config;
     }
 
     /**
-     * @return string[][][]
+     * Get configuration data.
+     *
+     * @return array
      */
-    public function getConfig()
+    public function getConfig(): array
     {
-        $data = [];
-
-        $data = [
+        return [
             'payment' => [
                 self::CODE => [
                     'instructions' => $this->config->getInstructions(),
@@ -37,7 +40,5 @@ class ConfigProvider implements ConfigProviderInterface
                 ]
             ]
         ];
-
-        return $data;
     }
 }

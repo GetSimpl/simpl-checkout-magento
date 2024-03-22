@@ -2,6 +2,9 @@
 
 namespace Simpl\Checkout\Block\Adminhtml\Order;
 
+use Magento\Backend\Block\Template\Context;
+use Magento\Framework\Registry;
+use Magento\Sales\Helper\Admin;
 use Magento\Shipping\Helper\Data as ShippingHelper;
 use Magento\Tax\Helper\Data as TaxHelper;
 use Simpl\Checkout\Model\SimplOrderFactory;
@@ -10,18 +13,31 @@ use Magento\Sales\Block\Adminhtml\Order\View\Tab\Info as TabInfo;
 
 class Info extends TabInfo
 {
+    /**
+     * @var SimplOrderFactory
+     */
     protected $simplFactory;
-
+    /**
+     * @var SimplResource
+     */
     protected $simplResource;
 
-    private $simplModel;
-
+    /**
+     * @param SimplOrderFactory $simplFactory
+     * @param SimplResource $simplResource
+     * @param Context $context
+     * @param Registry $registry
+     * @param Admin $adminHelper
+     * @param array $data
+     * @param ShippingHelper|null $shippingHelper
+     * @param TaxHelper|null $taxHelper
+     */
     public function __construct(
         SimplOrderFactory $simplFactory,
         SimplResource $simplResource,
-        \Magento\Backend\Block\Template\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Sales\Helper\Admin $adminHelper,
+        Context $context,
+        Registry $registry,
+        Admin $adminHelper,
         array $data = [],
         ?ShippingHelper $shippingHelper = null,
         ?TaxHelper $taxHelper = null
@@ -31,6 +47,12 @@ class Info extends TabInfo
         parent::__construct($context, $registry, $adminHelper, $data, $shippingHelper, $taxHelper);
     }
 
+    /**
+     * To retrieve transaction id based on id
+     *
+     * @param int|string $id
+     * @return mixed
+     */
     public function getTransactionId($id)
     {
         if ($this->simplModel) {
@@ -42,6 +64,12 @@ class Info extends TabInfo
         return $this->simplModel->getTransactionId();
     }
 
+    /**
+     * To retrieve payment mode with id
+     *
+     * @param int|string $id
+     * @return mixed
+     */
     public function getPaymentMode($id)
     {
         if ($this->simplModel) {

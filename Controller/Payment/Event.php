@@ -19,17 +19,52 @@ class Event implements HttpPostActionInterface
      * @var JsonFactory
      */
     protected $jsonFactory;
+    /**
+     * @var CheckoutPageview
+     */
     protected $checkoutPageview;
+    /**
+     * @var PaymentInitiate
+     */
     protected $paymentInitiate;
+    /**
+     * @var AddressInfoSubmitted
+     */
     protected $addressInfoSubmitted;
+    /**
+     * @var OrderConfirm
+     */
     protected $orderConfirm;
+    /**
+     * @var PaymentInfoSubmitted
+     */
     protected $paymentInfoSubmitted;
+    /**
+     * @var ThankyouPageview
+     */
     protected $thankyouPageview;
-
+    /**
+     * @var Http
+     */
     protected $request;
-
+    /**
+     * @var Json
+     */
     protected $json;
 
+    /**
+     *
+     *
+     * @param Http $request
+     * @param Json $json
+     * @param JsonFactory $jsonFactory
+     * @param CheckoutPageview $checkoutPageview
+     * @param PaymentInitiate $paymentInitiate
+     * @param AddressInfoSubmitted $addressInfoSubmitted
+     * @param OrderConfirm $orderConfirm
+     * @param PaymentInfoSubmitted $paymentInfoSubmitted
+     * @param ThankyouPageview $thankyouPageview
+     */
     public function __construct(
         Http $request,
         Json $json,
@@ -94,7 +129,9 @@ class Event implements HttpPostActionInterface
     }
 
     /**
-     * @param $key
+     * To get the param passed as body request.
+     *
+     * @param string $key
      */
     public function getParam($key)
     {

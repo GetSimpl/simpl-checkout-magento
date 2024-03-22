@@ -29,7 +29,7 @@ Simpl Checkout
     - public repository `packagist.org`
     - public github repository as vcs
  - Add the composer repository to the configuration by running `composer config repositories.repo.magento.com composer https://repo.magento.com/`
- - Install the module composer by running `composer require simpl/module-checkout`
+ - Install the module composer by running `composer require getsimpl/module-checkout`
  - enable the module by running `php bin/magento module:enable Simpl_Checkout`
  - apply database updates by running `php bin/magento setup:upgrade`\*
  - Flush the cache by running `php bin/magento cache:flush`

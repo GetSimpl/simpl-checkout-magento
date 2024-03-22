@@ -20,17 +20,21 @@ class Response
     }
 
     /**
+     * Check if the response is success or not
+     *
      * @return bool
      */
     public function isSuccess()
     {
-        if (isset($this->data["success"]) and $this->data["success"] == true) {
+        if (isset($this->data["success"]) && $this->data["success"] == true) {
             return true;
         }
         return false;
     }
 
     /**
+     * To retrieve the response data
+     *
      * @return array
      */
     public function getData()
@@ -42,6 +46,8 @@ class Response
     }
 
     /**
+     * Check if the response have any error or not
+     *
      * @return string
      */
     public function getErrorMessage()
