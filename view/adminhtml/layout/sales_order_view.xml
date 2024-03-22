@@ -1,0 +1,9 @@
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="payment_additional_info">
+            <block name="simpl_payment_info"
+                   class="Simpl\Checkout\Block\Adminhtml\Order\Info"
+                   template="Simpl_Checkout::order/view/tab/info.phtml" />
+        </referenceContainer>
+    </body>
+</page>

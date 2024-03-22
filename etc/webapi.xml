@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <route url="/V1/simpl/order/:orderId/confirm" method="POST">
+        <service class="Simpl\Checkout\Api\OrderConfirmManagementInterface" method="confirm"/>
+        <resources>
+            <resource ref="simpl"/>
+        </resources>
+    </route>
+    <route url="/V1/simpl/order/:orderId/update" method="PUT">
+        <service class="Simpl\Checkout\Api\OrderUpdateManagementInterface" method="update"/>
+        <resources>
+            <resource ref="simpl"/>
+        </resources>
+    </route>
+    <route url="/V1/simpl/refund/:credit_memo_id/confirm" method="POST">
+        <service class="Simpl\Checkout\Api\RefundManagementInterface" method="confirm"/>
+        <resources>
+            <resource ref="simpl"/>
+        </resources>
+    </route>
+    <route url="/V1/simpl/order/:orderId" method="GET">
+        <service class="Simpl\Checkout\Api\OrderDetailsInterface" method="get"/>
+        <resources>
+            <resource ref="simpl"/>
+        </resources>
+    </route>
+    <route url="/V1/simpl/order/:order_id/credit_memo/:credit_memo_id" method="GET">
+        <service class="Simpl\Checkout\Api\CreditMemoDetailsInterface" method="getCreditMemo"/>
+        <resources>
+            <resource ref="simpl"/>
+        </resources>
+    </route>
+</routes>
