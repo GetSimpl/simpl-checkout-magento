@@ -124,7 +124,7 @@ class Order
 
         $orderDetails = [];
         $orderId = $this->checkoutSession->getLastRealOrder()->getIncrementId();
-        $order = $this->order->loadByIncrementId($orderId);
+        $order = $this->order->create()->loadByIncrementId($orderId);
         $orderDetails = $order->getData();
         $itemsData = [];
         $items = $order->getAllItems();
