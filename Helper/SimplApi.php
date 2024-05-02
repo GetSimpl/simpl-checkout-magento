@@ -4,6 +4,7 @@ namespace Simpl\Checkout\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Sales\Model\Order;
 use Simpl\Checkout\Api\Data\Order\TransactionDataInterface;
 use Simpl\Checkout\Api\Data\Order\PaymentDataInterface;
 use Magento\Framework\UrlInterface;
@@ -12,14 +13,14 @@ use Simpl\Checkout\Logger\Logger;
 class SimplApi extends AbstractHelper
 {
 
-    const INSTALL_API = 'api/v1/magento/app/install';
-    const PAYMENT_INIT_API = 'api/v1/magento/payment/initiate';
-    const REFUND_INIT_API = 'api/v1/magento/order/:order_id/refund';
-    const CANCEL_INIT_API = 'api/v1/magento/order/:order_id/cancel';
-    const FETCH_PAYMENT_API = 'api/v1/magento/payment_order/';
-    const FETCH_REFUND_API = 'api/v1/magento/refund/';
-    const ALERT_API = 'api/v1/magento/alert/track';
-    const EVENT_API = 'api/v1/magento/event/track';
+    protected const INSTALL_API = 'api/v1/magento/app/install';
+    protected const PAYMENT_INIT_API = 'api/v1/magento/payment/initiate';
+    protected const REFUND_INIT_API = 'api/v1/magento/order/:order_id/refund';
+    protected const CANCEL_INIT_API = 'api/v1/magento/order/:order_id/cancel';
+    protected const FETCH_PAYMENT_API = 'api/v1/magento/payment_order/';
+    protected const FETCH_REFUND_API = 'api/v1/magento/refund/';
+    protected const ALERT_API = 'api/v1/magento/alert/track';
+    protected const EVENT_API = 'api/v1/magento/event/track';
 
     /**
      * @var SimplClient
@@ -37,7 +38,7 @@ class SimplApi extends AbstractHelper
     protected $url;
 
     /**
-     * AuthHelper
+     * @var AuthHelper
      */
     protected $authHelper;
 
@@ -46,6 +47,14 @@ class SimplApi extends AbstractHelper
      */
     protected $logger;
 
+    /**
+     * @param SimplClient $simplClient
+     * @param Config $config
+     * @param UrlInterface $url
+     * @param AuthHelper $authHelper
+     * @param Logger $logger
+     * @param Context $context
+     */
     public function __construct(
         SimplClient $simplClient,
         Config $config,
@@ -64,6 +73,7 @@ class SimplApi extends AbstractHelper
 
     /**
      * API to install plugin
+     *
      * @param string $secret
      * @param string $clientId
      * @return array
@@ -87,7 +97,8 @@ class SimplApi extends AbstractHelper
 
     /**
      * Function Integrate API to init payment.
-     * @param $data
+     *
+     * @param string|array $data
      * @return string
      */
     public function initPayment($data)
@@ -102,8 +113,10 @@ class SimplApi extends AbstractHelper
     }
 
     /**
-     * @param $orderId
-     * @param $data
+     * API to cancel the order placed
+     *
+     * @param string $orderId
+     * @param string|array $data
      * @return bool
      */
     public function cancel($orderId, $data)
@@ -118,7 +131,9 @@ class SimplApi extends AbstractHelper
 
     /**
      * Function to init refund
-     * @param $data
+     *
+     * @param string $orderId
+     * @param string|array $data
      * @return string
      */
     public function initRefund($orderId, $data)
@@ -132,10 +147,12 @@ class SimplApi extends AbstractHelper
     }
 
     /**
-     * @param $creditMemoId
-     * @param $orderId
-     * @param $transactionId
-     * @param $status
+     * API to validate refund
+     *
+     * @param string $creditMemoId
+     * @param string $orderId
+     * @param string $transactionId
+     * @param string $status
      * @return bool
      */
     public function validateRefund($creditMemoId, $orderId, $transactionId, $status)
@@ -158,7 +175,9 @@ class SimplApi extends AbstractHelper
     }
 
     /**
-     * @param $order
+     * API to validate the payment
+     *
+     * @param Order $order
      * @param PaymentDataInterface $payment
      * @param TransactionDataInterface $transaction
      */
@@ -182,6 +201,8 @@ class SimplApi extends AbstractHelper
     }
 
     /**
+     * To retrieve the redirect url that will be sent to simpl for redirection
+     *
      * @param array $param
      * @return string
      */
@@ -191,7 +212,9 @@ class SimplApi extends AbstractHelper
     }
 
     /**
-     * @param $data
+     * API for sending alerts
+     *
+     * @param string|array $data
      * @return bool
      */
     public function alert($data)
@@ -206,9 +229,12 @@ class SimplApi extends AbstractHelper
     }
 
     /**
-     * @param $name
-     * @param $payload
-     * @param $type
+     * API for sending events
+     *
+     * @param string $name
+     * @param string $payload
+     * @param string $type
+     * @param string $version
      * @return bool
      */
     public function event($name, $payload, $type, $version = '1.0.0')
@@ -225,9 +251,4 @@ class SimplApi extends AbstractHelper
         }
         return false;
     }
-
-
-
-
-
 }

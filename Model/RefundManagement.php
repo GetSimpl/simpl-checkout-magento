@@ -2,7 +2,9 @@
 
 namespace Simpl\Checkout\Model;
 
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\CreditmemoCommentInterface;
+use Magento\Sales\Api\Data\TransactionInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order\Creditmemo;
 use Magento\Sales\Model\Order\CreditmemoRepository;
@@ -15,21 +17,37 @@ use Simpl\Checkout\Logger\Logger;
 
 class RefundManagement implements RefundManagementInterface
 {
-
+    /**
+     * @var RefundConfirmResponse
+     */
     protected $refundConfirmResponse;
-
+    /**
+     * @var OrderRepositoryInterface
+     */
     protected $orderRepository;
-
+    /**
+     * @var CreditmemoRepository
+     */
     protected $creditmemoRepository;
-
+    /**
+     * @var CreditmemoCommentInterface
+     */
     protected $creditmemoComment;
-
+    /**
+     * @var SimplApi
+     */
     protected $simplApi;
-
+    /**
+     * @var Logger
+     */
     protected $logger;
-
+    /**
+     * @var TransactionRepositoryInterface
+     */
     protected $transactionRepository;
-
+    /**
+     * @var TransactionSearchResultInterfaceFactory
+     */
     protected $transactionSearchResultInterfaceFactory;
 
     /**
@@ -72,11 +90,10 @@ class RefundManagement implements RefundManagementInterface
             $creditMemo =  $this->creditmemoRepository->get($creditMemoId);
 
             if ($creditMemo->getOrderId() != $orderId) {
-                throw new \Exception('invalid credit memo');
+                return $this->refundConfirmResponse->setError('error_request', 'invalid credit memo');
             }
 
             if (!$this->simplApi->validateRefund($creditMemoId, $orderId, $transactionId, $status)) {
-
                 $message    = "Validation failed for order id " . $orderId;
                 $this->logger->error($message);
                 return $this->refundConfirmResponse->setError('validation_failed', $message);
@@ -114,13 +131,19 @@ class RefundManagement implements RefundManagementInterface
             $this->creditmemoRepository->save($creditMemo);
             $this->orderRepository->save($order);
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage(),['stacktrace' => $e->getTraceAsString()]);
+            $this->logger->error($e->getMessage(), ['stacktrace' => $e->getTraceAsString()]);
             return $this->refundConfirmResponse->setError('error_request', $e->getMessage());
         }
 
         return $this->refundConfirmResponse->setMessage("refund confirm successfully");
     }
 
+    /**
+     * To retrieve transaction details based on order id
+     *
+     * @param int|string $orderId
+     * @return TransactionInterface[]
+     */
     private function getOrderTransactions($orderId)
     {
         $transactions = $this->transactionSearchResultInterfaceFactory->create()->addOrderIdFilter($orderId);

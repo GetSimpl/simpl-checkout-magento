@@ -42,6 +42,7 @@ class SimplClient extends AbstractHelper
      * @param Json $json
      * @param Config $config
      * @param Logger $logger
+     * @param AuthHelper $authHelper
      * @param Context $context
      */
     public function __construct(
@@ -62,6 +63,7 @@ class SimplClient extends AbstractHelper
 
     /**
      * Function to prepare header
+     *
      * @return array
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Exception
@@ -84,6 +86,8 @@ class SimplClient extends AbstractHelper
     }
 
     /**
+     * Create and send an HTTP POST request.
+     *
      * @param string $endpointUrl
      * @param array $body
      * @return Response
@@ -122,13 +126,11 @@ class SimplClient extends AbstractHelper
             $milliSeconds = $endTime * 1000;
             $this->logger->info('time taken by api to execute'.':'.' '.$milliSeconds);
         } catch (GuzzleException $exception) {
-
             if (!isset($responseArray["error"]["message"])) {
                 $responseArray["error"]["message"] = $exception->getMessage();
             }
             $this->logger->error('Exception ' . get_class($exception) . ' while API call: ' . $exception->getMessage());
         } catch (\InvalidArgumentException | \Exception $exception) {
-
             if (!isset($responseArray["error"]["message"])) {
                 $responseArray["error"]["message"] = $exception->getMessage();
             }
@@ -139,6 +141,8 @@ class SimplClient extends AbstractHelper
     }
 
     /**
+     * Create and send an HTTP GET request.
+     *
      * @param string $endpointUrl
      * @param array $params
      * @return Response
@@ -153,7 +157,8 @@ class SimplClient extends AbstractHelper
         try {
             // LOG
             $this->logger->info('API Call initiated for '.$endpointUrl);
-            $this->logger->info(print_r($params, true));
+            $paramsJson = json_encode($params, JSON_PRETTY_PRINT);
+            $this->logger->info($paramsJson);
             $startTime = time();
 
             $response = $this->client->request(
@@ -165,20 +170,18 @@ class SimplClient extends AbstractHelper
                 ]
             );
             $responseArray = $this->json->unserialize($response->getBody()->getContents());
-            $this->logger->info(print_r($responseArray, true));
+            $this->logger->info($response->getBody()->getContents());
 
             // LOG
             $endTime = time() - $startTime;
             $milliSeconds = $endTime * 1000;
             $this->logger->info('time taken by api to execute'.':'.' '.$milliSeconds);
         } catch (GuzzleException $exception) {
-
             if (!isset($responseArray["error"]["message"])) {
                 $responseArray["error"]["message"] = $exception->getMessage();
             }
             $this->logger->error('Exception ' . get_class($exception) . ' while API call: ' . $exception->getMessage());
         } catch (\InvalidArgumentException | \Exception $exception) {
-
             if (!isset($responseArray["error"]["message"])) {
                 $responseArray["error"]["message"] = $exception->getMessage();
             }

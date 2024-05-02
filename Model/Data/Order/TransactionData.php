@@ -6,9 +6,21 @@ use Simpl\Checkout\Api\Data\Order\TransactionDataInterface;
 
 class TransactionData implements TransactionDataInterface
 {
+    /**
+     * @var mixed
+     */
     private $id;
+    /**
+     * @var mixed
+     */
     private $parentId;
+    /**
+     * @var mixed
+     */
     private $type;
+    /**
+     * @var mixed
+     */
     private $closed;
 
     /**

@@ -10,6 +10,7 @@ use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\View\Result\PageFactory;
@@ -17,43 +18,44 @@ use Magento\Framework\View\Result\PageFactory;
 class OrderStatusRedirect implements CsrfAwareActionInterface, HttpPostActionInterface, HttpGetActionInterface
 {
     /**
-     * @var PageFactory
-     */
-    protected $resultRedirectFactory;
-    /**
      * @var RequestInterface
      */
     private $request;
 
     /**
+     * @var RedirectFactory
+     */
+    private $redirectFactory;
+
+    /**
      * @param RequestInterface $request
-     * @param RedirectFactory $resultRedirectFactory
+     * @param RedirectFactory $redirectFactory
      */
     public function __construct(
         RequestInterface $request,
-        RedirectFactory $resultRedirectFactory
+        RedirectFactory $redirectFactory
     ) {
         $this->request = $request;
-        $this->resultRedirectFactory = $resultRedirectFactory;
+        $this->redirectFactory = $redirectFactory;
     }
 
     /**
-     * @return ResponseInterface|\Magento\Framework\Controller\Result\Redirect|ResultInterface|\Magento\Framework\View\Result\Page
+     * Redirect to another controller action with parameters.
+     *
+     * @return ResponseInterface|Redirect|ResultInterface
      */
     public function execute()
     {
         $params = $this->request->getParams();
-        $resultRedirect = $this->resultRedirectFactory->create();
+        $resultRedirect = $this->redirectFactory->create();
         $resultRedirect->setPath('simpl/index/orderstatusupdateonredirect', $params);
         return $resultRedirect;
     }
 
     /**
-     * Create exception in case CSRF validation failed.
-     * Return null if default exception will suffice.
+     * Create exception in case CSRF validation failed. Return null if default exception will suffice.
      *
      * @param RequestInterface $request
-     *
      * @return InvalidRequestException|null
      */
     public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
@@ -62,11 +64,9 @@ class OrderStatusRedirect implements CsrfAwareActionInterface, HttpPostActionInt
     }
 
     /**
-     * Perform custom request validation.
-     * Return null if default validation is needed.
+     * Perform custom request validation. Return null if default validation is needed.
      *
      * @param RequestInterface $request
-     *
      * @return bool|null
      */
     public function validateForCsrf(RequestInterface $request): ?bool

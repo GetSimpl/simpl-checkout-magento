@@ -4,9 +4,14 @@ namespace Simpl\Checkout\Model\Adminhtml\Source;
 
 class Mode
 {
-    const TEST = 'test';
-    const LIVE = 'live';
+    public const TEST = 'test';
+    public const LIVE = 'live';
 
+    /**
+     * To prepare array options for showing payment mod.
+     *
+     * @return array[]
+     */
     public function toOptionArray()
     {
         return [

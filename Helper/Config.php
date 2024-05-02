@@ -3,32 +3,33 @@
 namespace Simpl\Checkout\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\UrlInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Framework\App\Helper\Context;
 
 class Config extends AbstractHelper
 {
 
-    const SCOPE = 'website';
-    const VERSION = '1.0.0';
-    const KEY_PAYMENT_CODE = 'simplcheckout';
-    const KEY_VIRTUAL_PRODUCT_ACTIVE = 'virtual_product';
-    const KEY_CHECKOUT_ACTIVE = 'active';
-    const KEY_LOG = 'logging';
-    const KEY_MODE = 'mode';
-    const KEY_CLIENT_ID = 'client_id';
-    const KEY_TEST_SECRET = 'test_secret';
-    const KEY_LIVE_SECRET = 'live_secret';
-    const KEY_TITLE = 'title';
-    const KEY_ALLOWED_EMAILS = 'allowed_emails';
-    const KEY_BUTTON_LABEL = 'place_order_button_label';
-    const KEY_ORDER_STATUS = 'order_status';
-    const KEY_TITLE_FRONTEND = 'title_for_frontend';
-    const KEY_PAYMENT_INS = 'instructions';
-    const KEY_SIMPL_LIVE_HOST_URL = 'https://checkout-platform-integrations.getsimpl.com/';
-    const KEY_SIMPL_TEST_HOST_URL = 'https://sandbox-checkout-platform-integrations.getsimpl.com/';
-
-    const ABANDONED_ORDER_LIFE_TIME = 60;
+    public const SCOPE = 'website';
+    public const VERSION = '1.0.0';
+    public const KEY_PAYMENT_CODE = 'simplcheckout';
+    public const KEY_VIRTUAL_PRODUCT_ACTIVE = 'virtual_product';
+    public const KEY_CHECKOUT_ACTIVE = 'active';
+    public const KEY_LOG = 'logging';
+    public const KEY_MODE = 'mode';
+    public const KEY_CLIENT_ID = 'client_id';
+    public const KEY_TEST_SECRET = 'test_secret';
+    public const KEY_LIVE_SECRET = 'live_secret';
+    public const KEY_TITLE = 'title';
+    public const KEY_ALLOWED_EMAILS = 'allowed_emails';
+    public const KEY_BUTTON_LABEL = 'place_order_button_label';
+    public const KEY_ORDER_STATUS = 'order_status';
+    public const KEY_TITLE_FRONTEND = 'title_for_frontend';
+    public const KEY_PAYMENT_INS = 'instructions';
+    public const KEY_SIMPL_LIVE_HOST_URL = 'https://checkout-platform-integrations.getsimpl.com/';
+    public const KEY_SIMPL_TEST_HOST_URL = 'https://sandbox-checkout-platform-integrations.getsimpl.com/';
+    public const ABANDONED_ORDER_LIFE_TIME = 60;
 
     /**
      * @var StoreManagerInterface
@@ -142,6 +143,7 @@ class Config extends AbstractHelper
 
     /**
      * To get place order button title
+     *
      * @return string
      */
     public function getButtonLabel()
@@ -183,7 +185,9 @@ class Config extends AbstractHelper
     }
 
     /**
-     * @param $key
+     * Get Magento configuration based on key
+     *
+     * @param string $key
      * @return string
      */
     private function getSimplConfig($key)
@@ -196,6 +200,8 @@ class Config extends AbstractHelper
     }
 
     /**
+     * Check if integration is live or test
+     *
      * @return bool
      */
     private function isLiveIntegration()
@@ -204,17 +210,21 @@ class Config extends AbstractHelper
     }
 
     /**
+     * To retrieve the current domain name of the store
+     *
      * @return string
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws NoSuchEntityException
      */
     public function getDomain()
     {
-        $url = $this->storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+        $url = $this->storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_WEB);
         $parsedUrl = parse_url($url);
-        return $parsedUrl["host"];
+        return $parsedUrl['host'] ?? '';
     }
 
     /**
+     * To get module version
+     *
      * @return string
      */
     public function getVersion()

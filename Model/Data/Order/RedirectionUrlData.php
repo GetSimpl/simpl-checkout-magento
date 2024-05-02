@@ -6,9 +6,14 @@ use Simpl\Checkout\Api\Data\Order\RedirectionUrlDataInterface;
 
 class RedirectionUrlData implements RedirectionUrlDataInterface
 {
+    /**
+     * @var string
+     */
     private $redirectionUrl;
 
     /**
+     * Gets redirect URL from the API response data.
+     *
      * @return string
      */
     public function getRedirectionUrl()
@@ -17,6 +22,8 @@ class RedirectionUrlData implements RedirectionUrlDataInterface
     }
 
     /**
+     * Sets redirect URL in the API response data.
+     *
      * @param string $redirectionUrl
      * @return $this
      */

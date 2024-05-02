@@ -6,10 +6,25 @@ use Simpl\Checkout\Api\Data\Order\PaymentDataInterface;
 
 class PaymentData implements PaymentDataInterface
 {
+    /**
+     * @var mixed
+     */
     private $status;
+    /**
+     * @var mixed
+     */
     private $mode;
+    /**
+     * @var mixed
+     */
     private $method;
+    /**
+     * @var mixed
+     */
     private $grandTotal;
+    /**
+     * @var mixed
+     */
     private $totalPaid;
 
     /**

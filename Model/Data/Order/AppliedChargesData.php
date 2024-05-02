@@ -6,9 +6,21 @@ use Simpl\Checkout\Api\Data\Order\AppliedChargesDataInterface;
 
 class AppliedChargesData implements AppliedChargesDataInterface
 {
+    /**
+     * @var mixed
+     */
     private $title;
+    /**
+     * @var mixed
+     */
     private $description;
+    /**
+     * @var mixed
+     */
     private $chargeType;
+    /**
+     * @var mixed
+     */
     private $amount;
 
     /**

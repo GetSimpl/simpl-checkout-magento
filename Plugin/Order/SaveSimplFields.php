@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
+
 namespace Simpl\Checkout\Plugin\Order;
 
 use Simpl\Checkout\Model\Order\SimplAdditionalFieldsExtensionManagement;
@@ -13,11 +14,21 @@ class SaveSimplFields
      */
     private $extensionManagement;
 
+    /**
+     * @param SimplAdditionalFieldsExtensionManagement $extensionManagement
+     */
     public function __construct(SimplAdditionalFieldsExtensionManagement $extensionManagement)
     {
         $this->extensionManagement = $extensionManagement;
     }
 
+    /**
+     * Before saving an order, set Simpl additional fields data.
+     *
+     * @param OrderRepositoryInterface $subject
+     * @param Order $order
+     * @return array
+     */
     public function beforeSave(OrderRepositoryInterface $subject, Order $order): array
     {
         return [$this->extensionManagement->setDataFromExtension($order)];

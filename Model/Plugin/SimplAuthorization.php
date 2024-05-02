@@ -25,6 +25,11 @@ class SimplAuthorization
      */
     protected $logger;
 
+    /**
+     * @param AuthHelper $authHelper
+     * @param Request $request
+     * @param Logger $logger
+     */
     public function __construct(
         AuthHelper $authHelper,
         Request $request,
@@ -66,8 +71,10 @@ class SimplAuthorization
             try {
                 return $this->authHelper->validateSignature($clientId, $nonce, $signature);
             } catch (\Exception $e) {
-                $this->logger->error('Exception in API Authorization: ' . $e->getMessage(),
-                    ['stacktrace' => $e->getTraceAsString()]);
+                $this->logger->error(
+                    'Exception in API Authorization: ' . $e->getMessage(),
+                    ['stacktrace' => $e->getTraceAsString()]
+                );
                 return $proceed($resource, $privilege);
             }
         } else {
