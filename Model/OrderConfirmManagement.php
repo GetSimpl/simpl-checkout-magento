@@ -267,9 +267,10 @@ class OrderConfirmManagement implements OrderConfirmManagementInterface
 
         $this->orderEmailSender->send($order);
 
-        if ($transactionId and $canProcessInvoice) {
-
-            $this->invoiceOrder($order, $payment, $transactionId);
+        if ($this->config->isInvoiceGenerationEnabled()) {
+            if ($transactionId and $canProcessInvoice) {
+                $this->invoiceOrder($order, $payment, $transactionId);
+            }
         }
     }
 

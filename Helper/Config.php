@@ -27,6 +27,7 @@ class Config extends AbstractHelper
     const KEY_PAYMENT_INS = 'instructions';
     const KEY_SIMPL_LIVE_HOST_URL = 'https://checkout-platform-integrations.getsimpl.com/';
     const KEY_SIMPL_TEST_HOST_URL = 'https://sandbox-checkout-platform-integrations.getsimpl.com/';
+    const KEY_GENERATE_INVOICE = 'generate_invoice';
 
     const ABANDONED_ORDER_LIFE_TIME = 60;
 
@@ -75,6 +76,10 @@ class Config extends AbstractHelper
     public function isLogEnabled()
     {
         return $this->getSimplConfig(self::KEY_LOG);
+    }
+
+    public function isInvoiceGenerationEnabled() {
+        return $this->getSimplConfig(self::KEY_GENERATE_INVOICE);
     }
 
     /**

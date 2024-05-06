@@ -81,6 +81,10 @@
                     <label>Enabled Logging</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="generate_invoice" type="select" sortOrder="999" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+                    <label>Auto generate Invoice for pre-paid orders</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
         </section>
     </system>
